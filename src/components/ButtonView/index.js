@@ -12,11 +12,12 @@ const Buttonview = ({
     customMarginRight,
     MarginRight,
     customMarginTop,
+    customimagestyle
 }) => {
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={[appStyles.buttonview, { marginTop: customMarginTop }]}>
-                <Image source={source} style={appStyles.Setting} />
+                <Image source={source} style={[appStyles.Setting,customimagestyle]} />
                 <Text
           style={[
             appStyles.subsciption,

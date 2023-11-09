@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
-import { colors } from '../../../services/utilities/color';
 import {
   responsiveFontSize,
   responsiveHeight,
@@ -10,40 +9,16 @@ import {
 } from 'react-native-responsive-dimensions';
 import {
   LeftButton,
-  Upload,
   lock,
 } from '../../../services/utilities/assets';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import SelectOptionPicker from '../../../components/selectOptionPicker';
-import DatePickerInput from '../../../components/DatePickerInput';
 export default function Index({ navigation }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [showModel, setShowModel] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const [imageSource, setImageSource] = useState(null);
-
-  const openImageLibrary = () => {
-    let options = {
-      storageOptions: {
-        path: 'image',
-      },
-    };
-
-    launchImageLibrary(options, async (response) => {
-      if (response && response.assets && response.assets.length > 0) {
-        const imageUri = response.assets[0].uri;
-
-        setImageSource(imageUri);
-      } else {
-        // Handle the case where the user canceled without selecting an image
-        Alert.alert("User did not select an image.");
-      }
-    });
-  }
   const GenderData = [{ label: 'Male' }, { label: 'Female' }, { label: 'Other' }];
 
   const viewModel = () => {
@@ -65,22 +40,6 @@ export default function Index({ navigation }) {
       <ScrollView
         contentContainerStyle={appStyles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
-        <TouchableOpacity onPress={openImageLibrary}>
-          {imageSource ? (
-            <Image source={{ uri: imageSource }} style={appStyles.circleview} />
-          ) : (
-            <View
-              style={{
-                ...appStyles.circleview,
-                marginTop: responsiveHeight(2),
-                backgroundColor: colors.color33, // Set your desired background color here
-              }}
-            >
-              <Image source={Upload} style={appStyles.upload} />
-              <Text style={appStyles.uploadtxt}>Upload a Photo</Text>
-            </View>
-          )}
-        </TouchableOpacity>
         <Text style={appStyles.infotxt}>Basic Info</Text>
         <CustomTextInput
           label="Full Name"
@@ -111,19 +70,6 @@ export default function Index({ navigation }) {
           label="Address"
           keyboardType="default"
           placeholder="Enter Address"
-          responsiveMarginTop={7}
-        />
-        <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(7) }]}>Organization Info</Text>
-        <CustomTextInput
-          label="Organization"
-          keyboardType="default"
-          placeholder="Type here"
-          responsiveMarginTop={3}
-        />
-        <CustomTextInput
-          label="Position"
-          keyboardType="default"
-          placeholder="Type here"
           responsiveMarginTop={7}
         />
         <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(7) }]}>Secure Your Account</Text>

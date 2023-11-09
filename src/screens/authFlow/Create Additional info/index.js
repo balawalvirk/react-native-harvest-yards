@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
 import { colors } from '../../../services/utilities/color';
@@ -11,22 +11,29 @@ import {
     responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import {
-    Btntick,
-    Calender,
-    Down,
     Email,
     LeftButton,
+    Phone,
     User,
-    arrowrightwhite,
     lock,
-    mappin,
 } from '../../../services/utilities/assets';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import HorizontalLine from '../../../components/Line';
+import { SentModal } from '../../../components/Modal';
 export default function Index({ navigation }) {
-
+    const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
+    const [resetLinkSent, setResetLinkSent] = useState(false);
+    const handlesendresetlink = () => {
+        setIslinksentModalVisible(true);
+        setResetLinkSent(true);
+        setTimeout(() => {
+            setIslinksentModalVisible(false);
+            navigation.navigate('DrawerNavigation',{screen:'FindFood'});
+        }, 2000);
+    };
+    useEffect(() => {
+    }, [resetLinkSent]);
     const handlearrow = () => {
         navigation.goBack();
     };
@@ -44,85 +51,81 @@ export default function Index({ navigation }) {
                 showsVerticalScrollIndicator={false}
                 extraScrollHeight={responsiveHeight(20)}>
 
-                <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(2) }]}>Address</Text>
                 <CustomTextInput
-                    label="Street"
+                    label="Email Address"
                     keyboardType="default"
-                    placeholder="street"
-                    placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={3}
-                    source={mappin}
-                />
-
-                <CustomTextInput
-                    label="City"
-                    keyboardType="default"
-                    placeholder="city"
+                    placeholder="example@email.com"
                     placeholderMarginLeft={responsiveWidth(3)}
                     responsiveMarginTop={7}
-                    source={mappin}
+                    source={Email}
                 />
+
                 <CustomTextInput
-                    label="State"
+                    label="Password"
                     keyboardType="default"
-                    placeholder="state"
+                    placeholder="Minimum 8 characters"
                     placeholderMarginLeft={responsiveWidth(3)}
                     responsiveMarginTop={7}
-                    source={mappin}
+                    TextinputWidth={responsiveWidth(67)}
+                    source={lock}
+                    showeye={true}
+
                 />
-                <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5) }}>
-                    <CustomTextInput
-                        label="Unit#"
-                        keyboardType="default"
-                        placeholder="unit"
-                        placeholderMarginLeft={responsiveWidth(3)}
-                        responsiveMarginTop={7}
-                        inputWidth={responsiveWidth(42)}
-                        source={mappin}
-                        TextinputWidth={responsiveWidth(28)}
-                       
-                    />
-                    <CustomTextInput
-                        label="Zip"
-                        keyboardType="default"
-                        placeholder="zip"
-                        placeholderMarginLeft={responsiveWidth(3)}
-                        responsiveMarginTop={7}
-                        custommarginleft={responsiveWidth(5)}
-                        source={mappin}
-                        inputWidth={responsiveWidth(42)}
-                        TextinputWidth={responsiveWidth(28)}
-                    />
-                </View>
-
-                <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
-                <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
+                <CustomTextInput
+                    label="Confirm Password"
+                    keyboardType="default"
+                    placeholder="Minimum 8 characters"
+                    placeholderMarginLeft={responsiveWidth(3)}
+                    responsiveMarginTop={7}
+                    TextinputWidth={responsiveWidth(67)}
+                    source={lock}
+                    showeye={true}
+                />
+                <CustomTextInput
+                    label="Cell Phone"
+                    keyboardType="default"
+                    placeholder="03440345050"
+                    placeholderMarginLeft={responsiveWidth(3)}
+                    responsiveMarginTop={7}
+                    source={Phone}
+                />
+                <CustomTextInput
+                    label="How many people in your household?"
+                    keyboardType="default"
+                    placeholder="How many people in your household?"
+                    placeholderMarginLeft={responsiveWidth(3)}
+                    responsiveMarginTop={7}
+                    source={User} />
+                <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
                     <CustomCheckbox />
-                    <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
-
+                    <View style={{ width: responsiveWidth(87) }}>
+                        <Text style={[appStyles.Accept, { marginTop: -responsiveHeight(0.5) }]}>I agree to the use of my phone number for receiving SMS updates and notifications</Text>
+                    </View>
                 </View>
-                <View style={appStyles.createcheckview}>
-                    <CustomCheckbox />
-                    <Text style={appStyles.Entertxt}>Are you currently unhoused?</Text>
-
+                <View style={[appStyles.acceptview, { marginTop: responsiveHeight(2) }]}>
+                    <View>
+                        <CustomCheckbox />
+                    </View>
+                    <Text style={appStyles.Accept}>Accept</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Termsandconditions')}>
+                        <Text style={appStyles.TermsText}>Terms & Conditions</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={appStyles.createcheckview}>
-                    <CustomCheckbox />
-                    <Text style={appStyles.Entertxt}>Are you currently receiving any public assistance?</Text>
-
-                </View>
-    
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3) }]}>
                     <Button
-                        label="Finish"
+                        label="Craete Account"
                         customImageMarginRight={responsiveWidth(3)}
-                      onPress={()=>navigation.navigate('DrawerNavigation',{screen:'FindFood'})}
+                        onPress={handlesendresetlink}
                     />
 
                 </TouchableOpacity>
 
                 <View style={{ height: responsiveHeight(6) }} />
             </KeyboardAwareScrollView>
+            <SentModal isVisible={islinksentModalVisible}
+                LinkSent='Account Created'
+                passowrd='Your account has been registered successfully.'
+            />
         </SafeAreaView>
     );
 }

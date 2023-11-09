@@ -17,7 +17,7 @@ import {
 } from 'react-native-responsive-dimensions';
 import Buttonview from '../ButtonView';
 import Line from '../Line';
-import { Donation, HYlogo, HYlogowhite, Info, Logo, Logout, Phone, Question, Settings, Star, User, book, share, tag } from '../../services/utilities/assets';
+import { Donation, HYlogo, HYlogowhite, Info, Logo, Logout, Phone, Question, Settings, Star, User, book, close, share, tag } from '../../services/utilities/assets';
 import Button2view from '../Button2view';
 import { ModalRemoveUser, SentModal } from '../Modal';
 
@@ -64,11 +64,12 @@ const DrawerContent = ({ navigation }) => {
           onPress={() => navigateToScreen('Editprofile')}
         />
         <Buttonview
-          source={Settings}
+          source={close}
           text="Disaster Relief"
           customMarginRight={responsiveWidth(35)}
           customMarginTop={responsiveHeight(1.5)}
           customTextColor={colors.color4}
+          customimagestyle={appStyles.imagestyle}
           onPress={() => navigateToScreen('DisasterRelief')}
         />
 

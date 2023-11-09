@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "469292395416",
+    "project_id": "harvest-yard-7a52e",
+    "storage_bucket": "harvest-yard-7a52e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469292395416:android:16c645f0fa9d8fb36099ed",
+        "android_client_info": {
+          "package_name": "com.harvard_yard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlyxMz0j5CldpE8eBvQgVp-d1FLAEqQcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1225,7 +1225,11 @@ export const appStyles = StyleSheet.create({
   fontFamily: fontFamily.SatoshiVariable,
   fontWeight: '700'
   },
-  
+  imagestyle:{
+    width: scale(18),
+    height: scale(18),
+    resizeMode: 'contain',
+  },
   mapmainview: {
     width: scale(313),
     borderRadius: responsiveWidth(5),

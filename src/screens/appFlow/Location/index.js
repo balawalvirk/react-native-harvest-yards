@@ -90,8 +90,9 @@ const Location = ({ navigation }) => {
         toggleModal={() => setHelpCalloutModalVisible(false)}
       bottom={responsiveHeight(4.7)}
       Title='Location Help'
-      helpcallouttxt='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis sem sed turpis elementum volutpat. Maecenas vulputate purus a dui mollis laoreet. Aenean porta, libero cursus sodales mattis. mi orci laoreet ipsum, placerat finibus orci ligula et arcu. Sed est metus. finibus in ex sed.'
-      />
+      helpcallouttxt='The default location is your home address.
+      You can use your current location to see the closest places to get food. 
+      Or, enter an address where you would like to see places nearby to obtain food.'/>
     </SafeAreaView>
   );
 };
