@@ -82,14 +82,6 @@ export default function Index({ navigation }) {
                     showeye={true}
                 />
                 <CustomTextInput
-                    label="Cell Phone"
-                    keyboardType="default"
-                    placeholder="03440345050"
-                    placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={7}
-                    source={Phone}
-                />
-                <CustomTextInput
                     label="How many people in your household?"
                     keyboardType="default"
                     placeholder="How many people in your household?"
@@ -113,7 +105,7 @@ export default function Index({ navigation }) {
                 </View>
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3) }]}>
                     <Button
-                        label="Craete Account"
+                        label="Create Account"
                         customImageMarginRight={responsiveWidth(3)}
                         onPress={handlesendresetlink}
                     />

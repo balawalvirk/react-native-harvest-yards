@@ -97,3 +97,5 @@ export const Buttondownload= require('../../../../src/assets/images/Buttondownlo
 export const Buttonzoom= require('../../../../src/assets/images/Buttonzoom.png');
 export const greenshoppingbag= require('../../../../src/assets/images/greenshoppingbag.png');
 export const close= require('../../../../src/assets/images/close.png');
+export const redcrosslogo= require('../../../../src/assets/images/redcrosslogo.png');
+export const icon8= require('../../../../src/assets/images/icons8.png');

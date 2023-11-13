@@ -54,7 +54,14 @@ export default function Index({ navigation }) {
           responsiveMarginTop={5}
           source={User}
         />
-
+        <CustomTextInput
+          label="Cell Phone"
+          keyboardType="default"
+          placeholder="03440345050"
+          placeholderMarginLeft={responsiveWidth(3)}
+          responsiveMarginTop={7}
+          source={Phone}
+        />
         <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(6) }]}>Address</Text>
         <CustomTextInput
           label="Street"

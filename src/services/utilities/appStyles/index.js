@@ -811,17 +811,10 @@ export const appStyles = StyleSheet.create({
     alignSelf: 'center',
     fontFamily: fontFamily.SatoshiRegular,
   },
-  // thumbOffStyle: {
-  //   backgroundColor: colors.color20,
-  //   opacity: 0.5
-  // },
-  // thumbOff: {
-  //   backgroundColor: colors.color20,
-  //   opacity: 1
-  // },
-  // thumbOnStyle: {
-  //   backgroundColor: colors.color20,
-  // },
+  trackOffStyle: {
+    Color: colors.color7,
+    opacity:0.5
+  },
   cardContainer: {
     flexDirection: 'row',
     padding: responsiveWidth(3),
@@ -1226,8 +1219,8 @@ export const appStyles = StyleSheet.create({
   fontWeight: '700'
   },
   imagestyle:{
-    width: scale(18),
-    height: scale(18),
+    width: scale(30),
+    height: scale(30),
     resizeMode: 'contain',
   },
   mapmainview: {

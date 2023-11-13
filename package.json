@@ -36,7 +36,8 @@
     "react-native-share": "^9.4.1",
     "react-native-size-matters": "^0.4.2",
     "react-navigation": "^5.0.0",
-    "react-navigation-tabs": "^2.11.2"
+    "react-navigation-tabs": "^2.11.2",
+    "toggle-switch-react-native": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

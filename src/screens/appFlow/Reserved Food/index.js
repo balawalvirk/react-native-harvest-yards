@@ -16,6 +16,7 @@ const ReservedFood = ({ navigation }) => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [showQRMainView, setShowQRMainView] = useState(false); 
+  const [isFavoritesModalVisible, setFavoritesModalVisible] = useState(false); 
   const handleNavigate = (item) => {
     setShowQRMainView(false); // Hide the QR main view
     navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item,selectedTouchable:selectedTouchable } });
@@ -242,7 +243,10 @@ const ReservedFood = ({ navigation }) => {
                 width: responsiveWidth(30),
               },
             ]}
-            onPress={() => setSelectedTouchable('Favorites')}
+            onPress={() =>
+              { setSelectedTouchable('Favorites');
+            setFavoritesModalVisible(true);
+          }}
           >
             <Image
               source={heart}
@@ -297,11 +301,13 @@ const ReservedFood = ({ navigation }) => {
         onBackdropPress={() => setHelpCalloutModalVisible(false)}
         toggleModal={() => setHelpCalloutModalVisible(false)}
         Title='Reserved Food Help'
-        helpcallouttxt='Pending Pick-up are reservations that you have but have not picked up the food package. 
-        If you select the pending button your QR code show up on your screen. 
-        You must show the QR code a the time of pick-up to receive your food package.
-        You can also cancel a food reservation on the same screen.
-        Press the Find Food button to return to the Find Food screen.'
+        helpcallouttxt={
+          selectedTouchable === 'Pending Pick-ups'
+            ? 'Pending Pick-up are reservations that you have but have not picked up the food package. If you select the pending button your QR code show up on your screen. You must show the QR code at the time of pick-up to receive your food package. You can also cancel a food reservation on the same screen. Press the Find Food button to return to the Find Food screen.'
+            : selectedTouchable === 'Favorites'
+            ? 'Save food centers that you have visited and/or want to save for the future as a favorite. This way you dont have to search for through multiple entries when you want to make a reservation.'
+            : 'Default text if none of the conditions match.'
+        }
       />
         {selectedTouchable === 'Favorites' && showQRMainView && (
        <View style={appStyles.qrmainview}>

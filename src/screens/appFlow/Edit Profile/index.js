@@ -15,11 +15,20 @@ import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SelectOptionPicker from '../../../components/selectOptionPicker';
+import CustomCheckbox from '../../../components/Checkbox';
+import CustomSwitch from '../../../components/Switch';
+import { colors } from '../../../services/utilities/color';
 export default function Index({ navigation }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [showModel, setShowModel] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const GenderData = [{ label: 'Male' }, { label: 'Female' }, { label: 'Other' }];
+  const [switchValue, setSwitchValue] = useState(false);
+
+  const handleToggle = (value) => {
+    // Handle the toggle action here
+    setSwitchValue(value);
+  };
 
   const viewModel = () => {
     setShowModel(!showModel);
@@ -95,6 +104,19 @@ export default function Index({ navigation }) {
           source={lock}
           showeye={true}
         />
+        <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
+          <CustomSwitch
+            // offColor={colors.color33}
+            onColor={colors.color33}
+              thumbOffStyle={appStyles.thumbOffStyle}
+            value={switchValue}
+            trackOffStyle={appStyles.trackOffStyle}
+            toggleSwitch={handleToggle}
+          />
+          <View style={{ width: responsiveWidth(87) }}>
+            <Text style={[appStyles.Accept, { marginTop: responsiveHeight(1.2),marginLeft:responsiveWidth(3) }]}>Turn push notifications on/off</Text>
+          </View>
+        </View>
         <TouchableOpacity style={{ ...appStyles.Lubemeupcontainer, marginTop: responsiveHeight(7) }}>
           <Button
             label="Save Changes"

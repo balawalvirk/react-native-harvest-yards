@@ -9,6 +9,8 @@ const CustomSwitch = ({
   thumbOffStyle,
   value,
   toggleSwitch,
+  trackOffStyle,
+  trackOnStyle,
   onToggle
 }) => {
   return (
@@ -20,8 +22,9 @@ const CustomSwitch = ({
       thumbOnStyle={appStyles.thumbOnStyle}
       size="large"
       value={value}   
-      onToggle={toggleSwitch}
-      
+      trackOffStyle={trackOffStyle}
+      onToggle={toggleSwitch}  
+      trackOnStyle={trackOnStyle}
     />
   );
 };
