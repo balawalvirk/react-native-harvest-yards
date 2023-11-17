@@ -362,7 +362,7 @@ export const appStyles = StyleSheet.create({
   subsciption: {
     color: colors.color4,
     fontFamily: fontFamily.SatoshiVariable,
-    fontSize: fontSize.h10,
+    fontSize: fontSize.h5,
     // marginRight: responsiveWidth(30),
     marginLeft: responsiveWidth(2.5),
     opacity: 1,
@@ -437,6 +437,7 @@ export const appStyles = StyleSheet.create({
     fontWeight: '500',
     alignSelf: 'center',
     fontSize: fontSize.h5,
+    marginRight:responsiveWidth(2),
     opacity: 1,
   },
   input: {

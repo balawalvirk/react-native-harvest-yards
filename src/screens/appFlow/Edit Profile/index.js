@@ -51,10 +51,16 @@ export default function Index({ navigation }) {
         showsVerticalScrollIndicator={false}>
         <Text style={appStyles.infotxt}>Basic Info</Text>
         <CustomTextInput
-          label="Full Name"
+          label="First Name"
           keyboardType="default"
-          placeholder="John Doe"
+          placeholder="John"
           responsiveMarginTop={3}
+        />
+         <CustomTextInput
+          label="Last Name"
+          keyboardType="default"
+          placeholder="Doe"
+          responsiveMarginTop={7}
         />
         <CustomTextInput
           label="Username"

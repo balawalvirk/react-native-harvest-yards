@@ -47,9 +47,17 @@ export default function Index({ navigation }) {
         extraScrollHeight={responsiveHeight(20)}>
 
         <CustomTextInput
-          label="Full Name"
+          label="First Name"
           keyboardType="default"
-          placeholder="John Doe"
+          placeholder="John"
+          placeholderMarginLeft={responsiveWidth(3)}
+          responsiveMarginTop={5}
+          source={User}
+        />
+        <CustomTextInput
+          label="Last Name"
+          keyboardType="default"
+          placeholder="Doe"
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={5}
           source={User}
@@ -80,19 +88,11 @@ export default function Index({ navigation }) {
           responsiveMarginTop={7}
           source={mappin}
         />
-        <CustomTextInput
-          label="State"
-          keyboardType="default"
-          placeholder="state"
-          placeholderMarginLeft={responsiveWidth(3)}
-          responsiveMarginTop={7}
-          source={mappin}
-        />
         <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5) }}>
           <CustomTextInput
-            label="Unit#"
+            label="State"
             keyboardType="default"
-            placeholder="unit"
+            placeholder="state"
             placeholderMarginLeft={responsiveWidth(3)}
             responsiveMarginTop={7}
             inputWidth={responsiveWidth(42)}
@@ -115,19 +115,18 @@ export default function Index({ navigation }) {
 
         <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
         <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
-          <CustomCheckbox />
           <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
-
+          <CustomCheckbox />
+        </View>
+        <View style={appStyles.createcheckview}>  
+          <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
+          <CustomCheckbox />
         </View>
         <View style={appStyles.createcheckview}>
+          <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
+          <View style={{marginLeft:-responsiveWidth(58),marginTop:responsiveHeight(3)}}>
           <CustomCheckbox />
-          <Text style={appStyles.Entertxt}>Are you currently unhoused?</Text>
-
-        </View>
-        <View style={appStyles.createcheckview}>
-          <CustomCheckbox />
-          <Text style={appStyles.Entertxt}>Are you currently receiving any public assistance?</Text>
-
+            </View>
         </View>
 
 
