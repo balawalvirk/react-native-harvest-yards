@@ -4,6 +4,7 @@ import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
 import { colors } from '../../../services/utilities/color';
 import CustomCheckbox from '../../../components/Checkbox';
+import firestore from '@react-native-firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   responsiveFontSize,
@@ -11,27 +12,152 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import {
-  Btntick,
-  Calender,
-  Down,
-  Email,
   LeftButton,
   Phone,
   User,
+  animation,
   arrowrightwhite,
   lock,
   mappin,
   users,
 } from '../../../services/utilities/assets';
+import LottieView from 'lottie-react-native';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import HorizontalLine from '../../../components/Line';
+import auth from '@react-native-firebase/auth';
+import { scale } from 'react-native-size-matters';
 export default function Index({ navigation }) {
-
+  const [firstName, setfirstName] = useState('');
+  const [lastName, setlastName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zip, setZip] = useState('');
+  const [isOver13, setIsOver13] = useState('');
+  const [isUnhoused, setIsUnhoused] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isReceivingAssistance, setIsReceivingAssistance] = useState('');
   const handlearrow = () => {
     navigation.goBack();
   };
+  const phoneRegex = /^[0-9]{10}$/; 
+  const handleCreateAccount = async () => {
+    if (!firstName || !street || !city || !state || !zip) {
+   
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please fill in all required fields',
+      });
+      if (!zip) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Zip is required',
+        });
+      }
+      if (!state) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'State is required',
+        });
+      }
+
+      if (!city) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'City is required',
+        });
+      }
+      if (!street) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Street is required',
+        });
+      }
+    //   if (!phoneNumber) {
+    //     Toast.show({
+    //       type: 'error',
+    //       text1: 'Error',
+    //       text2: 'Cell Phone is required',
+    //     });
+    //   }
+  
+    //  else if (!phoneRegex.test(phoneNumber)) {
+    //     Toast.show({
+    //       type: 'error',
+    //       text1: 'Error',
+    //       text2: 'Please enter a valid phone number',
+    //     });
+    //     return;
+    //   }
+      if (!lastName) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Last name is required',
+        });
+      }
+      else
+        if (lastName.length <= 3) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Last name must be at least 3 characters',
+          });
+       return;
+        }
+     
+      if (!firstName) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'First name is required',
+        });
+      }
+      else
+        if (firstName.length <= 3) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'First name must be at least 3 characters',
+          });
+        }
+      return;
+    }
+
+    // Add additional validation if needed (e.g., email format)
+    try {
+      setLoading(true);
+      // Simulating an asynchronous process
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Pass data to the AdditionalInfo screen
+      navigation.navigate('CreateAdditionalinfo', {
+        firstName,
+        lastName,
+        phoneNumber,
+        street,
+        city,
+        state,
+        zip,
+        isOver13,
+        isUnhoused,
+        isReceivingAssistance,
+      });
+    } catch (error) {
+      console.error('Error creating account:', error.message);
+    }
+    setLoading(false);
+  };
+
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -53,24 +179,30 @@ export default function Index({ navigation }) {
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={5}
           source={User}
+          value={firstName}
+          onChangeText={(text) => setfirstName(text)}
         />
-        <CustomTextInput
+          <CustomTextInput
           label="Last Name"
           keyboardType="default"
           placeholder="Doe"
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={5}
           source={User}
+          value={lastName}
+          onChangeText={(text) => setlastName(text)}
         />
         <CustomTextInput
           label="Cell Phone"
-          keyboardType="default"
+          keyboardType="phone-pad"
           placeholder="03440345050"
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={7}
           source={Phone}
+          value={phoneNumber}
+          onChangeText={(text) => setPhoneNumber(text)}
         />
-        <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(6) }]}>Address</Text>
+        <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(7) }]}>Address</Text>
         <CustomTextInput
           label="Street"
           keyboardType="default"
@@ -78,8 +210,9 @@ export default function Index({ navigation }) {
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={3}
           source={mappin}
+          value={street}
+          onChangeText={(text) => setStreet(text)}
         />
-
         <CustomTextInput
           label="City"
           keyboardType="default"
@@ -87,6 +220,8 @@ export default function Index({ navigation }) {
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={7}
           source={mappin}
+          value={city}
+          onChangeText={(text) => setCity(text)}
         />
         <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5) }}>
           <CustomTextInput
@@ -98,11 +233,12 @@ export default function Index({ navigation }) {
             inputWidth={responsiveWidth(42)}
             source={mappin}
             TextinputWidth={responsiveWidth(28)}
-
+            value={state}
+            onChangeText={(text) => setState(text)}
           />
           <CustomTextInput
             label="Zip"
-            keyboardType="default"
+            keyboardType="numeric"
             placeholder="zip"
             placeholderMarginLeft={responsiveWidth(3)}
             responsiveMarginTop={7}
@@ -110,35 +246,43 @@ export default function Index({ navigation }) {
             source={mappin}
             inputWidth={responsiveWidth(42)}
             TextinputWidth={responsiveWidth(28)}
+            value={zip}
+            onChangeText={(text) => setZip(text)}
           />
         </View>
-
         <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
-        <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
-          <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
-          <CustomCheckbox />
-        </View>
         <View style={appStyles.createcheckview}>  
           <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
-          <CustomCheckbox />
+          <CustomCheckbox checked={isUnhoused} onPress={() => setIsUnhoused(!isUnhoused)}/>
         </View>
+        <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
+          <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
+          <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
+        </View>
+      
         <View style={appStyles.createcheckview}>
           <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
-          <View style={{marginLeft:-responsiveWidth(58),marginTop:responsiveHeight(3)}}>
-          <CustomCheckbox />
-            </View>
+          <CustomCheckbox  checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/> 
         </View>
-
-
         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(4) }]}>
           <Button
             label="Continue"
             customImageSource={arrowrightwhite}
             customImageMarginRight={responsiveWidth(3)}
-            onPress={() => navigation.navigate('CreateAdditionalinfo')}
+            onPress={handleCreateAccount}
           />
         </TouchableOpacity>
         <View style={{ height: responsiveHeight(12) }} />
+        <View style={appStyles.loadingContainer}>
+          {loading && (
+            <LottieView
+              source={animation}
+              autoPlay
+              loop
+              style={appStyles.loadingAnimation}
+            />
+          )}
+        </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

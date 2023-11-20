@@ -96,5 +96,5 @@ export const QRcode= require('../../../../src/assets/images/QRcode.png');
 export const Buttondownload= require('../../../../src/assets/images/Buttondownload.png');
 export const Buttonzoom= require('../../../../src/assets/images/Buttonzoom.png');
 export const greenshoppingbag= require('../../../../src/assets/images/greenshoppingbag.png');
-export const close= require('../../../../src/assets/images/close.png');
+export const animation= require('../../../../src/assets/lottie/v3Bjl8xfoW.json');
 export const icon8= require('../../../../src/assets/images/icons8.png');

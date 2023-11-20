@@ -34,13 +34,16 @@ const CustomTextInput = ({
   showImage,
   source1,
   marginLeft,
+  value,
   onpress,
   onImgPress,
+  onChangeText,
   placeholderTextColor = colors.color29,
   customTextInputMarginRight,
   borderRadius,
   secureTextEntry = false,
   error,
+  autoCapitalize
 
 }) => {
   const [isPasswordVisible, setPasswordVisibility] = useState(secureTextEntry);
@@ -103,6 +106,7 @@ const CustomTextInput = ({
               marginTop: -responsiveHeight(placeholderMarginTop || 0),
               marginLeft: placeholderMarginLeft,
               width: TextinputWidth || responsiveWidth(75),
+            
             },
           ]}
           keyboardType={keyboardType}
@@ -115,7 +119,9 @@ const CustomTextInput = ({
           secureTextEntry={isPasswordVisible} 
           maxLength={maxlength}
           onFocus={onfocus}
-          
+          value={value}
+          onChangeText={onChangeText}
+          autoCapitalize={autoCapitalize}
         />
         {showImage && (
           // <TouchableOpacity style={{width:responsiveWidth(5),height:responsiveHeight(3)}} onPress={onpress}>

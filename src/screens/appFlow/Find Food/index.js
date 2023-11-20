@@ -12,7 +12,7 @@ import { scale } from 'react-native-size-matters';
 import { colors } from '../../../services/utilities/color';
 const FindFood = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-
+  const [searchText, setSearchText] = useState('');
   const data = [
     {
         source:Image8, 
@@ -78,7 +78,9 @@ const FindFood = ({ navigation }) => {
       additionalInfo: '6 km away',
     },
   ];
-
+  const filteredData = data.filter(
+    item => item.title.toLowerCase().includes(searchText.toLowerCase())
+  );
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -102,13 +104,22 @@ const FindFood = ({ navigation }) => {
           placeholderTextColor={colors.color29}
           maininputmarginleft={-responsiveWidth(16.6)}
           marginLeft={responsiveWidth(2)}
+          onChangeText={(text) => setSearchText(text)}
+          value={searchText}
         />
+           {/* Conditional rendering for button related to search */}
+      {searchText !== '' && (
+        <TouchableOpacity onPress={() => setSearchText('')}>
+          {/* Your button related to search input */}
+          {/* <Text>Clear Search</Text> */}
+        </TouchableOpacity>
+      )}
         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
           <Image source={locationtag} style={appStyles.locationtag} />
         </TouchableOpacity>
         <Text style={[appStyles.infotxt, {marginBottom:responsiveHeight(0.1)}]}>Nearby</Text>
         <FlatList
-          data={data}
+           data={searchText === '' ? data : filteredData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <CardView

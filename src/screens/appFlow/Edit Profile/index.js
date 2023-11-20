@@ -2,39 +2,200 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
+import { colors } from '../../../services/utilities/color';
 import {
   responsiveFontSize,
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
+import Toast from 'react-native-toast-message';
 import {
+  Email,
   LeftButton,
+  Upload,
+  animation,
   lock,
+  mappin,
 } from '../../../services/utilities/assets';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SelectOptionPicker from '../../../components/selectOptionPicker';
-import CustomCheckbox from '../../../components/Checkbox';
+import firestore from '@react-native-firebase/firestore'; // Correct import statement
+import auth from '@react-native-firebase/auth'; // Make sure you've imported auth if used
+import LottieView from 'lottie-react-native';
 import CustomSwitch from '../../../components/Switch';
-import { colors } from '../../../services/utilities/color';
-export default function Index({ navigation }) {
-  const [selectedDate, setSelectedDate] = useState('');
-  const [showModel, setShowModel] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  const GenderData = [{ label: 'Male' }, { label: 'Female' }, { label: 'Other' }];
-  const [switchValue, setSwitchValue] = useState(false);
+export default function EditProfile({ navigation }) {
+  const [userId, setUserId] = useState('');
+  const [firstName, setfirstName] = useState('');
+  const [lastName, setlastName] = useState('');
+  const [UserName, setUserName] = useState('');
+  const [email, setemail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zip, setZip] = useState('');
+  const [Password, setPassword] = useState('');
+  const [ConfirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
+  const fetchUserData = async () => {
+    try {
+      const currentUser = auth().currentUser;
+      if (currentUser) {
+        setLoading(true);
+        const userRef = firestore().collection('users').doc(currentUser.uid);
+        const doc = await userRef.get();
+
+        if (doc.exists) {
+          const userData = doc.data();
+          setUserId(currentUser.uid);
+          setfirstName(userData.firstName || '');
+          setlastName(userData.lastName || '');
+          setemail(userData.email || '');
+          setPhoneNumber(userData.phoneNumber || '');
+          setStreet(userData.street || '');
+          setCity(userData.city || '');
+          setState(userData.state || '');
+          setZip(userData.zip || '');
+          setUserName(userData.UserName || '');
+          setConfirmPassword(userData.ConfirmPassword || '');
+          setPassword(userData.Password || '');
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setLoading(false);
+    }
+  };
+
+  const saveChanges = async () => {
+    setLoading(true)
+    try {
+      if (!validateInputs()) {
+        setLoading(false);
+        return;
+      }
+      const userRef = firestore().collection('users').doc(userId);
+      const notificationValue = switchValue ? 'yes' : 'no';
+      await userRef.update({
+        firstName,
+        lastName,
+        UserName,
+        email,
+        phoneNumber,
+        street,
+        city,
+        state,
+        zip,
+        ConfirmPassword,
+        Password,
+        notification: notificationValue,
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Save changes successfully!',
+      });
+      navigation.navigate('FindFood');
+    } catch (error) {
+      showToast('Error saving changes');
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or error
+    }
+  };
+  const [switchValue, setSwitchValue] = useState(false);
+  const phonePattern = /^\d{10}$/;
   const handleToggle = (value) => {
     // Handle the toggle action here
     setSwitchValue(value);
   };
+  const validateInputs = () => {
+    if (!firstName) {
+      showToast('First name is required');
+      return false;
+    } else if (firstName.length < 3) {
+      showToast('First name must be at least 3 characters');
+      return false;
+    }
 
-  const viewModel = () => {
-    setShowModel(!showModel);
+    if (!lastName) {
+      showToast('Last name is required');
+      return false;
+    } else if (lastName.length < 3) {
+      showToast('Last name must be at least 3 characters');
+      return false;
+    }
+
+    if (!UserName) {
+      showToast('Username is required');
+      return false;
+    } else if (UserName.length < 3) {
+      showToast('Username must be at least 3 characters');
+      return false;
+    }
+
+    if (!email) {
+      showToast('Email is required');
+      return false;
+    } else if (!isValidEmail(email)) {
+      showToast('Invalid email');
+      return false;
+    }
+    // if (!phoneNumber) {
+    //   showToast('Phone Number is required');
+    //   return false;
+    // } else if (!phonePattern.test(phoneNumber)) {
+    //   showToast('Invalid Phone Number.');
+    //   return false;
+    // }
+
+    if (!street) {
+      showToast('street is required');
+      return false;
+    }
+    if (!city) {
+      showToast('city is required');
+      return false;
+    }
+    if (!state) {
+      showToast('state is required');
+      return false;
+    }
+    if (!zip) {
+      showToast('zip is required');
+      return false;
+    }
+    if (!Password) {
+      showToast('Password is required');
+      return false;
+    } else if (Password.length < 8) {
+      showToast('Password should be at least 8 characters');
+      return false;
+    } else if (!ConfirmPassword) {
+      showToast('Confirm Password is required');
+      return false;
+    } else if (ConfirmPassword !== Password) {
+      showToast('Passwords do not match');
+      return false;
+    }
+    return true;
   };
-  const handleDateChange = date => {
-    setSelectedDate(date);
+
+  const showToast = (message) => {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: message,
+    });
+  };
+  const isValidEmail = (email) => {
+    // Implement your email validation logic
+    return /\S+@\S+\.\S+/.test(email);
   };
 
   return (
@@ -55,40 +216,95 @@ export default function Index({ navigation }) {
           keyboardType="default"
           placeholder="John"
           responsiveMarginTop={3}
+          value={firstName}
+          onChangeText={(text) => setfirstName(text)}
         />
-         <CustomTextInput
+        <CustomTextInput
           label="Last Name"
           keyboardType="default"
           placeholder="Doe"
           responsiveMarginTop={7}
+          value={lastName}
+          onChangeText={(text) => setlastName(text)}
         />
+
         <CustomTextInput
           label="Username"
           keyboardType="default"
           placeholder="example123"
           responsiveMarginTop={7}
+          value={UserName}
+          onChangeText={(text) => setUserName(text)}
         />
         <CustomTextInput
           label="Email Address"
           keyboardType="default"
           placeholder="example@email.com"
           responsiveMarginTop={7}
-
+          autoCapitalize={true}
+          value={email}
+          onChangeText={(text) => setemail(text)}
         />
+
         <CustomTextInput
           label="Phone Number"
-          keyboardType="default"
+          keyboardType="phone-pad"
           placeholder="Enter a number"
           responsiveMarginTop={7}
+          value={phoneNumber} // Add value prop to display user data
+          onChangeText={(text) => setPhoneNumber(text)}
         />
+        <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(7) }]}>Address</Text>
         <CustomTextInput
-          label="Address"
+          label="Street"
           keyboardType="default"
-          placeholder="Enter Address"
-          responsiveMarginTop={7}
+          placeholder="street"
+          placeholderMarginLeft={responsiveWidth(3)}
+          responsiveMarginTop={3}
+          source={mappin}
+          value={street}
+          onChangeText={(text) => setStreet(text)}
         />
-        <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(7) }]}>Secure Your Account</Text>
 
+        <CustomTextInput
+          label="City"
+          keyboardType="default"
+          placeholder="city"
+          placeholderMarginLeft={responsiveWidth(3)}
+          responsiveMarginTop={7}
+          source={mappin}
+          value={city}
+          onChangeText={(text) => setCity(text)}
+        />
+        <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5) }}>
+          <CustomTextInput
+            label="State"
+            keyboardType="default"
+            placeholder="state"
+            placeholderMarginLeft={responsiveWidth(3)}
+            responsiveMarginTop={7}
+            inputWidth={responsiveWidth(42)}
+            source={mappin}
+            TextinputWidth={responsiveWidth(28)}
+            value={state}
+            onChangeText={(text) => setState(text)}
+          />
+          <CustomTextInput
+            label="Zip"
+            keyboardType="numeric"
+            placeholder="zip"
+            placeholderMarginLeft={responsiveWidth(3)}
+            responsiveMarginTop={7}
+            custommarginleft={responsiveWidth(5)}
+            source={mappin}
+            inputWidth={responsiveWidth(42)}
+            TextinputWidth={responsiveWidth(28)}
+            value={zip}
+            onChangeText={(text) => setZip(text)}
+          />
+        </View>
+
+        <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(7) }]}>Secure Your Account</Text>
         <CustomTextInput
           label="Password"
           keyboardType="default"
@@ -98,8 +314,9 @@ export default function Index({ navigation }) {
           TextinputWidth={responsiveWidth(67)}
           source={lock}
           showeye={true}
+          value={Password}
+          onChangeText={(text) => setPassword(text)}
         />
-
         <CustomTextInput
           label="Confirm Password"
           keyboardType="default"
@@ -109,39 +326,44 @@ export default function Index({ navigation }) {
           TextinputWidth={responsiveWidth(67)}
           source={lock}
           showeye={true}
+          value={ConfirmPassword}
+          onChangeText={(text) => setConfirmPassword(text)}
         />
         <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
           <CustomSwitch
             // offColor={colors.color33}
             onColor={colors.color33}
-              thumbOffStyle={appStyles.thumbOffStyle}
+            thumbOffStyle={appStyles.thumbOffStyle}
             value={switchValue}
             trackOffStyle={appStyles.trackOffStyle}
             toggleSwitch={handleToggle}
           />
           <View style={{ width: responsiveWidth(87) }}>
-            <Text style={[appStyles.Accept, { marginTop: responsiveHeight(1.2),marginLeft:responsiveWidth(3) }]}>Turn push notifications on/off</Text>
+            <Text style={[appStyles.Accept, { marginTop: responsiveHeight(1.2), marginLeft: responsiveWidth(3) }]}>Turn push notifications on/off</Text>
           </View>
         </View>
         <TouchableOpacity style={{ ...appStyles.Lubemeupcontainer, marginTop: responsiveHeight(7) }}>
           <Button
             label="Save Changes"
             customImageMarginRight={responsiveWidth(3)}
-            onPress={() => navigation.navigate('DrawerNavigation', { screen: 'FindFood' })}
+            onPress={saveChanges}
           />
         </TouchableOpacity>
         <View style={{ height: responsiveHeight(6) }} />
+
+        <View style={appStyles.loadingContainer}>
+          {loading && (
+            <LottieView
+              source={animation}
+              autoPlay
+              loop
+              style={appStyles.loadingAnimation}
+            />
+          )}
+        </View>
       </ScrollView>
-      <SelectOptionPicker
-        value={showModel}
-        label={'Select Gender'}
-        activeItem={selectedOption}
-        data={GenderData}
-        toggleModel={() => viewModel()}
-        Selected={e => {
-          setSelectedOption(e);
-        }}
-      />
+
     </SafeAreaView>
+
   );
 }

@@ -29,6 +29,7 @@ const AppNavigation = () => {
          <Stack.Screen name="Location" component={Location} /> 
          <Stack.Screen name="Donation" component={Donation} /> 
          <Stack.Screen name="NewDonation" component={NewDonation} /> 
+         
          <Stack.Screen name="MainDonation" component={MainDonation} /> 
          <Stack.Screen name="LocationRadious" component={LocationRadious} /> 
          <Stack.Screen name="DisasterRelief" component={DisasterRelief} /> 

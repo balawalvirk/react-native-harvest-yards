@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "Harvard_yard.app"
-               BlueprintName = "Harvard_yard"
-               ReferencedContainer = "container:Harvard_yard.xcodeproj">
+               BuildableName = "Harvest_yards.app"
+               BlueprintName = "Harvest_yards"
+               ReferencedContainer = "container:Harvest_yards.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "Harvard_yardTests.xctest"
-               BlueprintName = "Harvard_yardTests"
-               ReferencedContainer = "container:Harvard_yard.xcodeproj">
+               BuildableName = "Harvest_yardsTests.xctest"
+               BlueprintName = "Harvest_yardsTests"
+               ReferencedContainer = "container:Harvest_yards.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Harvard_yard.app"
-            BlueprintName = "Harvard_yard"
-            ReferencedContainer = "container:Harvard_yard.xcodeproj">
+            BuildableName = "Harvest_yards.app"
+            BlueprintName = "Harvest_yards"
+            ReferencedContainer = "container:Harvest_yards.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Harvard_yard.app"
-            BlueprintName = "Harvard_yard"
-            ReferencedContainer = "container:Harvard_yard.xcodeproj">
+            BuildableName = "Harvest_yards.app"
+            BlueprintName = "Harvest_yards"
+            ReferencedContainer = "container:Harvest_yards.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -9,25 +9,62 @@ import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-nat
 import { Btntick, Email, LeftButton, Resetlock, Send, send, sendicon } from '../../../services/utilities/assets';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
-import { SentModal } from '../../../components/Modal';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
+import { SentModal } from '../../../components/Modal';
+import Toast from 'react-native-toast-message';
 export default function Index({ navigation }) {
   const handlearrow = () => {
     navigation.goBack();
   };
-  const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
-  const [resetLinkSent, setResetLinkSent] = useState(false);
-  const handlesendresetlink = () => {
-    setIslinksentModalVisible(true);
-    setResetLinkSent(true);
-    setTimeout(() => {
-      setIslinksentModalVisible(false);
-      navigation.navigate('Login'); 
-    }, 2000); 
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
   };
-  useEffect(() => {
-  }, [resetLinkSent]);
+  const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const handlesendresetlink = async () => {
+    try {
+        setIslinksentModalVisible(true);
+        if (!email) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Email is required',
+            });
+            return;
+        }
+        if (!isValidEmail(email)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Invalid email address',
+            });
+            return;
+        }
+        const userSnapshot = await firestore().collection('users').where('email', '==', email).get();
 
+        if (userSnapshot.empty) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Email not found. Please use a registered email address.',
+            });
+            return;
+        }
+        await auth().sendPasswordResetEmail(email);
+        navigation.navigate('Login');
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to send reset link. Please try again.',
+        });
+    } finally {
+        setIslinksentModalVisible(false);
+    }
+};
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -49,6 +86,9 @@ export default function Index({ navigation }) {
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={5}
           source={Email}
+          value={email}
+          autoCapitalize={true}
+          onChangeText={(text) => setEmail(text)}
         />
         <TouchableOpacity style={{ ...appStyles.Lubemeupcontainer, marginTop: responsiveHeight(8) }}>
           <Button

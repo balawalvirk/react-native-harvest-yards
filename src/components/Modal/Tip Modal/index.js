@@ -27,8 +27,8 @@ export const HelpCalloutModal = ({
       transparent={true}
       visible={isVisible}>
       <View style={[appStyles.helpmodal,{bottom:bottom,height:height}]}>
-        <Text style={[appStyles.modaltitle,{fontSize:fontSize.h10}]}>{Title}</Text>
-        <Text style={[appStyles.modalText2, { marginTop: responsiveHeight(0.5),fontSize:fontSize.h10 }]}>
+      <Text style={[appStyles.modaltitle,{fontSize:fontSize.h10}]}>{Title}</Text>
+        <Text style={[appStyles.modalText2, { marginTop: responsiveHeight(0.5),fontSize:fontSize.h10  }]}>
         {helpcallouttxt}
          </Text>
       </View>

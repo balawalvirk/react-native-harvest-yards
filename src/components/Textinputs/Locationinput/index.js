@@ -21,6 +21,8 @@ const CustomLocationInput = ({
   maininputmarginleft,
   placeholderTextColor,
   marginLeft,
+onChangeText,
+value,
   ...props
 }) => {
   return (
@@ -31,6 +33,8 @@ const CustomLocationInput = ({
           style={[appStyles.input, { width:inneriinputtwidth || responsiveWidth(75),marginRight: customTextInputMarginRight,marginLeft:marginLeft,color:colors.color4 }]}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
+          onChangeText={onChangeText}
+          value={value}
           {...props}
         />
          {showsearch && (

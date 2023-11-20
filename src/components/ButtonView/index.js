@@ -10,18 +10,21 @@ const Buttonview = ({
     showtxt,
     customTextColor, 
     customMarginRight,
+    customFontSize,
     MarginRight,
     customMarginTop,
-    customimagestyle
+    customimagestyle,
+    selected
 }) => {
+    const tint = selected ? { tintColor: colors.color4 } : null;
     return (
         <TouchableOpacity onPress={onPress}>
-            <View style={[appStyles.buttonview, { marginTop: customMarginTop }]}>
-                <Image source={source} style={[appStyles.Setting,customimagestyle]} />
+            <View style={[appStyles.buttonview, { marginTop: customMarginTop, }]}>
+               <Image source={source} style={[appStyles.Setting,tint ,customimagestyle]} />
                 <Text
           style={[
             appStyles.subsciption,
-            { marginRight: customMarginRight, color: customTextColor }, // Apply customTextColor if provided
+            { marginRight: customMarginRight, fontSize: customFontSize,color: customTextColor }, // Apply customTextColor if provided
           ]}
         >
          {text}

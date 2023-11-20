@@ -92,7 +92,8 @@ const Location = ({ navigation }) => {
       Title='Location Help'
       helpcallouttxt='The default location is your home address.
       You can use your current location to see the closest places to get food. 
-      Or, enter an address where you would like to see places nearby to obtain food.'/>
+      Or, enter an address where you would like to see places nearby to obtain food.'
+      />
     </SafeAreaView>
   );
 };

@@ -16,7 +16,6 @@ const ReservedFood = ({ navigation }) => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [showQRMainView, setShowQRMainView] = useState(false); 
-  const [isFavoritesModalVisible, setFavoritesModalVisible] = useState(false); 
   const handleNavigate = (item) => {
     setShowQRMainView(false); // Hide the QR main view
     navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item,selectedTouchable:selectedTouchable } });
@@ -243,10 +242,7 @@ const ReservedFood = ({ navigation }) => {
                 width: responsiveWidth(30),
               },
             ]}
-            onPress={() =>
-              { setSelectedTouchable('Favorites');
-            setFavoritesModalVisible(true);
-          }}
+            onPress={() => setSelectedTouchable('Favorites')}
           >
             <Image
               source={heart}

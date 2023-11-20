@@ -7,5 +7,11 @@ const HorizontalLine = ({ marginTop,width,marginLeft }) => {
   return (
     <View style={[appStyles.horizontalLine, { marginTop: marginTop || responsiveHeight(1.5), width:width || scale(170),marginLeft:marginLeft}]} />
     );
-};
+};      
+
+
+
+
+
+
 export default HorizontalLine;

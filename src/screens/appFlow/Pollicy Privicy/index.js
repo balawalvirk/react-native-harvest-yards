@@ -1,9 +1,10 @@
 import { View, Text, Image ,ScrollView,SafeAreaView} from 'react-native'
 import React from 'react'
 import Header from '../../../components/Headers'
+
 import { responsiveFontSize, responsiveHeight, responsiveWidth, } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles'
-import { GreenLock, HYlogowhite, Handtea, LeftButton, Logo, Redduck, } from '../../../services/utilities/assets'
+import { GreenLock, Handtea, LeftButton, Redduck, } from '../../../services/utilities/assets'
 import { scale } from 'react-native-size-matters';
 import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 export default function Index({ navigation }) {
@@ -13,13 +14,13 @@ export default function Index({ navigation }) {
         headerText='Privacy Policy'
         showImage={true}
         onPress={() => navigation.goBack()}
-        customTextMarginLeft={responsiveWidth(24)}
+        customTextMarginLeft={responsiveWidth(22)}
       />
        <ScrollView
         contentContainerStyle={appStyles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
-             <Image source={GreenLock} style={appStyles.frame} />
-      <View style={appStyles.mainview}>
+      <Image source={GreenLock} style={appStyles.frame} />
+       <View style={appStyles.mainview}>
        <Text style={[appStyles.txtpartner,{lineHeight:scale(18),textAlign:'justify'}]}>
 <Text style={appStyles.title}>Privacy Policy{'\n'}</Text>{'\n'}Last updated: November 04, 2023{'\n'}{'\n'}
 This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
@@ -11,9 +11,7 @@ import {
     responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import {
-    Email,
     LeftButton,
-    Phone,
     User,
     lock,
 } from '../../../services/utilities/assets';
@@ -21,22 +19,141 @@ import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SentModal } from '../../../components/Modal';
-export default function Index({ navigation }) {
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
+export default function AdditionalInfo({ route, navigation }) {
+    const { firstName,lastName,phoneNumber, street, city, state,zip, isOver13, isUnhoused, isReceivingAssistance } = route.params;
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [Confirmpassword, setConfirmPassword] = useState(''); 
+    const [householdSize, setHouseholdSize] = useState('');
+    const [smsUpdates, setSmsUpdates] = useState('');
+    const [acceptTerms, setAcceptTerms] = useState('');
     const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
-    const [resetLinkSent, setResetLinkSent] = useState(false);
-    const handlesendresetlink = () => {
-        setIslinksentModalVisible(true);
-        setResetLinkSent(true);
-        setTimeout(() => {
-            setIslinksentModalVisible(false);
-            navigation.navigate('DrawerNavigation',{screen:'FindFood'});
-        }, 2000);
-    };
-    useEffect(() => {
-    }, [resetLinkSent]);
     const handlearrow = () => {
         navigation.goBack();
     };
+    const isValidEmail = (email) => {
+      // Implement your email validation logic
+      return /\S+@\S+\.\S+/.test(email);
+    };
+  
+    const handlesendresetlink = async () => {
+        try {
+            setIslinksentModalVisible(true);
+            if (!email) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Email is required',
+                });
+                return;
+              }
+              if (!isValidEmail(email)) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Invalid email address',
+                });
+                return;
+              }
+        
+              // Validate password
+              if (!password) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Password is required',
+                });
+                return;
+              }
+        
+              // Validate password length
+              if (password.length < 8) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Password must be at least 8 characters',
+                });
+                return;
+              }
+        
+              // Validate Confirm Password
+              if (!Confirmpassword) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Confirm Password is required',
+                });
+                return;
+              }
+        
+              // Validate password match
+              if (password !== Confirmpassword) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Password and Confirm Password do not match',
+                });
+                return;
+              }  
+              if (!householdSize) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Householdsize is required',
+                });
+                return;
+              }
+              if (!acceptTerms) {
+                // Show a toast message indicating that the terms and conditions need to be accepted
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: 'Please accept the terms and conditions',
+                });
+                return;
+              }
+            // Create user in Firebase Authentication
+            const authResponse = await auth().createUserWithEmailAndPassword(email, password);
+            const userId = authResponse.user.uid;
+            // Pass data to Firestore
+            await firestore().collection('users').doc(authResponse.user.uid).set({
+                userId,
+                firstName,
+                lastName,
+                street,
+                city,
+                state,
+                zip,
+                isOver13: isOver13 ? 'Yes' : 'No',
+                isUnhoused: isUnhoused ? 'Yes' : 'No',
+                isReceivingAssistance: isReceivingAssistance ? 'Yes' : 'No',
+                email,
+                password,
+                Confirmpassword,
+                phoneNumber,
+                householdSize,
+                agreementAccepted: acceptTerms ? 'Yes' : 'No',
+                smsUpdates: smsUpdates ? 'Yes' : 'No'
+            });
+            setIslinksentModalVisible(true);
+            navigation.navigate('DrawerNavigation', { screen: 'FindFood' });
+          } catch (error) {
+            console.error('Firebase Error:', error);
+            // Display a more informative error message or log specific error details.
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: 'Failed to Create Account. Please try again.',
+            });
+         }
+         finally {   
+          setIslinksentModalVisible(false)     
+        }
+    };
+
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -50,14 +167,16 @@ export default function Index({ navigation }) {
                 contentContainerStyle={appStyles.scrollViewContainer}
                 showsVerticalScrollIndicator={false}
                 extraScrollHeight={responsiveHeight(20)}>
-
                 <CustomTextInput
                     label="Email Address"
                     keyboardType="default"
-                    placeholder="example@email.com"
+                    placeholder="example@gmail.com"
                     placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={7}
-                    source={Email}
+                    responsiveMarginTop={5}
+                    source={User}
+                    autoCapitalize={true}
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
                 />
 
                 <CustomTextInput
@@ -65,11 +184,10 @@ export default function Index({ navigation }) {
                     keyboardType="default"
                     placeholder="Minimum 8 characters"
                     placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={7}
-                    TextinputWidth={responsiveWidth(67)}
-                    source={lock}
-                    showeye={true}
-
+                    responsiveMarginTop={5}
+                    source={User}
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
                 />
                 <CustomTextInput
                     label="Confirm Password"
@@ -80,38 +198,44 @@ export default function Index({ navigation }) {
                     TextinputWidth={responsiveWidth(67)}
                     source={lock}
                     showeye={true}
+                    value={Confirmpassword}
+                    onChangeText={(text) => setConfirmPassword(text)}
                 />
+               
                 <CustomTextInput
                     label="How many people in your household?"
-                    keyboardType="default"
+                    keyboardType="phone-pad"
                     placeholder="How many people in your household?"
                     placeholderMarginLeft={responsiveWidth(3)}
                     responsiveMarginTop={7}
-                    source={User} />
+                    source={User}
+                    value={householdSize}
+                    onChangeText={(text) => setHouseholdSize(text)} />
                 <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
-                    <CustomCheckbox />
+                    <CustomCheckbox
+                        checked={smsUpdates} onPress={() => setSmsUpdates(!smsUpdates)} />
                     <View style={{ width: responsiveWidth(87) }}>
                         <Text style={[appStyles.Accept, { marginTop: -responsiveHeight(0.5) }]}>I agree to the use of my phone number for receiving SMS updates and notifications</Text>
                     </View>
                 </View>
                 <View style={[appStyles.acceptview, { marginTop: responsiveHeight(2) }]}>
                     <View>
-                        <CustomCheckbox />
+                        <CustomCheckbox
+                            checked={acceptTerms} onPress={() => setAcceptTerms(!acceptTerms)} />
                     </View>
                     <Text style={appStyles.Accept}>Accept</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Termsandconditions')}>
                         <Text style={appStyles.TermsText}>Terms & Conditions</Text>
                     </TouchableOpacity>
                 </View>
+
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3) }]}>
                     <Button
                         label="Create Account"
                         customImageMarginRight={responsiveWidth(3)}
                         onPress={handlesendresetlink}
                     />
-
                 </TouchableOpacity>
-
                 <View style={{ height: responsiveHeight(6) }} />
             </KeyboardAwareScrollView>
             <SentModal isVisible={islinksentModalVisible}
@@ -121,3 +245,7 @@ export default function Index({ navigation }) {
         </SafeAreaView>
     );
 }
+
+
+
+

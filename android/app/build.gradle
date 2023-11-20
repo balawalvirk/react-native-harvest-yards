@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-
+apply plugin: 'com.google.gms.google-services'
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -73,9 +73,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.harvard_yard"
+    namespace "com.harvest_yards"
     defaultConfig {
-        applicationId "com.harvard_yard"
+        applicationId "com.harvest_yards"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -118,17 +118,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-      implementation(project(':react-native-onesignal')){
-      exclude group: 'com.google.android.gms'
-  }
-
-  implementation(project(':react-native-maps')){
-      exclude group: 'com.google.android.gms'
-  }
-  implementation 'com.google.android.gms:play-services-base:18.0.1'
-  implementation 'com.google.android.gms:play-services-location:19.0.1'
-  implementation 'com.google.android.gms:play-services-maps:18.0.2'
 }
-
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

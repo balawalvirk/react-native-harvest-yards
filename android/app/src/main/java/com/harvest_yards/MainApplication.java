@@ -1,4 +1,4 @@
-package com.harvard_yard;
+package com.harvest_yards;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

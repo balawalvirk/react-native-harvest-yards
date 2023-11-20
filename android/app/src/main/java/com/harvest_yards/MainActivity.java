@@ -1,4 +1,4 @@
-package com.harvard_yard;
+package com.harvest_yards;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "Harvard_yard";
+    return "Harvest_yards";
   }
 
   /**

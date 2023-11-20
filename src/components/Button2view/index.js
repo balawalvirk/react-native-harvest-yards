@@ -6,12 +6,10 @@ import { Facebook, Frame1, Instagram, XLogo, arrowright } from '../../services/u
 const Button2view = ({
     onPress,
     text,
-    source,
-    showtxt,
     customTextColor, 
     customMarginRight,
-    MarginRight,
     customMarginTop,
+    customfontsize
 }) => {
     return (
         <TouchableOpacity onPress={onPress}>
@@ -20,7 +18,7 @@ const Button2view = ({
               <Text
           style={[
             appStyles.follow,
-            { marginRight: customMarginRight, color: customTextColor }, // Apply customTextColor if provided
+            { marginRight: customMarginRight, color: customTextColor ,fontSize:customfontsize}, // Apply customTextColor if provided
           ]}
         >
        {text}

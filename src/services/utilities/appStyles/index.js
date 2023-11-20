@@ -362,7 +362,7 @@ export const appStyles = StyleSheet.create({
   subsciption: {
     color: colors.color4,
     fontFamily: fontFamily.SatoshiVariable,
-    fontSize: fontSize.h5,
+    fontSize: fontSize.h10,
     // marginRight: responsiveWidth(30),
     marginLeft: responsiveWidth(2.5),
     opacity: 1,
@@ -443,7 +443,6 @@ export const appStyles = StyleSheet.create({
   input: {
     height: responsiveHeight(6.5),
     width: responsiveWidth(75),
-  
   },
   circleview: {
     width: scale(150),
@@ -645,6 +644,12 @@ export const appStyles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
   },
+  imagedisaster:{
+    width: scale(30),
+    height: scale(30),
+    resizeMode: 'contain',
+
+  },
   locationtag: {
     width: scale(48),
     height: scale(48),
@@ -812,10 +817,17 @@ export const appStyles = StyleSheet.create({
     alignSelf: 'center',
     fontFamily: fontFamily.SatoshiRegular,
   },
-  trackOffStyle: {
-    Color: colors.color7,
-    opacity:0.5
-  },
+  // thumbOffStyle: {
+  //   backgroundColor: colors.color20,
+  //   opacity: 0.5
+  // },
+  // thumbOff: {
+  //   backgroundColor: colors.color20,
+  //   opacity: 1
+  // },
+  // thumbOnStyle: {
+  //   backgroundColor: colors.color20,
+  // },
   cardContainer: {
     flexDirection: 'row',
     padding: responsiveWidth(3),
@@ -1219,11 +1231,7 @@ export const appStyles = StyleSheet.create({
   fontFamily: fontFamily.SatoshiVariable,
   fontWeight: '700'
   },
-  imagestyle:{
-    width: scale(30),
-    height: scale(30),
-    resizeMode: 'contain',
-  },
+  
   mapmainview: {
     width: scale(313),
     borderRadius: responsiveWidth(5),
@@ -1276,12 +1284,21 @@ export const appStyles = StyleSheet.create({
     width: responsiveWidth(90),
     alignSelf: 'center',
     alignItems: 'center',
+   
     height: responsiveHeight(12),
   },
   createcheckview:{
     flexDirection:'row',
     marginLeft:responsiveWidth(4),
-    marginTop:responsiveHeight(3)
+    marginTop:responsiveHeight(3),
+  },
+  createcheckview2:{
+    flexDirection:'row',
+    marginLeft:responsiveWidth(4),
+    marginTop:responsiveHeight(3),
+    width:scale(300),
+    height:scale(48),
+  backgroundColor:"green"
   },
   dropdownContainer: {
     // marginBottom: responsiveHeight(2),
@@ -1312,5 +1329,19 @@ export const appStyles = StyleSheet.create({
     borderRadius: 5,
     width: responsiveWidth(90),
     marginTop: responsiveHeight(1),
+  },
+  loadingAnimation: {
+    width: '40%',
+    height: '18%',
+    alignSelf: 'center',
+  },
+  loadingContainer: {
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
