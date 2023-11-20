@@ -260,9 +260,9 @@ export default function Index({ navigation }) {
           <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
         </View>
       
-        <View style={appStyles.createcheckview}>
+        <View style={appStyles.createcheckview2}>
           <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
-          <CustomCheckbox  checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/> 
+          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/> 
         </View>
         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(4) }]}>
           <Button

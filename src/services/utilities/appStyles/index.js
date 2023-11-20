@@ -1298,7 +1298,6 @@ export const appStyles = StyleSheet.create({
     marginTop:responsiveHeight(3),
     width:scale(300),
     height:scale(48),
-  backgroundColor:"green"
   },
   dropdownContainer: {
     // marginBottom: responsiveHeight(2),

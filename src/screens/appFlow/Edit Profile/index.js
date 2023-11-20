@@ -74,34 +74,50 @@ export default function EditProfile({ navigation }) {
   };
 
   const saveChanges = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (!validateInputs()) {
         setLoading(false);
         return;
       }
-      const userRef = firestore().collection('users').doc(userId);
-      const notificationValue = switchValue ? 'yes' : 'no';
-      await userRef.update({
-        firstName,
-        lastName,
-        UserName,
-        email,
-        phoneNumber,
-        street,
-        city,
-        state,
-        zip,
-        ConfirmPassword,
-        Password,
-        notification: notificationValue,
-      });
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Save changes successfully!',
-      });
-      navigation.navigate('FindFood');
+
+      const currentUser = auth().currentUser;
+
+      if (currentUser) {
+        // Update email if it has been changed
+        if (email !== currentUser.email) {
+          await currentUser.updateEmail(email);
+        }
+
+        // Update password if it has been changed
+        if (Password) {
+          await currentUser.updatePassword(Password);
+        }
+
+        const userRef = firestore().collection('users').doc(userId);
+        const notificationValue = switchValue ? 'yes' : 'no';
+
+        await userRef.update({
+          firstName,
+          lastName,
+          UserName,
+          email,
+          phoneNumber,
+          street,
+          city,
+          state,
+          zip,
+          notification: notificationValue,
+        });
+
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Save changes successfully!',
+        });
+
+        navigation.navigate('FindFood');
+      }
     } catch (error) {
       showToast('Error saving changes');
     } finally {

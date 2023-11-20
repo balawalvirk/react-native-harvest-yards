@@ -131,8 +131,6 @@ export default function AdditionalInfo({ route, navigation }) {
                 isUnhoused: isUnhoused ? 'Yes' : 'No',
                 isReceivingAssistance: isReceivingAssistance ? 'Yes' : 'No',
                 email,
-                password,
-                Confirmpassword,
                 phoneNumber,
                 householdSize,
                 agreementAccepted: acceptTerms ? 'Yes' : 'No',

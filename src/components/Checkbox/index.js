@@ -6,7 +6,7 @@ import { appStyles } from '../../services/utilities/appStyles';
 import LinearGradient from 'react-native-linear-gradient'; 
 import { colors } from '../../services/utilities/color';
 
-const CustomCheckbox = ({ checked, onPress }) => {
+const CustomCheckbox = ({ checked, onPress,marginTop }) => {
   const checkboxStyle = {
     borderColor: checked ? 'transparent' : colors.color33,
     backgroundColor: checked ? 'green' : 'transparent',
@@ -15,7 +15,7 @@ const CustomCheckbox = ({ checked, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View>
-        <View style={appStyles.checkboxContainer}>
+        <View style={[appStyles.checkboxContainer,{marginTop:marginTop}]}>
           <View style={[appStyles.checkbox, checkboxStyle]}>
             {checked && (
               <Image
