@@ -13,11 +13,37 @@ import {
 } from 'react-native-responsive-dimensions';
 import CardView from '../../../../components/CardView';
 import { QRcodeModal } from '../../../../components/Modal/QR Code Modal';
+import firestore from '@react-native-firebase/firestore';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
 const ReservedFood1 = ({ route, navigation }) => {
+
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
+    const [companyData, setCompanyData] = useState({});
+
+    useEffect(() => {
+        const fetchCompanyData = async () => {
+            try {
+                const { userId } = route.params; // Get the userId passed from FindFood
+
+                // Assuming 'organizations' is the collection name in Firestore
+                const organizationDoc = await firestore().collection('distributors').doc(userId).get();
+
+                if (organizationDoc.exists) {
+                    // If the document exists, fetch and set the company data
+                    setCompanyData(organizationDoc.data());
+                } else {
+                    console.log('Organization document not found');
+                }
+            } catch (error) {
+                console.error('Error fetching company data:', error);
+            }
+        };
+
+        fetchCompanyData();
+    }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
+
     const toggleModal = () => {
         console.log('Toggling modal'); // Add this line for debugging
         setIsQRModalVisible(!isQRModalVisible);
@@ -39,7 +65,7 @@ const ReservedFood1 = ({ route, navigation }) => {
     const handleDateChange = date => {
         setSelectedDate(date);
     };
-    const { item } = route.params;
+    const { item,userId} = route.params;
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -54,18 +80,18 @@ const ReservedFood1 = ({ route, navigation }) => {
                 <CardView
                     customMarginTop={responsiveHeight(1)}
                     source={item.source}
-                    title={item.title}
-                    description={item.description}
+                    title={item.organization}
+                    description={item.address}
                     Availabletxt={item.Availabletxt}
                     additionalInfo={item.additionalInfo}
                 />
                 <View style={{marginLeft:responsiveWidth(4),marginTop:responsiveHeight(3)}}>
                     <Text style={appStyles.label}>Company Name:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> XYZ Widgets, Inc.</Text></Text>
+                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.organization}</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Address:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> 123 Main Street, Anytown, USA</Text></Text>
+                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.address}</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Phone number:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> (555) 555-5555</Text></Text>
+                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.phoneNumber}</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Hours:
                     <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> 9:00 AM - 5:00 PM</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>What we offer:

@@ -25,7 +25,6 @@ export default function Index({ navigation }) {
   const [email, setEmail] = useState('');
   const handlesendresetlink = async () => {
     try {
-        setIslinksentModalVisible(true);
         if (!email) {
             Toast.show({
                 type: 'error',
@@ -45,14 +44,17 @@ export default function Index({ navigation }) {
         const userSnapshot = await firestore().collection('users').where('email', '==', email).get();
 
         if (userSnapshot.empty) {
+         
             Toast.show({
                 type: 'error',
                 text1: 'Error',
                 text2: 'Email not found. Please use a registered email address.',
-            });
+            });  
             return;
         }
+        setIslinksentModalVisible(true);
         await auth().sendPasswordResetEmail(email);
+    
         navigation.navigate('Login');
     } catch (error) {
         console.error('Error sending password reset email:', error);

@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { View, ScrollView, SafeAreaView, Image, Text,TouchableOpacity, FlatList } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
@@ -7,6 +7,7 @@ import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { MenueButton, search, locationtag, Image5, Image6, Image7, Image10, Image11, Image12, Image13, Image14, HelpCallout } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
+import firestore from '@react-native-firebase/firestore'; 
 import { Image8 } from '../../../services/utilities/assets';
 import { scale } from 'react-native-size-matters';
 import { colors } from '../../../services/utilities/color';
@@ -78,9 +79,32 @@ const FindFood = ({ navigation }) => {
       additionalInfo: '6 km away',
     },
   ];
-  const filteredData = data.filter(
-    item => item.title.toLowerCase().includes(searchText.toLowerCase())
-  );
+
+  const [distributorsData, setDistributorsData] = useState([]);
+
+  useEffect(() => {
+    const fetchDistributorsData = async () => {
+      try {
+        const distributorsCollection = await firestore().collection('distributors').get();
+        const fetchedData = [];
+
+        distributorsCollection.forEach((doc) => {
+          fetchedData.push({ ...doc.data(), userId: doc.id });
+        });
+
+        setDistributorsData(fetchedData);
+      } catch (error) {
+        console.error('Error fetching distributors data:', error);
+      }
+    };
+
+    fetchDistributorsData();
+  }, []);
+
+
+
+
+
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -118,18 +142,25 @@ const FindFood = ({ navigation }) => {
           <Image source={locationtag} style={appStyles.locationtag} />
         </TouchableOpacity>
         <Text style={[appStyles.infotxt, {marginBottom:responsiveHeight(0.1)}]}>Nearby</Text>
-        <FlatList
-           data={searchText === '' ? data : filteredData}
+             <FlatList
+          data={searchText === '' ? distributorsData : distributorsData.filter(item =>
+            item.organization.toLowerCase().includes(searchText.toLowerCase())
+          )}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <CardView
               customMarginTop={responsiveHeight(1)}
               source={item.source}
-              title={item.title}
-              description={item.description}
+              title={item.organization}
+              description={item.address}
               Availabletxt={item.Availabletxt}
               additionalInfo={item.additionalInfo}
-              onPress={()=> navigation.navigate('AppNavigation',{screen:'Reservedfood1', params: { item: item }})}
+              onPress={() =>
+                navigation.navigate('AppNavigation', {
+                  screen: 'Reservedfood1',
+                  params: { item: item, userId: item.userId },
+                })
+              }
             />
           )}
         />
