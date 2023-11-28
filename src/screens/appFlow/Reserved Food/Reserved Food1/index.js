@@ -79,7 +79,7 @@ const ReservedFood1 = ({ route, navigation }) => {
             <ScrollView>
                 <CardView
                     customMarginTop={responsiveHeight(1)}
-                    source={item.source}
+                    source={{ uri: item.profileImage }}
                     title={item.organization}
                     description={item.address}
                     Availabletxt={item.Availabletxt}

@@ -150,7 +150,7 @@ const FindFood = ({ navigation }) => {
           renderItem={({ item }) => (
             <CardView
               customMarginTop={responsiveHeight(1)}
-              source={item.source}
+              source={{ uri: item.profileImage }}
               title={item.organization}
               description={item.address}
               Availabletxt={item.Availabletxt}
