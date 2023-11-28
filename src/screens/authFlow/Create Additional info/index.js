@@ -41,7 +41,7 @@ export default function AdditionalInfo({ route, navigation }) {
   
     const handlesendresetlink = async () => {
         try {
-            setIslinksentModalVisible(true);
+           
             if (!email) {
                 Toast.show({
                   type: 'error',
@@ -118,6 +118,8 @@ export default function AdditionalInfo({ route, navigation }) {
             // Create user in Firebase Authentication
             const authResponse = await auth().createUserWithEmailAndPassword(email, password);
             const userId = authResponse.user.uid;
+            setIslinksentModalVisible(true);
+            console.log('Modal should show now...'); 
             // Pass data to Firestore
             await firestore().collection('users').doc(authResponse.user.uid).set({
                 userId,
