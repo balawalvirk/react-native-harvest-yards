@@ -21,7 +21,8 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
     const [companyData, setCompanyData] = useState({});
-
+    const nextDay = new Date();
+    nextDay.setDate(nextDay.getDate() + 1);
     useEffect(() => {
         const fetchCompanyData = async () => {
             try {
@@ -43,7 +44,22 @@ const ReservedFood1 = ({ route, navigation }) => {
 
         fetchCompanyData();
     }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
+    const formatTime = (time) => {
+        const date = time.toDate(); // Convert Firebase timestamp to JavaScript Date object
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        let amPM = hours >= 12 ? 'PM' : 'AM';
 
+        // Convert hours to 12-hour format
+        let formattedHours = hours % 12;
+        formattedHours = formattedHours ? formattedHours : 12; // '0' should be '12'
+
+        // Ensure minutes are displayed with leading zero
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+        return `${formattedHours}:${formattedMinutes} ${amPM}`;
+    };
+   
     const toggleModal = () => {
         console.log('Toggling modal'); // Add this line for debugging
         setIsQRModalVisible(!isQRModalVisible);
@@ -66,6 +82,7 @@ const ReservedFood1 = ({ route, navigation }) => {
         setSelectedDate(date);
     };
     const { item,userId} = route.params;
+    
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -92,13 +109,20 @@ const ReservedFood1 = ({ route, navigation }) => {
                     <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.address}</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Phone number:
                     <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.phoneNumber}</Text></Text>
-                    <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Hours:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> 9:00 AM - 5:00 PM</Text></Text>
+
+                  
+              <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
+              <Text style={[appStyles.label,{marginTop:responsiveHeight(0.3)}]}>Hours:</Text>
+        <Text style={appStyles.description}>{formatTime(companyData.openAt)}</Text>
+        <Text style={appStyles.label}>  _ </Text>
+        <Text style={appStyles.description}>{formatTime(companyData.closeAt)}</Text>
+    </View>
+                   
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>What we offer:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}> XYZ Widgets, Inc. is your one-stop shop for all your widget needs. We offer a wide range of widgets for various applications, including residential and commercial use. </Text></Text>
+                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.whatWeOffer}</Text></Text>
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Website:</Text>
                    <TouchableOpacity onPress={handleLinkPress}>
-                 <Text style={[appStyles.description,{textDecorationLine:'underline',marginTop:-responsiveHeight(2),marginLeft:responsiveWidth(13)}]}>www.google.com</Text>
+                 <Text style={[appStyles.description,{textDecorationLine:'underline',marginTop:-responsiveHeight(2),marginLeft:responsiveWidth(13)}]}>{companyData.website}</Text>
                  </TouchableOpacity>
                
               
