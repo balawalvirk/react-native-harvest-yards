@@ -7,16 +7,16 @@ import DatePickerInput from '../../../../components/DatePickerInput';
 import { scale } from 'react-native-size-matters';
 import { HelpCallout, LeftButton, arrowrightwhite, calendar, whitearrowright } from '../../../../services/utilities/assets';
 import {
-    responsiveFontSize,
     responsiveHeight,
     responsiveWidth,
 } from 'react-native-responsive-dimensions';
+import Toast from 'react-native-toast-message';
 import CardView from '../../../../components/CardView';
 import { QRcodeModal } from '../../../../components/Modal/QR Code Modal';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth'; 
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
-const ReservedFood1 = ({ route, navigation }) => {
-
+const ReservedFood1 = ({ route, navigation, }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
@@ -44,21 +44,7 @@ const ReservedFood1 = ({ route, navigation }) => {
 
         fetchCompanyData();
     }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
-    const formatTime = (time) => {
-        const date = time.toDate(); // Convert Firebase timestamp to JavaScript Date object
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        let amPM = hours >= 12 ? 'PM' : 'AM';
 
-        // Convert hours to 12-hour format
-        let formattedHours = hours % 12;
-        formattedHours = formattedHours ? formattedHours : 12; // '0' should be '12'
-
-        // Ensure minutes are displayed with leading zero
-        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
-        return `${formattedHours}:${formattedMinutes} ${amPM}`;
-    };
    
     const toggleModal = () => {
         console.log('Toggling modal'); // Add this line for debugging
@@ -74,8 +60,51 @@ const ReservedFood1 = ({ route, navigation }) => {
           })
           .catch((err) => console.error(err));
       };
-    const handleQR = () => {
-        setIsQRModalVisible(true);
+      const handleQR = async (item) => {
+        if (!selectedDate) {
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: 'Please select a reservation date.',
+            });
+            return; // Exit the function if the reservation date is not selected
+          }
+        const reservedFoodInfo = {
+            profileImage: item.profileImage,
+            organization: item.organization,
+            address: item.address,
+            reservationDate: selectedDate,
+        };
+
+        try {
+            // Retrieve the current user's ID
+            const currentUser = auth().currentUser;
+            const userId = currentUser ? currentUser.uid : null;
+
+            if (!userId) {
+                console.error('User ID not found');
+                return;
+            }
+
+            const userDocRef = firestore().collection('users').doc(userId);
+
+            // Get the current user's document data to check if 'reservedFood' field exists
+            const userDoc = await userDocRef.get();
+            const userData = userDoc.data();
+
+            // Check if 'reservedFood' field exists or create an empty array
+            const reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
+
+            // Update the 'reservedFood' array in Firestore with the new reservation
+            await userDocRef.update({
+                reservedFood: [...reservedFoodArray, reservedFoodInfo],
+            });
+
+            console.log('Reserved food information added to user document successfully');
+            setIsQRModalVisible(true);
+        } catch (error) {
+            console.error('Error adding reserved food information:', error);
+        }
     };
 
     const handleDateChange = date => {
@@ -113,9 +142,9 @@ const ReservedFood1 = ({ route, navigation }) => {
                   
               <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
               <Text style={[appStyles.label,{marginTop:responsiveHeight(0.3)}]}>Hours:</Text>
-        <Text style={appStyles.description}>{formatTime(companyData.openAt)}</Text>
+        <Text style={appStyles.description}>{companyData.openAt}</Text>
         <Text style={appStyles.label}>  _ </Text>
-        <Text style={appStyles.description}>{formatTime(companyData.closeAt)}</Text>
+        <Text style={appStyles.description}>{companyData.closeAt}</Text>
     </View>
                    
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>What we offer:
@@ -123,9 +152,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                     <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Website:</Text>
                    <TouchableOpacity onPress={handleLinkPress}>
                  <Text style={[appStyles.description,{textDecorationLine:'underline',marginTop:-responsiveHeight(2),marginLeft:responsiveWidth(13)}]}>{companyData.website}</Text>
-                 </TouchableOpacity>
-               
-              
+                 </TouchableOpacity>      
                 </View>
                 <DatePickerInput
                     label='Reservation Date'
@@ -140,13 +167,12 @@ const ReservedFood1 = ({ route, navigation }) => {
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
                     <Button
                         label="Reserve Food"
-                        onPress={handleQR}
+                        onPress={() => handleQR(item)} 
                         ImageSource={arrowrightwhite}
                         ImageSource1={true}
                         ImageMarginLeft={responsiveWidth(3)}
                     />
                 </TouchableOpacity>
-
             </ScrollView>
             <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
                 <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60), marginLeft: responsiveWidth(85) }]} />

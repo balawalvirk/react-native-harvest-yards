@@ -1,199 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpacity, FlatList } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
-import { MenueButton, search, locationtag, Image5, Image6, Image7, Image10, Image11, Image12, Image13, Image14, tag, pocket8, heart, pocket1, greenheart, HelpCallout } from '../../../services/utilities/assets';
+import { MenueButton, search, pocket8, heart, HelpCallout } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
-import { Image8 } from '../../../services/utilities/assets';
 import { scale } from 'react-native-size-matters';
 import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { colors } from '../../../services/utilities/color';
-
+import { Toast } from 'react-native-toast-message';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 const ReservedFood = ({ navigation }) => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-  const [showQRMainView, setShowQRMainView] = useState(false); 
+  const [showQRMainView, setShowQRMainView] = useState(false);
   const handleNavigate = (item) => {
-    setShowQRMainView(false); // Hide the QR main view
-    navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item,selectedTouchable:selectedTouchable } });
+    setShowQRMainView(false);
+    navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item, selectedTouchable: selectedTouchable } });
   };
-  const pendingPickupsData = [
-    {
-      source: Image8,
-      title: 'CareFood Pantry',
-      pickupsource:pocket1,
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image8,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image6,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image7,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image10,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image11,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image12,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image13,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image14,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image11,
-      pickupsource:pocket1,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Pending',
-      additionalInfo: '6 km away',
-    },
-  ];
-
-  const favoritesData = [
-    {
-      source: Image6,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '123 Main Street, City, Country',
-      Availabletxt: 'Favorite',
-      additionalInfo: '2 km away',
-    },
-    {
-      source: Image7,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image8,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image10,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image11,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image12,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image11,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image13,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image14,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-    {
-      source: Image11,
-      pickupsource:greenheart,
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: 'Favorite',
-      additionalInfo: '6 km away',
-    },
-  ];
-
-  const getDataToShow = () => {
-    if (selectedTouchable === 'Pending Pick-ups') {
-      return pendingPickupsData;
-    } else if (selectedTouchable === 'Favorites') {
-      return favoritesData;
+  const [favoritesData, setFavoritesData] = useState([]);
+  const fetchFavorites = async () => {
+    try {
+      const currentUser = auth().currentUser;
+      const userId = currentUser ? currentUser.uid : null;
+      if (!userId) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'User ID not found',
+        });
+        return;
+      }
+      const userDocRef = firestore().collection('users').doc(userId);
+      const userDoc = await userDocRef.get();
+      const userData = userDoc.data();
+      let favoritesArray = userData && userData.favorites ? userData.favorites : [];
+      setFavoritesData(favoritesArray);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to fetch favorites. Please try again.',
+      });
     }
   };
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+  const [reservedFoodData, setReservedFoodData] = useState([]);
+  useEffect(() => {
+    const fetchDataFromFirestore = async () => {
+      try {
+        const currentUser = auth().currentUser;
+        const userId = currentUser ? currentUser.uid : null;
+        if (!userId) {
+          console.error('User ID not found');
+          return;
+        }
+        const userDocRef = firestore().collection('users').doc(userId);
+        const userDoc = await userDocRef.get();
+        const userData = userDoc.data();
 
+        if (userData && userData.reservedFood) {
+          // Set the reserved food data fetched from Firestore to state
+          setReservedFoodData(userData.reservedFood);
+        }
+      } catch (error) {
+        console.error('Error fetching reserved food information:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to fetch reserved food information. Please try again.',
+        });
+      }
+    };
+    fetchDataFromFirestore();
+  }, []);
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -232,12 +117,11 @@ const ReservedFood = ({ navigation }) => {
               Pending Pick-ups
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={[
               styles.touchable2,
               selectedTouchable === 'Favorites' && {
-                backgroundColor:colors.color33,
+                backgroundColor: colors.color33,
                 borderRadius: 50,
                 width: responsiveWidth(30),
               },
@@ -258,39 +142,38 @@ const ReservedFood = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-
         <CustomLocationInput
           showsearch={true}
           source={search}
           inputWidth={responsiveWidth(92)}
-         marginBottom={responsiveHeight(1)}
+          marginBottom={responsiveHeight(1)}
           inneriinputtwidth={responsiveWidth(82)}
           placeholder='Search...'
           placeholderTextColor={colors.color29}
           marginLeft={responsiveWidth(2)}
-        
         />
         <FlatList
-          data={getDataToShow()}
+          data={selectedTouchable === 'Pending Pick-ups' ? reservedFoodData : favoritesData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <CardView
               customMarginTop={responsiveHeight(1)}
-              source={item.source}
-              title={item.title}
+              source={{ uri: item.profileImage }}
+              title={item.organization}
               pickupsource={item.pickupsource}
-              description={item.description}
+              description={item.address}
               Availabletxt={item.Availabletxt}
               additionalInfo={item.additionalInfo}
+
               showPickupsView={true}
-              onPress={() =>handleNavigate(item)}
+              onPress={() => handleNavigate(item)}
             />
           )}
         />
-            <View style={{ height: responsiveHeight(4) }} />
+        <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
-      <TouchableOpacity  onPress={() => setHelpCalloutModalVisible(true)}>
-      <Image source={HelpCallout} style={[appStyles.locationtag,{width:scale(60),height:scale(60)}]} />
+      <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
+        <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60) }]} />
       </TouchableOpacity>
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
@@ -301,27 +184,27 @@ const ReservedFood = ({ navigation }) => {
           selectedTouchable === 'Pending Pick-ups'
             ? 'Pending Pick-up are reservations that you have but have not picked up the food package. If you select the pending button your QR code show up on your screen. You must show the QR code at the time of pick-up to receive your food package. You can also cancel a food reservation on the same screen. Press the Find Food button to return to the Find Food screen.'
             : selectedTouchable === 'Favorites'
-            ? 'Save food centers that you have visited and/or want to save for the future as a favorite. This way you dont have to search for through multiple entries when you want to make a reservation.'
-            : 'Default text if none of the conditions match.'
+              ? 'Save food centers that you have visited and/or want to save for the future as a favorite. This way you dont have to search for through multiple entries when you want to make a reservation.'
+              : 'Default text if none of the conditions match.'
         }
       />
-        {selectedTouchable === 'Favorites' && showQRMainView && (
-       <View style={appStyles.qrmainview}>
-          <Image source={QRcode} style={[appStyles.QRcode,{marginTop:responsiveHeight(1)}]}/>
-         <TouchableOpacity>
-         <Image source={Buttonzoom} style={[appStyles.locationtag,{marginTop:-responsiveHeight(20),marginLeft:responsiveWidth(73)}]}/>
-          </TouchableOpacity> 
+      {selectedTouchable === 'Favorites' && showQRMainView && (
+        <View style={appStyles.qrmainview}>
+          <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
           <TouchableOpacity>
-          <Image source={Buttondownload} style={[appStyles.locationtag,{marginTop:-responsiveHeight(13),marginLeft:responsiveWidth(73)}]}/>
-            </TouchableOpacity>
-          <Text style={[appStyles.title,{marginTop:responsiveHeight(1)}]}>
+            <Image source={Buttonzoom} style={[appStyles.locationtag, { marginTop: -responsiveHeight(20), marginLeft: responsiveWidth(73) }]} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image source={Buttondownload} style={[appStyles.locationtag, { marginTop: -responsiveHeight(13), marginLeft: responsiveWidth(73) }]} />
+          </TouchableOpacity>
+          <Text style={[appStyles.title, { marginTop: responsiveHeight(1) }]}>
             QR code
           </Text>
           <Text style={appStyles.description}>
             Use this QR to collect the food.
           </Text>
         </View>
-       )}
+      )}
     </SafeAreaView>
   );
 };
@@ -329,14 +212,14 @@ const ReservedFood = ({ navigation }) => {
 const styles = StyleSheet.create({
   touchablesContainer: {
     flexDirection: 'row',
-     justifyContent: 'space-evenly',
-    backgroundColor:colors.color16,
-    borderRadius:responsiveWidth(50),
-    width:responsiveWidth(92),
-    height:responsiveHeight(5),
-    marginBottom:responsiveHeight(1),
-    marginTop:responsiveHeight(2),
-    alignSelf:'center'
+    justifyContent: 'space-evenly',
+    backgroundColor: colors.color16,
+    borderRadius: responsiveWidth(50),
+    width: responsiveWidth(92),
+    height: responsiveHeight(5),
+    marginBottom: responsiveHeight(1),
+    marginTop: responsiveHeight(2),
+    alignSelf: 'center'
   },
   touchable1: {
     flex: 0.6,
@@ -345,10 +228,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    width:responsiveWidth(48),
-    height:responsiveHeight(5),
-    marginTop:responsiveHeight(0),
-    marginLeft:responsiveWidth(0),
+    width: responsiveWidth(48),
+    height: responsiveHeight(5),
+    marginTop: responsiveHeight(0),
+    marginLeft: responsiveWidth(0),
   },
   touchable2: {
     flex: 0.4,
@@ -357,10 +240,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    width:responsiveWidth(43),
-    height:responsiveHeight(5),
-    marginTop:responsiveHeight(0),
-    marginRight:responsiveWidth(0),
+    width: responsiveWidth(43),
+    height: responsiveHeight(5),
+    marginTop: responsiveHeight(0),
+    marginRight: responsiveWidth(0),
   },
   touchableImage: {
     width: scale(20),

@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {View, TextInput, Text, Image, Modal} from 'react-native';
-import {appStyles} from '../../services/utilities/appStyles';
+import React, { useState } from 'react';
+import { View, TextInput, Text, Image, Modal } from 'react-native';
+import { appStyles } from '../../services/utilities/appStyles';
 import {
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import DatePicker from '@react-native-community/datetimepicker';
-import {colors} from '../../services/utilities/color';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {fontFamily, fontSize} from '../../services/utilities/fonts';
+import { colors } from '../../services/utilities/color';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { fontFamily, fontSize } from '../../services/utilities/fonts';
 import moment from 'moment';
 
 const DatePickerInput = ({
@@ -33,6 +33,7 @@ const DatePickerInput = ({
   onDateChange,
 }) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const currentDate = new Date();
 
   const handleDateChange = (event, selectedPickedDate) => {
     if (selectedPickedDate) {
@@ -40,7 +41,6 @@ const DatePickerInput = ({
       setDatePickerVisible(false);
     }
   };
-
   return (
     <View
       style={[
@@ -50,8 +50,26 @@ const DatePickerInput = ({
           width: customWidth,
           marginLeft: custommarginleft,
         },
-      ]}>
+      ]}
+    >
       <Text style={appStyles.label}>{label}</Text>
+
+      {isDatePickerVisible && (
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => setDatePickerVisible(false)}
+          />
+          <DatePicker
+            style={{ width: '100%', backgroundColor: 'white' }}
+            value={selectedDate || currentDate}
+            mode="date"
+            display="calendar"
+            minimumDate={currentDate}
+            onChange={handleDateChange}
+          />
+        </View>
+      )}
       <TouchableOpacity
         onPress={() => setDatePickerVisible(true)}
         style={[
@@ -62,35 +80,27 @@ const DatePickerInput = ({
             backgroundColor:
               inputBackgroundColor || appStyles.inputView.backgroundColor,
             flexDirection: rowReverse ? 'row-reverse' : 'row',
-            borderRadius: borderRadius || responsiveWidth(3.2), // Apply the custom border radius
+            borderRadius: borderRadius || responsiveWidth(3.2),
           },
-        ]}>
-     
-
+        ]}
+      >
         {selectedDate ? (
-          <Text style={{color: colors.color18}}>
-             {' ' + moment(selectedDate).format('YYYY/MM/DD')}
+          <Text style={{ color: colors.color18 }}>
+            {' ' + moment(selectedDate).format('YYYY/MM/DD')}
           </Text>
         ) : (
-          <Text style={{color: colors.color29,marginLeft:responsiveWidth(2.5)}}>Select a date--</Text>
+          <Text style={{ color: colors.color29, marginLeft: responsiveWidth(2.5) }}>
+            Select a date
+          </Text>
         )}
+
         {showImage && (
-          <TouchableOpacity  onPress={() => setDatePickerVisible(true)}>
-            <Image source={source1} style={[appStyles.uploadimage,{marginLeft:responsiveWidth(59)}]} />
+          <TouchableOpacity onPress={() => setDatePickerVisible(true)}>
+            <Image source={source1} style={[appStyles.uploadimage, { marginLeft: responsiveWidth(59) }]} />
           </TouchableOpacity>
         )}
       </TouchableOpacity>
-      {error && <Text style={{color: colors.color32}}>{error}</Text>}
-      {/* Date Picker Modal */}
-      {isDatePickerVisible && (
-        <DatePicker
-          value={selectedDate || new Date()} // Set an initial date value
-          mode="date"
-          display="calendar"
-          maximumDate={new Date()}
-          onChange={handleDateChange}
-        />
-      )}
+      {error && <Text style={{ color: colors.color32 }}>{error}</Text>}
     </View>
   );
 };

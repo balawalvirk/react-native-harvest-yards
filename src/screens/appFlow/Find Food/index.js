@@ -4,84 +4,17 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
-import { MenueButton, search, locationtag, Image5, Image6, Image7, Image10, Image11, Image12, Image13, Image14, HelpCallout } from '../../../services/utilities/assets';
+import { MenueButton, search, locationtag,HelpCallout } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
+import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore'; 
-import { Image8 } from '../../../services/utilities/assets';
 import { scale } from 'react-native-size-matters';
 import { colors } from '../../../services/utilities/color';
 const FindFood = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const data = [
-    {
-        source:Image8, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image6, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image7, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image10, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image11, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image12, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image13, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image14, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-    {
-        source:Image11, 
-      title: 'CareFood Pantry',
-      description: '888 Opera Place, Vienna, Austria',
-      Availabletxt: '11 Available',
-      additionalInfo: '6 km away',
-    },
-  ];
-
   const [distributorsData, setDistributorsData] = useState([]);
-
   useEffect(() => {
     const fetchDistributorsData = async () => {
       try {
@@ -93,18 +26,22 @@ const FindFood = ({ navigation }) => {
         });
 
         setDistributorsData(fetchedData);
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Data fetched successfully!',
+        });
       } catch (error) {
         console.error('Error fetching distributors data:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to fetch data. Please try again.',
+        });
       }
     };
-
     fetchDistributorsData();
   }, []);
-
-
-
-
-
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -131,11 +68,8 @@ const FindFood = ({ navigation }) => {
           onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
-           {/* Conditional rendering for button related to search */}
       {searchText !== '' && (
         <TouchableOpacity onPress={() => setSearchText('')}>
-          {/* Your button related to search input */}
-          {/* <Text>Clear Search</Text> */}
         </TouchableOpacity>
       )}
         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
@@ -181,5 +115,4 @@ const FindFood = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 export default FindFood;
