@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Image, View, Text,Linking, TouchableOpacity, SafeAreaView } from 'react-native';
+import { ScrollView, Image, View, Text, Linking, TouchableOpacity, SafeAreaView } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
@@ -14,7 +14,7 @@ import Toast from 'react-native-toast-message';
 import CardView from '../../../../components/CardView';
 import { QRcodeModal } from '../../../../components/Modal/QR Code Modal';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth'; 
+import auth from '@react-native-firebase/auth';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
 const ReservedFood1 = ({ route, navigation, }) => {
     const [selectedDate, setSelectedDate] = useState('');
@@ -45,7 +45,7 @@ const ReservedFood1 = ({ route, navigation, }) => {
         fetchCompanyData();
     }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
 
-   
+
     const toggleModal = () => {
         console.log('Toggling modal'); // Add this line for debugging
         setIsQRModalVisible(!isQRModalVisible);
@@ -53,22 +53,22 @@ const ReservedFood1 = ({ route, navigation, }) => {
     const handleLinkPress = () => {
         const url = 'http://www.google.com';
         Linking.openURL(url)
-          .then((supported) => {
-            if (!supported) {
-              console.error('Unable to open URL');
-            }
-          })
-          .catch((err) => console.error(err));
-      };
-      const handleQR = async (item) => {
+            .then((supported) => {
+                if (!supported) {
+                    console.error('Unable to open URL');
+                }
+            })
+            .catch((err) => console.error(err));
+    };
+    const handleQR = async (item) => {
         if (!selectedDate) {
             Toast.show({
-              type: 'error',
-              text1: 'Error',
-              text2: 'Please select a reservation date.',
+                type: 'error',
+                text1: 'Error',
+                text2: 'Please select a reservation date.',
             });
             return; // Exit the function if the reservation date is not selected
-          }
+        }
         const reservedFoodInfo = {
             profileImage: item.profileImage,
             organization: item.organization,
@@ -110,8 +110,8 @@ const ReservedFood1 = ({ route, navigation, }) => {
     const handleDateChange = date => {
         setSelectedDate(date);
     };
-    const { item,userId} = route.params;
-    
+    const { item, userId } = route.params;
+
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -128,31 +128,31 @@ const ReservedFood1 = ({ route, navigation, }) => {
                     source={{ uri: item.profileImage }}
                     title={item.organization}
                     description={item.address}
-                    Availabletxt={item.Availabletxt}
+                    Availabletxt={`${item.availableMeals} Available`}
                     additionalInfo={item.additionalInfo}
                 />
-                <View style={{marginLeft:responsiveWidth(4),marginTop:responsiveHeight(3)}}>
+                <View style={{ marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3) }}>
                     <Text style={appStyles.label}>Company Name:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.organization}</Text></Text>
-                    <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Address:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.address}</Text></Text>
-                    <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Phone number:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.phoneNumber}</Text></Text>
+                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.organization}</Text></Text>
+                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Address:
+                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.address}</Text></Text>
+                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Phone number:
+                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.phoneNumber}</Text></Text>
 
-                  
-              <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
-              <Text style={[appStyles.label,{marginTop:responsiveHeight(0.3)}]}>Hours:</Text>
-        <Text style={appStyles.description}>{companyData.openAt}</Text>
-        <Text style={appStyles.label}>  _ </Text>
-        <Text style={appStyles.description}>{companyData.closeAt}</Text>
-    </View>
-                   
-                    <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>What we offer:
-                    <Text style={[appStyles.description,{marginTop:responsiveHeight(3)}]}>{companyData.whatWeOffer}</Text></Text>
-                    <Text style={[appStyles.label,{marginTop:responsiveHeight(3)}]}>Website:</Text>
-                   <TouchableOpacity onPress={handleLinkPress}>
-                 <Text style={[appStyles.description,{textDecorationLine:'underline',marginTop:-responsiveHeight(2),marginLeft:responsiveWidth(13)}]}>{companyData.website}</Text>
-                 </TouchableOpacity>      
+
+                    <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
+                        <Text style={[appStyles.label, { marginTop: responsiveHeight(0.3) }]}>Hours:</Text>
+                        <Text style={appStyles.description}>{companyData.openAt}</Text>
+                        <Text style={appStyles.label}>  _ </Text>
+                        <Text style={appStyles.description}>{companyData.closeAt}</Text>
+                    </View>
+
+                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>What we offer:
+                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.whatWeOffer}</Text></Text>
+                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Website:</Text>
+                    <TouchableOpacity onPress={handleLinkPress}>
+                        <Text style={[appStyles.description, { textDecorationLine: 'underline', marginTop: -responsiveHeight(2), marginLeft: responsiveWidth(13) }]}>{companyData.website}</Text>
+                    </TouchableOpacity>
                 </View>
                 <DatePickerInput
                     label='Reservation Date'
@@ -167,7 +167,7 @@ const ReservedFood1 = ({ route, navigation, }) => {
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
                     <Button
                         label="Reserve Food"
-                        onPress={() => handleQR(item)} 
+                        onPress={() => handleQR(item)}
                         ImageSource={arrowrightwhite}
                         ImageSource1={true}
                         ImageMarginLeft={responsiveWidth(3)}

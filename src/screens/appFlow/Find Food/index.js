@@ -87,7 +87,7 @@ const FindFood = ({ navigation }) => {
               source={{ uri: item.profileImage }}
               title={item.organization}
               description={item.address}
-              Availabletxt={item.Availabletxt}
+              Availabletxt={`${item.availableMeals} Available`} // Concatenating label with available meals count
               additionalInfo={item.additionalInfo}
               onPress={() =>
                 navigation.navigate('AppNavigation', {

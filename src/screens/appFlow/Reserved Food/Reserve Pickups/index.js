@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, FlatList, Text, SafeAreaView, Image } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import Toast from 'react-native-toast-message';
-import { Buttondownload, LeftButton, QRcode, blackX, calendar, checkcircle, greenheart, greensend, heart, Buttonzoom, locationtag, greenshoppingbag } from '../../../../services/utilities/assets';
+import { Buttondownload, LeftButton, QRcode, blackX, calendar, checkcircle, greenheart, greensend, heart, Buttonzoom, locationtag, greenshoppingbag, pocket1 } from '../../../../services/utilities/assets';
 import {
   responsiveHeight,
   responsiveWidth,
@@ -17,10 +17,117 @@ import { ModalRemoveUser } from '../../../../components/Modal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 const ReservedPickups = ({ route, navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
+  const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
+ 
+  const handleRemoveUserPress = () => {
+    setIsRemoveUserModalVisible(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    try {
+      await handleCancelReservation(selectedCardID);
+      setIsRemoveUserModalVisible(false); // Close the modal after cancellation
+    } catch (error) {
+      // Handle any error from the cancellation function
+      setIsRemoveUserModalVisible(false); // Close the modal if an error occurs
+    }
+  };
+
+  const handleCancelReject = () => {
+    // Close the modal when the user rejects
+    setIsRemoveUserModalVisible(false);
+  };
+  useEffect(() => {
+    const fetchReservationDate = async () => {
+      try {
+        const currentUser = auth().currentUser;
+        const userId = currentUser ? currentUser.uid : null;
+        if (!userId) {
+          console.error('User is not authenticated');
+          return;
+        }
+
+        const userDocRef = firestore().collection('users').doc(userId);
+        const userDoc = await userDocRef.get();
+        const userData = userDoc.data();
+        const reservedFood = userData && userData.reservedFood ? userData.reservedFood : [];
+
+        console.log('Reserved Date from Firestore:', reservedFood.length > 0 ? reservedFood[0].reservationDate : 'No reservation date');
+        const firestoreTimestampSeconds = 1702035600; // Replace this with the retrieved timestamp from Firestore
+
+        // Convert Firestore Timestamp to a JavaScript Date object
+        const date = new Date(firestoreTimestampSeconds * 1000);
+
+        // Define month names
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        // Extract date components
+        const month = monthNames[date.getMonth()];
+        const day = date.getDate();
+        const year = date.getFullYear();
+
+        // Format the date to "Month Day, Year" format
+        const formattedDate = `${month} ${day}, ${year}`;
+
+        console.log('Formatted Date:', formattedDate); // Output: Formatted Date: June 20, 2023
+
+        setSelectedDate(formattedDate); // Set the formatted date to selectedDate
+      } catch (error) {
+        console.error('Error fetching reservation date:', error);
+      }
+    };
+
+    fetchReservationDate();
+  }, []);
+  const handleCancelReservation = async (cardID) => {
+    try {
+      const currentUser = auth().currentUser;
+      const userId = currentUser ? currentUser.uid : null;
+      if (!userId) {
+        console.error('User ID not found');
+        return;
+      }
+  
+      const userDocRef = firestore().collection('users').doc(userId);
+      const userDoc = await userDocRef.get();
+      const userData = userDoc.data();
+      let reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
+  
+      const indexToRemove = reservedFoodArray.findIndex((item) => item.cardID === cardID);
+  
+      if (indexToRemove !== -1) {
+        reservedFoodArray.splice(indexToRemove, 1);
+        await userDocRef.update({
+          reservedFood: reservedFoodArray,
+        });
+  
+        // Perform other actions after successful removal, if needed
+  
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Reservation canceled and removed!',
+        });
+      } else {
+        console.error('Item not found in reserved food array');
+      }
+    } catch (error) {
+      console.error('Error removing reservation:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to cancel reservation. Please try again.',
+      });
+    }
+  };
+  
   const handleReservation = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -58,9 +165,7 @@ const ReservedPickups = ({ route, navigation }) => {
     }
   };
   const { item } = route.params;
-  const handleRemoveUserPress = () => {
-    setIsRemoveUserModalVisible(true);
-  };
+ 
   const handleRemoveFavorite = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -116,25 +221,16 @@ const ReservedPickups = ({ route, navigation }) => {
           customMarginTop={responsiveHeight(1)}
           source={{ uri: item.profileImage }}
           title={item.organization}
-          pickupsource={item.pickupsource}
+          pickupsource={pocket1}
           description={item.address}
-          Availabletxt={item.Availabletxt}
+          Availabletxt={'Pending'}
           additionalInfo={item.additionalInfo}
           showPickupsView={true}
-          onPress={() => handleNavigate(item)}
+          onPress={() => handleCancelReservation(item.cardID)}
         />
-        {/* <DatePickerInput
-                label='Reservation Date'
-                    inputWidth={responsiveWidth(92)}
-                    responsiveMarginTop={3}
-                    source1={calendar}
-                    customWidth={responsiveWidth(92)}
-                    selectedDate={selectedDate}
-                    showImage={true}
-                    onDateChange={handleDateChange}
-                /> */}
+
         <CustomTextInput
-          placeholder="June 20, 2023"
+          placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={-responsiveHeight(0.2)}
           TextinputWidth={responsiveWidth(67)}
@@ -146,6 +242,7 @@ const ReservedPickups = ({ route, navigation }) => {
           source1={checkcircle}
           editable={false}
         />
+
         <View style={appStyles.qrmainview}>
           <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
           <TouchableOpacity>
@@ -189,7 +286,10 @@ const ReservedPickups = ({ route, navigation }) => {
           customImageMarginRight={responsiveWidth(2)}
           marginTop={responsiveHeight(1)}
         />
-        <TouchableOpacity onPress={handleRemoveUserPress}>
+     <TouchableOpacity onPress={() => {
+        setSelectedCardID(item.cardID); // Set the selected card ID
+        setIsRemoveUserModalVisible(true); // Open the modal
+      }}>
           <View style={[appStyles.getdirectioncontainer, {
             backgroundColor: colors.color16,
             marginTop: responsiveHeight(1),
@@ -205,14 +305,14 @@ const ReservedPickups = ({ route, navigation }) => {
       <ModalRemoveUser
         isVisible={isRemoveUserModalVisible}
         Logout='Cancel Reservation?'
-        onPress={() => navigation.navigate('ReserveFood')}
+        onPress={handleCancelConfirm} // Call handleCancelConfirm when user presses 'Yes'
         toggleModal={() => setIsRemoveUserModalVisible(false)}
-        onCancelPress={() => {
-          setIsRemoveUserModalVisible(false);
-        }}
+        onCancelPress={handleCancelReject} // Call handleCancelReject when user presses 'No'
         onRemovePress={() => setIsRemoveUserModalVisible(false)}
         navigation={navigation}
       />
+
+
     </SafeAreaView>
   );
 };

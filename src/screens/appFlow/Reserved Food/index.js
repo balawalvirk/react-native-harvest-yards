@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpaci
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
-import { MenueButton, search, pocket8, heart, HelpCallout } from '../../../services/utilities/assets';
+import { MenueButton, search, pocket8, heart, HelpCallout, pocket1, greenheart } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import { scale } from 'react-native-size-matters';
@@ -160,9 +160,17 @@ const ReservedFood = ({ navigation }) => {
               customMarginTop={responsiveHeight(1)}
               source={{ uri: item.profileImage }}
               title={item.organization}
-              pickupsource={item.pickupsource}
+              pickupsource={
+                selectedTouchable === 'Pending Pick-ups'
+                  ? pocket1
+                  : greenheart
+              }
               description={item.address}
-              Availabletxt={item.Availabletxt}
+              Availabletxt={
+                selectedTouchable === 'Pending Pick-ups'
+                  ? 'Pending' 
+                  : 'Favorite' 
+              }
               additionalInfo={item.additionalInfo}
 
               showPickupsView={true}

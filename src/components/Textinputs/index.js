@@ -80,12 +80,12 @@ const CustomTextInput = ({
           },
         ]}>
         {source ? (
-          <TouchableOpacity onPress={onImgPress}>
+         
             <Image
               source={source}
               style={[appStyles.Email, {marginRight: customImageMarginRight}]}
             />
-          </TouchableOpacity>
+       
         ) : (
           <View
             style={{
