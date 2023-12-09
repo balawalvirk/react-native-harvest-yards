@@ -1,29 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpacity, FlatList ,ActivityIndicator} from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
-import { MenueButton, search, pocket8, heart, HelpCallout, pocket1, greenheart } from '../../../services/utilities/assets';
+import { MenueButton, search, pocket8, heart, HelpCallout, pocket1, greenheart, Refresh, animation } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import { scale } from 'react-native-size-matters';
 import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { colors } from '../../../services/utilities/color';
+import LottieView from 'lottie-react-native'; 
 import { Toast } from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
+import { RefreshControl } from 'react-native';
 import auth from '@react-native-firebase/auth';
 const ReservedFood = ({ navigation }) => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [showQRMainView, setShowQRMainView] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
   const handleNavigate = (item) => {
     setShowQRMainView(false);
     navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item, selectedTouchable: selectedTouchable } });
   };
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDataFromFirestore(); 
+    fetchFavorites();
+    setRefreshing(false); 
+  };
   const [favoritesData, setFavoritesData] = useState([]);
   const fetchFavorites = async () => {
     try {
+      setLoading(true); 
+
+      setLoadingAnimation(true); 
       const currentUser = auth().currentUser;
       const userId = currentUser ? currentUser.uid : null;
       if (!userId) {
@@ -39,7 +53,13 @@ const ReservedFood = ({ navigation }) => {
       const userData = userDoc.data();
       let favoritesArray = userData && userData.favorites ? userData.favorites : [];
       setFavoritesData(favoritesArray);
+      setLoading(false); 
+
+      setLoadingAnimation(false);
     } catch (error) {
+      setLoading(false); 
+      setLoadingAnimation(false);
+
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -51,9 +71,11 @@ const ReservedFood = ({ navigation }) => {
     fetchFavorites();
   }, []);
   const [reservedFoodData, setReservedFoodData] = useState([]);
-  useEffect(() => {
+
     const fetchDataFromFirestore = async () => {
       try {
+        setLoading(true);
+        setLoadingAnimation(true); 
         const currentUser = auth().currentUser;
         const userId = currentUser ? currentUser.uid : null;
         if (!userId) {
@@ -68,7 +90,11 @@ const ReservedFood = ({ navigation }) => {
           // Set the reserved food data fetched from Firestore to state
           setReservedFoodData(userData.reservedFood);
         }
+        setLoading(false); 
+        setLoadingAnimation(false); 
       } catch (error) {
+        setLoading(false); 
+        setLoadingAnimation(false); 
         console.error('Error fetching reserved food information:', error);
         Toast.show({
           type: 'error',
@@ -77,6 +103,7 @@ const ReservedFood = ({ navigation }) => {
         });
       }
     };
+    useEffect(() => {
     fetchDataFromFirestore();
   }, []);
   return (
@@ -91,7 +118,15 @@ const ReservedFood = ({ navigation }) => {
         bellmarginleft={responsiveWidth(25.5)}
         marginleft={-responsiveWidth(2)}
       />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.color33]} // Set the colors for the refresh indicator
+          />
+        }
+      >
         <View style={styles.touchablesContainer}>
           <TouchableOpacity
             style={[
@@ -183,6 +218,16 @@ const ReservedFood = ({ navigation }) => {
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
         <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60) }]} />
       </TouchableOpacity>
+      <View style={appStyles.loadingContainer}>
+        {loadingAnimation && (
+          <LottieView
+            source={animation} // Your animation source
+            autoPlay
+            loop
+            style={appStyles.loadingAnimation} // Apply your animation styles
+          />
+        )}
+      </View>
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
         onBackdropPress={() => setHelpCalloutModalVisible(false)}
@@ -263,6 +308,17 @@ const styles = StyleSheet.create({
     marginLeft: responsiveWidth(2),
     fontFamily: fontFamily.SatoshiVariable,
     fontWeight: '700'
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust the background color and opacity
+    zIndex: 999, // Adjust the zIndex as needed
   },
 });
 

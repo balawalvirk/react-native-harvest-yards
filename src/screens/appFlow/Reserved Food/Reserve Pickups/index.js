@@ -22,7 +22,7 @@ const ReservedPickups = ({ route, navigation }) => {
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
- 
+  const [reservedFoodData, setReservedFoodData] = useState([]);
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
   };
@@ -94,27 +94,36 @@ const ReservedPickups = ({ route, navigation }) => {
         console.error('User ID not found');
         return;
       }
-  
+
       const userDocRef = firestore().collection('users').doc(userId);
       const userDoc = await userDocRef.get();
       const userData = userDoc.data();
       let reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
-  
+
       const indexToRemove = reservedFoodArray.findIndex((item) => item.cardID === cardID);
-  
+
       if (indexToRemove !== -1) {
         reservedFoodArray.splice(indexToRemove, 1);
         await userDocRef.update({
           reservedFood: reservedFoodArray,
         });
-  
-        // Perform other actions after successful removal, if needed
-  
+
+        // Fetch updated reserved food data after successful cancellation
+        const updatedUserDoc = await userDocRef.get();
+        const updatedUserData = updatedUserDoc.data();
+
+        if (updatedUserData && updatedUserData.reservedFood) {
+          // Set the updated reserved food data fetched from Firestore to state
+          setReservedFoodData(updatedUserData.reservedFood);
+        }
+
         Toast.show({
           type: 'success',
           text1: 'Success',
           text2: 'Reservation canceled and removed!',
         });
+
+        navigation.navigate('DrawerNavigation', { screen: 'ReserveFood' });
       } else {
         console.error('Item not found in reserved food array');
       }
@@ -127,6 +136,7 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
+
   
   const handleReservation = async () => {
     try {

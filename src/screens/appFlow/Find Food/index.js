@@ -4,42 +4,55 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
-import { MenueButton, search, locationtag,HelpCallout } from '../../../services/utilities/assets';
+import { MenueButton, search, locationtag,HelpCallout, animation } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore'; 
 import { scale } from 'react-native-size-matters';
 import { colors } from '../../../services/utilities/color';
+import LottieView from 'lottie-react-native';
+import { RefreshControl } from 'react-native';
 const FindFood = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [distributorsData, setDistributorsData] = useState([]);
+  const [loading, setLoading] = useState(false); 
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingAnimation, setLoadingAnimation] = useState(false); 
+  const fetchDistributorsData = async () => {
+    try {
+      setLoading(true);
+      setLoadingAnimation(true);
+      const distributorsCollection = await firestore().collection('distributors').get();
+      const fetchedData = [];
+      distributorsCollection.forEach((doc) => {
+        fetchedData.push({ ...doc.data(), userId: doc.id });
+      });
+      setDistributorsData(fetchedData);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Data fetched successfully!',
+      });
+      setLoading(false);
+      setLoadingAnimation(false);
+    } catch (error) {
+      setLoading(false);
+      setLoadingAnimation(false);
+      console.error('Error fetching distributors data:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to fetch data. Please try again.',
+      });
+    }
+  };
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDistributorsData().then(() => setRefreshing(false));
+  };
   useEffect(() => {
-    const fetchDistributorsData = async () => {
-      try {
-        const distributorsCollection = await firestore().collection('distributors').get();
-        const fetchedData = [];
-
-        distributorsCollection.forEach((doc) => {
-          fetchedData.push({ ...doc.data(), userId: doc.id });
-        });
-
-        setDistributorsData(fetchedData);
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Data fetched successfully!',
-        });
-      } catch (error) {
-        console.error('Error fetching distributors data:', error);
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to fetch data. Please try again.',
-        });
-      }
-    };
     fetchDistributorsData();
   }, []);
   return (
@@ -54,7 +67,15 @@ const FindFood = ({ navigation }) => {
         marginleft={-responsiveWidth(2)}
         bellmarginleft={responsiveWidth(32)}
       />
-      <ScrollView>
+    <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.color33]} // Set the colors for the refresh indicator
+          />
+        }
+      >
         <CustomLocationInput
           showsearch={true}
           source={search}
@@ -103,6 +124,16 @@ const FindFood = ({ navigation }) => {
       <TouchableOpacity  onPress={() => setHelpCalloutModalVisible(true)}>
       <Image source={HelpCallout} style={[appStyles.locationtag,{width:scale(60),height:scale(60),marginBottom:-responsiveHeight(3)}]} />
       </TouchableOpacity>
+      <View style={appStyles.loadingContainer}>
+      {loadingAnimation && (
+          <LottieView
+            source={animation} 
+            autoPlay
+            loop
+            style={appStyles.loadingAnimation} 
+          />
+        )}
+      </View>
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
         onBackdropPress={() => setHelpCalloutModalVisible(false)}
