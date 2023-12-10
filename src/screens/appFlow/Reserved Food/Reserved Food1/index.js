@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { ScrollView, Image, View, Text, Linking, TouchableOpacity, SafeAreaView } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import DatePickerInput from '../../../../components/DatePickerInput';
 import { scale } from 'react-native-size-matters';
+
 import { HelpCallout, LeftButton, arrowrightwhite, calendar, whitearrowright } from '../../../../services/utilities/assets';
 import {
     responsiveHeight,
@@ -12,15 +13,18 @@ import {
 } from 'react-native-responsive-dimensions';
 import Toast from 'react-native-toast-message';
 import CardView from '../../../../components/CardView';
-import { QRcodeModal } from '../../../../components/Modal/QR Code Modal';
+import QRcodeModal from '../../../../components/Modal/QR Code Modal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
+import { QRCode } from 'react-native-qrcode-svg';
 const ReservedFood1 = ({ route, navigation, }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
     const [companyData, setCompanyData] = useState({});
+    const [qrCodeUri, setQRCodeUri] = useState(null);
+    const qrCodeRef = useRef(null);
     const nextDay = new Date();
     nextDay.setDate(nextDay.getDate() + 1);
     useEffect(() => {
@@ -45,7 +49,7 @@ const ReservedFood1 = ({ route, navigation, }) => {
         fetchCompanyData();
     }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
 
-
+    const [qrCodeValue, setQRCodeValue] = useState('');
     const toggleModal = () => {
         console.log('Toggling modal'); // Add this line for debugging
         setIsQRModalVisible(!isQRModalVisible);
@@ -67,17 +71,10 @@ const ReservedFood1 = ({ route, navigation, }) => {
                 text1: 'Error',
                 text2: 'Please select a reservation date.',
             });
-            return; // Exit the function if the reservation date is not selected
+            return;
         }
-        const reservedFoodInfo = {
-            profileImage: item.profileImage,
-            organization: item.organization,
-            address: item.address,
-            reservationDate: selectedDate,
-        };
 
         try {
-            // Retrieve the current user's ID
             const currentUser = auth().currentUser;
             const userId = currentUser ? currentUser.uid : null;
 
@@ -87,20 +84,22 @@ const ReservedFood1 = ({ route, navigation, }) => {
             }
 
             const userDocRef = firestore().collection('users').doc(userId);
-
-            // Get the current user's document data to check if 'reservedFood' field exists
             const userDoc = await userDocRef.get();
             const userData = userDoc.data();
-
-            // Check if 'reservedFood' field exists or create an empty array
             const reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
 
-            // Update the 'reservedFood' array in Firestore with the new reservation
             await userDocRef.update({
-                reservedFood: [...reservedFoodArray, reservedFoodInfo],
+                reservedFood: [...reservedFoodArray, {
+                    profileImage: item.profileImage,
+                    organization: item.organization,
+                    address: item.address,
+                    reservationDate: selectedDate,
+                }],
             });
 
-            console.log('Reserved food information added to user document successfully');
+            const qrValue = `${userId}_${item.organization}_${selectedDate}`;
+            setQRCodeValue(qrValue);
+
             setIsQRModalVisible(true);
         } catch (error) {
             console.error('Error adding reserved food information:', error);
@@ -188,10 +187,15 @@ const ReservedFood1 = ({ route, navigation, }) => {
                 The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package. 
                 A QR code will be issued to you that must be scanned when you are picking up your food package.'
             />
-            <QRcodeModal
-                navigation={navigation}
-                onBackdropPress={toggleModal}
-                isVisible={isQRModalVisible} />
+            {isQRModalVisible && (
+                <QRcodeModal
+                    navigation={navigation}
+                    onBackdropPress={toggleModal}
+                    isVisible={isQRModalVisible}
+                    qrCodeValue={qrCodeValue}
+                />
+            )}
+
         </SafeAreaView>
     );
 };

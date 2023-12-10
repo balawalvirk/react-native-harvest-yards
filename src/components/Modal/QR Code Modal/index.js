@@ -1,50 +1,82 @@
-import React, { useState, useContext } from 'react';
-import {
-    View,
-    TouchableOpacity,
-    Text,
-    Image,
-} from 'react-native';
-import {
-    responsiveHeight,
-    responsiveWidth,
-} from 'react-native-responsive-dimensions';
+import React from 'react';
+import { View, TouchableOpacity, Text, Alert } from 'react-native';
+import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import RNFetchBlob from 'rn-fetch-blob';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Modal from 'react-native-modal';
 import { scale } from 'react-native-size-matters';
 import Button from '../../Button';
+import QRCode from 'react-native-qrcode-svg';
+import RNFS from 'react-native-fs';
+import { download } from '../../../services/utilities/assets';
 import GetButton from '../../GetButton';
-import { QRcode, download } from '../../../services/utilities/assets';
-export const QRcodeModal = ({
-    isVisible,
-    navigation,
-   onBackdropPress,
-    onPress
-}) => {
- 
-    return (
-        <Modal
-            isVisible={isVisible}
-            onBackdropPress={onBackdropPress} 
-            backdropOpacity={0.3}
-            animationIn={'slideInUp'}  >
-            <View style={[appStyles.QRmodal, { height: scale(480) }]}>
+import { requestStoragePermission } from '../../../services/utilities/permission'
+const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) => {
+    const imageUri = 'nxY6upyayHZXDVRMsiAysdy6ZUE2_Web Development_Sun Dec 10 2023 20:19:00 GMT+0500';
+  const saveImageToGallery = async (imageUri) => {
+    console.log('Image URI:', imageUri); 
+  
+    try {
+      // Check and request permission if needed (Android)
+      if (Platform.OS === 'android') {
+        const granted = await requestStoragePermission();
+        if (!granted) {
+          Alert.alert('Permission Denied', 'Storage permission required.');
+          return;
+        }
+      }
 
-                <Text style={[appStyles.modalText1, { marginTop: responsiveHeight(2) }]}>Food Reserved!</Text>
-                <View style={appStyles.qrsecondcode}>
-                    <Text style={[appStyles.modalText2, { marginTop: responsiveHeight(2) }]}>Your food has been reserved successfully. Use the QR {'.\n'}code below to collect the food from the Food Center. {'.\n'}You can also access this QR code from the Reserved</Text>
-                    <Text style={[appStyles.modalText2, { alignSelf: 'center' }]}>Food tab.</Text>
-                </View>
-                {/* <Text style={appStyles.modalText2}>successfully.</Text> */}
-                <Image source={QRcode} style={appStyles.QRcode} />
-                <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3), width: responsiveWidth(85) }]}>
-                    <Button
-                        label="Download QR Code"
-                        onPress={onPress}
-                        customImageSource={download}
-                        customImageMarginRight={responsiveWidth(3)}
-                    />
-                </TouchableOpacity>
+      // Other platform-specific configurations
+      const { config, fs } = RNFetchBlob;
+      const isIOS = Platform.OS === 'ios';
+      const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
+
+      // Fetch the image
+      const response = await config({
+        fileCache: true,
+        appendExt: 'jpg',
+      }).fetch('GET', imageLocation);
+
+      // Determine the destination path for saving the image
+      const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
+      const imageName = `IMG_${new Date().getTime()}.jpg`;
+
+      // Save the image to the gallery
+      await fs.cp(response.path(), `${imagePath}/${imageName}`);
+      await fs.scanFile([{ path: `${imagePath}/${imageName}`, mime: 'image/jpeg' }]);
+
+      console.log('Image saved to gallery successfully!');
+      Alert.alert('Success', 'Image saved to gallery!');
+    } catch (error) {
+      console.error('Error saving image to gallery:', error);
+      Alert.alert('Error', 'Failed to save image to gallery.');
+    }
+  };
+
+  return (
+    <Modal isVisible={isVisible} onBackdropPress={onBackdropPress} backdropOpacity={0.3} animationIn={'slideInUp'}>
+      <View style={[appStyles.QRmodal, { height: scale(480) }]}>
+        <Text style={[appStyles.modalText1, { marginTop: responsiveHeight(2) }]}>Food Reserved!</Text>
+        <View style={appStyles.qrsecondcode}>
+          <Text style={[appStyles.modalText2, { marginTop: responsiveHeight(2) }]}>
+            Your food has been reserved successfully. Use the QR code below to collect the food from the Food Center.
+            {'\n'}You can also access this QR code from the Reserved
+          </Text>
+          <Text style={[appStyles.modalText2, { alignSelf: 'center' }]}>Food tab.</Text>
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <QRCode value={qrCodeValue} size={200} />
+        </View>
+        <TouchableOpacity
+          style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3), width: responsiveWidth(85) }]}
+          onPress={() => saveImageToGallery(qrCodeValue)}>
+          <Button
+            label="Download QR Code"
+            onPress={() => saveImageToGallery(qrCodeValue)}
+            customImageSource={download}
+            customImageMarginRight={responsiveWidth(3)}
+          />
+        </TouchableOpacity>
                 <View style={appStyles.getview}>
                     <GetButton
                         label='Find Food'
@@ -67,3 +99,5 @@ export const QRcodeModal = ({
         </Modal>
     );
 };
+export default QRcodeModal;
+
