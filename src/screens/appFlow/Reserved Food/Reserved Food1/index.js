@@ -1,12 +1,12 @@
-import React, { useEffect, useState,useRef } from 'react';
-import { ScrollView, Image, View, Text, Linking, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { ScrollView, Image, View, Text, Linking, TouchableOpacity, SafeAreaView, Platform, Alert } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import DatePickerInput from '../../../../components/DatePickerInput';
 import { scale } from 'react-native-size-matters';
 
-import { HelpCallout, LeftButton, arrowrightwhite, calendar, whitearrowright } from '../../../../services/utilities/assets';
+import { HelpCallout, LeftButton, arrowrightwhite, calendar } from '../../../../services/utilities/assets';
 import {
     responsiveHeight,
     responsiveWidth,
@@ -18,25 +18,23 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
 import { QRCode } from 'react-native-qrcode-svg';
-const ReservedFood1 = ({ route, navigation, }) => {
+import RNFetchBlob from 'rn-fetch-blob';
+
+const ReservedFood1 = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
     const [companyData, setCompanyData] = useState({});
-    const [qrCodeUri, setQRCodeUri] = useState(null);
-    const qrCodeRef = useRef(null);
-    const nextDay = new Date();
-    nextDay.setDate(nextDay.getDate() + 1);
+    const [qrCodeValue, setQRCodeValue] = useState('');
+    const [reservedFoodArray, setReservedFoodArray] = useState([]);
     useEffect(() => {
         const fetchCompanyData = async () => {
             try {
                 const { userId } = route.params; // Get the userId passed from FindFood
 
-                // Assuming 'organizations' is the collection name in Firestore
                 const organizationDoc = await firestore().collection('distributors').doc(userId).get();
 
                 if (organizationDoc.exists) {
-                    // If the document exists, fetch and set the company data
                     setCompanyData(organizationDoc.data());
                 } else {
                     console.log('Organization document not found');
@@ -47,13 +45,12 @@ const ReservedFood1 = ({ route, navigation, }) => {
         };
 
         fetchCompanyData();
-    }, [route.params]); // Add route.params as a dependency to useEffect to trigger when it changes
+    }, [route.params]);
 
-    const [qrCodeValue, setQRCodeValue] = useState('');
     const toggleModal = () => {
-        console.log('Toggling modal'); // Add this line for debugging
         setIsQRModalVisible(!isQRModalVisible);
     };
+
     const handleLinkPress = () => {
         const url = 'http://www.google.com';
         Linking.openURL(url)
@@ -64,6 +61,77 @@ const ReservedFood1 = ({ route, navigation, }) => {
             })
             .catch((err) => console.error(err));
     };
+    const fetchUserData = async (userId) => {
+        try {
+            const userDoc = await firestore().collection('users').doc(userId).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+             
+                return {
+                    firstName: userData.firstName,
+                    lastName: userData.lastName, 
+                };
+            } else {
+                console.log('User document not found');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            return null;
+        }
+    };
+    const addReservedFoodToOrdersCollection = async (userId, item, userData, qrCodeValue) => {
+        try {
+            const userDocRef = firestore().collection('users').doc(userId);
+    
+            const reservedFoodEntry = {
+                profileImage: item.profileImage,
+                organization: item.organization,
+                address: item.address,
+                reservationDate: selectedDate,
+                qrCodeValue: qrCodeValue,
+            };
+    
+            // Update the reservedFoodArray state using its setter function
+            setReservedFoodArray(prevReservedFoodArray => [...prevReservedFoodArray, reservedFoodEntry]);
+    
+            // Now use the updated state value in the callback
+            userDocRef.update({
+                reservedFood: [...reservedFoodArray, reservedFoodEntry],
+            });
+    
+            // Add data to the reserved_orders collection
+            const reservedOrderRef = firestore().collection('reserved_orders').doc(userId);
+            const reservedOrderSnapshot = await reservedOrderRef.get();
+    
+            if (reservedOrderSnapshot.exists) {
+                reservedOrderRef.update({
+                    reservations: firestore.FieldValue.arrayUnion({
+                        userId: userId,
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        reservationDate: selectedDate,
+                        qrCodeValue: qrCodeValue,
+                    }),
+                });
+            } else {
+                reservedOrderRef.set({
+                    reservations: [{
+                        userId: userId,
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        reservationDate: selectedDate,
+                        qrCodeValue: qrCodeValue,
+                    }],
+                });
+            }
+            console.log('Reserved food added to user document and reserved_orders collection successfully!');
+        } catch (error) {
+            console.error('Error adding reserved food information:', error);
+            Alert.alert('Error', 'Failed to add reserved food information.');
+        }
+    };
+    
     const handleQR = async (item) => {
         if (!selectedDate) {
             Toast.show({
@@ -73,43 +141,76 @@ const ReservedFood1 = ({ route, navigation, }) => {
             });
             return;
         }
-
+    
         try {
             const currentUser = auth().currentUser;
             const userId = currentUser ? currentUser.uid : null;
-
+    
             if (!userId) {
                 console.error('User ID not found');
                 return;
             }
-
-            const userDocRef = firestore().collection('users').doc(userId);
-            const userDoc = await userDocRef.get();
-            const userData = userDoc.data();
-            const reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
-
-            await userDocRef.update({
-                reservedFood: [...reservedFoodArray, {
-                    profileImage: item.profileImage,
-                    organization: item.organization,
-                    address: item.address,
-                    reservationDate: selectedDate,
-                }],
-            });
-
-            const qrValue = `${userId}_${item.organization}_${selectedDate}`;
-            setQRCodeValue(qrValue);
-
-            setIsQRModalVisible(true);
+    
+            const userData = await fetchUserData(userId);
+    
+            if (userData) {
+                const qrValue = `${userId}_${item.organization}_${selectedDate}`;
+                setQRCodeValue(qrValue);
+    
+                setIsQRModalVisible(true);
+    
+                await addReservedFoodToOrdersCollection(userId, item, userData, qrValue);
+            } else {
+                console.error('User data not found');
+            }
         } catch (error) {
             console.error('Error adding reserved food information:', error);
         }
     };
+    
+ 
 
     const handleDateChange = date => {
         setSelectedDate(date);
     };
     const { item, userId } = route.params;
+
+    const saveImageToGallery = async (imageUri) => {
+        console.log('Image URI:', imageUri);
+        if (!imageUri) {
+            throw new Error('Image URI is null or undefined');
+        }
+        try {
+            if (Platform.OS === 'android') {
+                const granted = await requestStoragePermission();
+                if (!granted) {
+                    Alert.alert('Permission Denied', 'Storage permission required.');
+                    return;
+                }
+            }
+
+            const { config, fs } = RNFetchBlob;
+            const isIOS = Platform.OS === 'ios';
+            const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
+
+            const response = await config({
+                fileCache: true,
+                appendExt: 'jpg',
+            }).fetch('GET', imageLocation);
+
+            const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
+            const imageName = `IMG_${new Date().getTime()}.jpg`;
+
+            await fs.cp(response.path(), `${imagePath}/${imageName}`);
+            await fs.scanFile([{ path: `${imagePath}/${imageName}`, mime: 'image/jpeg' }]);
+
+            console.log('Image saved to gallery successfully!');
+            Alert.alert('Success', 'Image saved to gallery!');
+        } catch (error) {
+            console.error('Error saving image to gallery:', error);
+            Alert.alert('Error', 'Failed to save image to gallery.');
+        }
+    };
 
     return (
         <SafeAreaView style={appStyles.container}>
@@ -187,16 +288,19 @@ const ReservedFood1 = ({ route, navigation, }) => {
                 The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package. 
                 A QR code will be issued to you that must be scanned when you are picking up your food package.'
             />
-            {isQRModalVisible && (
+             {isQRModalVisible && (
                 <QRcodeModal
                     navigation={navigation}
                     onBackdropPress={toggleModal}
                     isVisible={isQRModalVisible}
                     qrCodeValue={qrCodeValue}
+                    saveImageToGallery={saveImageToGallery}
                 />
             )}
-
         </SafeAreaView>
     );
 };
 export default ReservedFood1;
+
+
+

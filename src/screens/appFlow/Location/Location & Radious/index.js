@@ -87,9 +87,7 @@ export default function LocationRadious({ navigation }) {
                 <View style={appStyles.mapmainview}>
                     <MapView
                         style={{ width: scale(320), height: scale(247) }}
-                        region={mapRegion}
-                    />
-                    
+                        region={mapRegion}></MapView>
                 </View>
                 <TouchableOpacity onPress={handleZoomIn}>
                     <Image source={Buttonplus} style={[appStyles.plusbutton, { marginTop: -responsiveHeight(11.5) }]} />
