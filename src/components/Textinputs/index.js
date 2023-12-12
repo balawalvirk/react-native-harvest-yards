@@ -43,6 +43,7 @@ const CustomTextInput = ({
   borderRadius,
   secureTextEntry = false,
   error,
+  multiline,
   autoCapitalize
 
 }) => {
@@ -119,6 +120,7 @@ const CustomTextInput = ({
           secureTextEntry={isPasswordVisible} 
           maxLength={maxlength}
           onFocus={onfocus}
+          multiline={multiline}
           value={value}
           onChangeText={onChangeText}
           autoCapitalize={autoCapitalize}

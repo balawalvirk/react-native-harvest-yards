@@ -53,8 +53,10 @@ const Location = ({ navigation }) => {
             source={checkcircle}
             source1={edit}
             title='Home'
+            expirecolor={colors.color4}
+            coupontxt1={colors.color4}
             description='432 Blues Boulevard, Memphis, USA'
-            imagemarginleft={responsiveWidth(19)}
+            imagemarginleft={responsiveWidth(14)}
             backgroundcolor={colors.color36}
           />
         </TouchableOpacity>
@@ -65,8 +67,10 @@ const Location = ({ navigation }) => {
             source={mappin}
             source1={edit}
             title='University'
+            expirecolor={colors.color4}
+            coupontxt1={colors.color4}
             description='1234 Melody Lane, Nashville, USA'
-            imagemarginleft={responsiveWidth(22)}
+            imagemarginleft={responsiveWidth(18)}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() =>navigation.navigate('FindFood')}>
@@ -75,8 +79,10 @@ const Location = ({ navigation }) => {
             source={mappin}
             source1={edit}
             title='Office'
+            expirecolor={colors.color4}
+            coupontxt1={colors.color4}
             description='890 Jazz Street, Chicago, USA'
-            imagemarginleft={responsiveWidth(27)}
+            imagemarginleft={responsiveWidth(23)}
           />
         </TouchableOpacity>
 

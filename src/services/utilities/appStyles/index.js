@@ -1261,7 +1261,9 @@ export const appStyles = StyleSheet.create({
     height: responsiveHeight(7)
   },
   qrsecondcode: {
-    width: responsiveWidth(100),
+    width: responsiveWidth(88),
+    height:responsiveHeight(10.5),
+    alignSelf:'center',
     alignItems: 'center'
   },
   qrmainview: {

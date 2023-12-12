@@ -11,20 +11,34 @@ import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { colors } from '../../../services/utilities/color';
 import LottieView from 'lottie-react-native'; 
+import { useNavigation } from '@react-navigation/native';
 import { Toast } from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
 import { RefreshControl } from 'react-native';
 import auth from '@react-native-firebase/auth';
-const ReservedFood = ({ navigation }) => {
+const ReservedFood = () => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [showQRMainView, setShowQRMainView] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
-  const handleNavigate = (item) => {
-    setShowQRMainView(false);
-    navigation.navigate('AppNavigation', { screen: 'ReservedPickups', params: { item: item, selectedTouchable: selectedTouchable } });
+  const navigation = useNavigation();
+
+  const handleCardPress = (item) => {
+    if (selectedTouchable === 'Pending Pick-ups') {
+      // Navigate to ReservedPickups screen with parameters for 'pending'
+      navigation.navigate('AppNavigation', {
+        screen: 'ReservedPickups',
+        params: { item: item, selectedTouchable: selectedTouchable }
+      });
+    } else if (selectedTouchable === 'Favorites') {
+      // Navigate to Reservedfavorites screen with parameters for 'favourites'
+      navigation.navigate('AppNavigation', {
+        screen: 'Reservedfavorites',
+        params: { item: item, selectedTouchable: selectedTouchable }
+      });
+    }
   };
   const onRefresh = () => {
     setRefreshing(true);
@@ -209,7 +223,7 @@ const ReservedFood = ({ navigation }) => {
               additionalInfo={item.additionalInfo}
 
               showPickupsView={true}
-              onPress={() => handleNavigate(item)}
+              onPress={() => handleCardPress(item)}
             />
           )}
         />
@@ -241,23 +255,6 @@ const ReservedFood = ({ navigation }) => {
               : 'Default text if none of the conditions match.'
         }
       />
-      {selectedTouchable === 'Favorites' && showQRMainView && (
-        <View style={appStyles.qrmainview}>
-          <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
-          <TouchableOpacity>
-            <Image source={Buttonzoom} style={[appStyles.locationtag, { marginTop: -responsiveHeight(20), marginLeft: responsiveWidth(73) }]} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image source={Buttondownload} style={[appStyles.locationtag, { marginTop: -responsiveHeight(13), marginLeft: responsiveWidth(73) }]} />
-          </TouchableOpacity>
-          <Text style={[appStyles.title, { marginTop: responsiveHeight(1) }]}>
-            QR code
-          </Text>
-          <Text style={appStyles.description}>
-            Use this QR to collect the food.
-          </Text>
-        </View>
-      )}
     </SafeAreaView>
   );
 };

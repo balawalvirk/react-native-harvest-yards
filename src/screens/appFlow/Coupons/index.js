@@ -32,6 +32,8 @@ const Coupons = ({ navigation }) => {
           source={tag}
           source1={copy}
           title='#TAKE15OFF'
+           coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           description='Expires on:Oct 5, 2023'
           imagemarginleft={responsiveWidth(38)}
 
@@ -41,6 +43,8 @@ const Coupons = ({ navigation }) => {
           source={tag}
           source1={copy}
           title='#GRAB10OFF'
+          coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           description='Expires on:Oct 8, 2023'
           imagemarginleft={responsiveWidth(38)}
         />
@@ -49,6 +53,8 @@ const Coupons = ({ navigation }) => {
           source={tag}
           source1={copy}
           title='#WINTERSALE25'
+          coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           description='Expires on:Oct 1, 2023'
           imagemarginleft={responsiveWidth(36)}
         />
@@ -57,6 +63,8 @@ const Coupons = ({ navigation }) => {
           source={tag}
           source1={checksquare}
           customstyle={appStyles.customstyle}
+          coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           title='#BESTDEAL40'
           customstyletitle={appStyles.customstyletitle}
           customdescriptionstyle={appStyles.customdescriptionstyle}
@@ -68,6 +76,8 @@ const Coupons = ({ navigation }) => {
           customMarginTop={responsiveHeight(1)}
           source={tag}
           source1={checksquare}
+          coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           customstyle={appStyles.customstyle}
           title='#FINALSALE75'
           customstyletitle={appStyles.customstyletitle}
@@ -81,10 +91,12 @@ const Coupons = ({ navigation }) => {
           source1={checksquare}
           customstyle={appStyles.customstyle}
           title='#AMAZINGDISCOUNT'
+          coupontxt1={colors.color4}
+          expirecolor={colors.color4}
           customstyletitle={appStyles.customstyletitle}
           customdescriptionstyle={appStyles.customdescriptionstyle}
           description='Expires on:Oct 22, 2023'
-          imagemarginleft={responsiveWidth(28)}
+          imagemarginleft={responsiveWidth(26)}
         />
         <CouponsView
           customMarginTop={responsiveHeight(1)}
@@ -110,7 +122,7 @@ const Coupons = ({ navigation }) => {
           description='Expired'
           expirecolor={colors.color32}
           coupontxt1={colors.color32}
-          imagemarginleft={responsiveWidth(35)}
+          imagemarginleft={responsiveWidth(33)}
         />
         <View style={{ height: responsiveHeight(10) }} />
       </ScrollView>

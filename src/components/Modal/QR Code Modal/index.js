@@ -59,13 +59,13 @@ const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) =>
         <Text style={[appStyles.modalText1, { marginTop: responsiveHeight(2) }]}>Food Reserved!</Text>
         <View style={appStyles.qrsecondcode}>
           <Text style={[appStyles.modalText2, { marginTop: responsiveHeight(2) }]}>
-            Your food has been reserved successfully. Use the QR code below to collect the food from the Food Center.
+            Your food has been reserved successfully.Use the QR{'\n'}code below to collect the food from the Food Center.
             {'\n'}You can also access this QR code from the Reserved
           </Text>
           <Text style={[appStyles.modalText2, { alignSelf: 'center' }]}>Food tab.</Text>
         </View>
-        <View style={{ alignSelf: 'center' }}>
-          <QRCode value={qrCodeValue} size={200} />
+        <View style={{ alignSelf: 'center',marginTop:responsiveHeight(3) }}>
+          <QRCode value={qrCodeValue} size={150} />
         </View>
         <TouchableOpacity
           style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3), width: responsiveWidth(85) }]}

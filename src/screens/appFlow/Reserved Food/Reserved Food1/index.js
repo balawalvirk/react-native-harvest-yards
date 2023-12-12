@@ -92,14 +92,32 @@ const ReservedFood1 = ({ route, navigation }) => {
                 qrCodeValue: qrCodeValue,
             };
     
-            // Update the reservedFoodArray state using its setter function
-            setReservedFoodArray(prevReservedFoodArray => [...prevReservedFoodArray, reservedFoodEntry]);
+            // Fetch the existing reservedFood array from the user document
+            const userDoc = await userDocRef.get();
+            const existingReservedFood = userDoc.data()?.reservedFood || [];
     
-            // Now use the updated state value in the callback
-            userDocRef.update({
-                reservedFood: [...reservedFoodArray, reservedFoodEntry],
+            // Check if there is an exact match for the reservation entry in the array
+            const isExistingReservation = existingReservedFood.find(
+                (reservation) =>
+                    reservation.organization === reservedFoodEntry.organization &&
+                    reservation.address === reservedFoodEntry.address &&
+                    reservation.reservationDate === reservedFoodEntry.reservationDate &&
+                    reservation.qrCodeValue === reservedFoodEntry.qrCodeValue
+            );
+    
+            if (isExistingReservation) {
+                console.log('Reservation already exists for this entry');
+                // Handle if the reservation already exists, e.g., show a message or perform necessary actions
+                return;
+            }
+    
+            // Add the new reserved food entry to the existing reservedFood array
+            const updatedReservedFood = [...existingReservedFood, reservedFoodEntry];
+    
+            // Update the user document with the updated reservedFood array
+            await userDocRef.update({
+                reservedFood: updatedReservedFood,
             });
-    
             // Add data to the reserved_orders collection
             const reservedOrderRef = firestore().collection('reserved_orders').doc(userId);
             const reservedOrderSnapshot = await reservedOrderRef.get();
@@ -133,15 +151,6 @@ const ReservedFood1 = ({ route, navigation }) => {
     };
     
     const handleQR = async (item) => {
-        if (!selectedDate) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Please select a reservation date.',
-            });
-            return;
-        }
-    
         try {
             const currentUser = auth().currentUser;
             const userId = currentUser ? currentUser.uid : null;
@@ -151,14 +160,14 @@ const ReservedFood1 = ({ route, navigation }) => {
                 return;
             }
     
+            const qrValue =`${userId}`;
+            setQRCodeValue(qrValue);
+    
+            setIsQRModalVisible(true);
+    
             const userData = await fetchUserData(userId);
     
             if (userData) {
-                const qrValue = `${userId}_${item.organization}_${selectedDate}`;
-                setQRCodeValue(qrValue);
-    
-                setIsQRModalVisible(true);
-    
                 await addReservedFoodToOrdersCollection(userId, item, userData, qrValue);
             } else {
                 console.error('User data not found');
@@ -168,7 +177,6 @@ const ReservedFood1 = ({ route, navigation }) => {
         }
     };
     
- 
 
     const handleDateChange = date => {
         setSelectedDate(date);
