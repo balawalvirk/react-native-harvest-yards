@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity,ScrollView, Image } from 'react-native';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
@@ -9,12 +9,39 @@ import Button from '../../../components/Button';
 import { Email, HYlogo, HYlogowhite, Logo, MaskGroup19, User, animation, lock, login } from '../../../services/utilities/assets';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 export default function Login({navigation}) {
   const [checkboxChecked, setCheckboxChecked] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false); 
+  useEffect(() => {
+    retrieveStoredCredentials();
+  }, []);
+  const retrieveStoredCredentials = async () => {
+    try {
+      const storedEmail = await AsyncStorage.getItem('email');
+      const storedPassword = await AsyncStorage.getItem('password');
+
+      if (storedEmail && storedPassword) {
+        setEmail(storedEmail);
+        setPassword(storedPassword);
+        setCheckboxChecked(true);
+      }
+    } catch (error) {
+      console.error('Error retrieving credentials from AsyncStorage:', error);
+    }
+  };
+
+  const storeCredentials = async (email, password) => {
+    try {
+      await AsyncStorage.setItem('email', email);
+      await AsyncStorage.setItem('password', password);
+    } catch (error) {
+      console.error('Error storing credentials in AsyncStorage:', error);
+    }
+  };
   const toggleCheckbox = () => {
     setCheckboxChecked((prevChecked) => !prevChecked);
   };
@@ -76,7 +103,7 @@ const capitalizeFirstLetter = (string) => {
         setLoading(false);
         return;
       }
-
+      
       const response = await auth().signInWithEmailAndPassword(email, password);
 
       // Additional logic after successful login, if needed
@@ -88,7 +115,13 @@ const capitalizeFirstLetter = (string) => {
         text1: 'Success',
         text2: 'Login successful!',
       });
-
+      if (checkboxChecked) {
+        await storeCredentials(email, password);
+      } else {
+        // If "Remember Me" is unchecked, clear stored credentials
+        await AsyncStorage.removeItem('email');
+        await AsyncStorage.removeItem('password');
+      }
       // Navigate to the next screen
       navigation.navigate('DrawerNavigation', { screen: 'FindFood' });
     } catch (error) {

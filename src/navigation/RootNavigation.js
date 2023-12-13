@@ -1,5 +1,5 @@
 // RootNavigation.js
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AppNavigation from './appNavigation';
@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 const RootNavigation = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='AuthNavigation'>
+      <Stack.Navigator screenOptions={{ headerShown: false }} >
         <Stack.Screen name='AuthNavigation' component={AuthNavigation} />
         <Stack.Screen name='AppNavigation' component={AppNavigation} />
         <Stack.Screen name='DrawerNavigation' component={DrawerNavigation} />
