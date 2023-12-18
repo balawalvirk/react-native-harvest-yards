@@ -4,7 +4,7 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
-import { MenueButton, search, locationtag,HelpCallout, animation } from '../../../services/utilities/assets';
+import { MenueButton, search, locationtag,HelpCallout, animation, mappin } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import Toast from 'react-native-toast-message';
@@ -94,7 +94,10 @@ const FindFood = ({ navigation }) => {
         </TouchableOpacity>
       )}
         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
-          <Image source={locationtag} style={appStyles.locationtag} />
+         <View style={appStyles.locationview}>
+         <Image source={mappin} style={appStyles.locationtag} />
+         </View>
+        
         </TouchableOpacity>
         <Text style={[appStyles.infotxt, {marginBottom:responsiveHeight(0.1)}]}>Nearby</Text>
              <FlatList

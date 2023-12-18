@@ -74,6 +74,7 @@ export default function EditProfile({ navigation }) {
   };
 
   const saveChanges = async () => {
+    
     setLoading(true);
     try {
       if (!validateInputs()) {
@@ -162,13 +163,6 @@ export default function EditProfile({ navigation }) {
       showToast('Invalid email');
       return false;
     }
-    // if (!phoneNumber) {
-    //   showToast('Phone Number is required');
-    //   return false;
-    // } else if (!phonePattern.test(phoneNumber)) {
-    //   showToast('Invalid Phone Number.');
-    //   return false;
-    // }
 
     if (!street) {
       showToast('street is required');

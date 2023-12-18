@@ -651,11 +651,11 @@ export const appStyles = StyleSheet.create({
 
   },
   locationtag: {
-    width: scale(48),
-    height: scale(48),
+    width: scale(24),
+    height: scale(24),
     resizeMode: 'contain',
-    marginTop: -responsiveHeight(7.2),
-    marginLeft: responsiveWidth(82.5)
+    // marginTop: -responsiveHeight(7.2),
+    // marginLeft: responsiveWidth(82.5)
   },
   imagetick: {
     height: responsiveHeight(4),
@@ -1190,6 +1190,17 @@ export const appStyles = StyleSheet.create({
     marginTop: responsiveHeight(6),
 
   },
+  locationview:{
+    width: scale(48),
+    height: scale(48),
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:colors.color13,
+    borderRadius:responsiveWidth(5),
+    marginLeft:responsiveWidth(83),
+    marginTop:-responsiveHeight(7.5)
+  },
+
   removefrt: {
     alignSelf: 'center',
     justifyContent: 'center',
@@ -1203,7 +1214,6 @@ export const appStyles = StyleSheet.create({
     borderRadius: responsiveWidth(50),
   },
   gettxt: {
-
     color: colors.color33,
     fontSize: fontSize.h6,
     fontFamily: fontFamily.SatoshiVariable,

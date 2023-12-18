@@ -67,15 +67,12 @@ const ReservedPickups = ({ route, navigation }) => {
           'January', 'February', 'March', 'April', 'May', 'June',
           'July', 'August', 'September', 'October', 'November', 'December'
         ];
-
         // Extract date components
         const month = monthNames[date.getMonth()];
         const day = date.getDate();
         const year = date.getFullYear();
-
         // Format the date to "Month Day, Year" format
         const formattedDate = `${month} ${day}, ${year}`;
-
         console.log('Formatted Date:', formattedDate); // Output: Formatted Date: June 20, 2023
 
         setSelectedDate(formattedDate); // Set the formatted date to selectedDate
@@ -83,7 +80,6 @@ const ReservedPickups = ({ route, navigation }) => {
         console.error('Error fetching reservation date:', error);
       }
     };
-
     fetchReservationDate();
   }, []);
   const handleCancelReservation = async (cardID) => {
@@ -136,8 +132,6 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
-
-  
   const handleReservation = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -175,7 +169,6 @@ const ReservedPickups = ({ route, navigation }) => {
     }
   };
   const { item } = route.params;
- 
   const handleRemoveFavorite = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -188,18 +181,29 @@ const ReservedPickups = ({ route, navigation }) => {
       const userDoc = await userDocRef.get();
       const userData = userDoc.data();
       let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-      const indexToRemove = favoritesArray.findIndex(
-        (item) =>
-          item.profileImage === item.profileImage &&
-          item.organization === item.organization &&
-          item.address === item.address &&
-          item.reservationDate === selectedDate
+      // Check if the item exists in favorites
+      const isItemInFavorites = favoritesArray.some(
+        (fav) =>
+          fav.profileImage === item.profileImage &&
+          fav.organization === item.organization &&
+          fav.address === item.address &&
+          fav.reservationDate === selectedDate
       );
-      if (indexToRemove !== -1) {
-        favoritesArray.splice(indexToRemove, 1);
+      if (!isItemInFavorites) {
+        // Show alert that the item is not in favorites
+        alert('This item is not in favorites!');
+      } else {
+        // Remove the item from favorites
+        const filteredFavorites = favoritesArray.filter(
+          (fav) =>
+            fav.profileImage !== item.profileImage ||
+            fav.organization !== item.organization ||
+            fav.address !== item.address ||
+            fav.reservationDate !== selectedDate
+        );
         await userDocRef.update({
-          favorites: favoritesArray,
-        });
+          favorites: filteredFavorites,
+        });  
         setShowLubemeup(true);
         setShowGetButton(false);
         Toast.show({
@@ -238,7 +242,6 @@ const ReservedPickups = ({ route, navigation }) => {
           showPickupsView={true}
           onPress={() => handleCancelReservation(item.cardID)}
         />
-
         <CustomTextInput
           placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
           placeholderMarginLeft={responsiveWidth(3)}
@@ -252,7 +255,6 @@ const ReservedPickups = ({ route, navigation }) => {
           source1={checkcircle}
           editable={false}
         />
-
         <View style={appStyles.qrmainview}>
           <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
           <TouchableOpacity>
@@ -321,8 +323,6 @@ const ReservedPickups = ({ route, navigation }) => {
         onRemovePress={() => setIsRemoveUserModalVisible(false)}
         navigation={navigation}
       />
-
-
     </SafeAreaView>
   );
 };

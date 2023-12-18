@@ -11,7 +11,7 @@ export const colors = {
   color10: '#545F71',
   color11: '#EEEEEE',
   color12: '#FFFFCC',
-  color13: '#00000080',
+  color13: '#EDF1F4',
   color14: '#F7F7F7',
   color15: '#C33B4F',
   color16: '#EEF1F4',

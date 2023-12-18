@@ -152,6 +152,14 @@ const ReservedFood1 = ({ route, navigation }) => {
     
     const handleQR = async (item) => {
         try {
+            if (!selectedDate) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Reservation Date is required',
+                  }); 
+                return;
+            }
             const currentUser = auth().currentUser;
             const userId = currentUser ? currentUser.uid : null;
     

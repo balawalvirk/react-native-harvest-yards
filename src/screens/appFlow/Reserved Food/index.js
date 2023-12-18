@@ -86,6 +86,23 @@ const ReservedFood = () => {
   }, []);
   const [reservedFoodData, setReservedFoodData] = useState([]);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (text) => {
+    const formattedQuery = text.toLowerCase();
+    setSearchQuery(formattedQuery);
+
+    const filteredItems = selectedTouchable === 'Pending Pick-ups'
+      ? reservedFoodData.filter(item =>
+        item.organization.toLowerCase().includes(formattedQuery)
+      )
+      : favoritesData.filter(item =>
+        item.organization.toLowerCase().includes(formattedQuery)
+      );
+
+    setFilteredData(filteredItems);
+  };
     const fetchDataFromFirestore = async () => {
       try {
         setLoading(true);
@@ -200,9 +217,11 @@ const ReservedFood = () => {
           placeholder='Search...'
           placeholderTextColor={colors.color29}
           marginLeft={responsiveWidth(2)}
+          onChangeText={handleSearch} // Call handleSearch on input change
+          value={searchQuery} // Bind the input value to the searchQuery state
         />
         <FlatList
-          data={selectedTouchable === 'Pending Pick-ups' ? reservedFoodData : favoritesData}
+          data={searchQuery !== '' ? filteredData : selectedTouchable === 'Pending Pick-ups' ? reservedFoodData : favoritesData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <CardView
