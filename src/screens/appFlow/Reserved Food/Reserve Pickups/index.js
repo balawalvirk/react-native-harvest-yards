@@ -144,22 +144,46 @@ const ReservedPickups = ({ route, navigation }) => {
       const userDoc = await userDocRef.get();
       const userData = userDoc.data();
       let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-      favoritesArray.push({
-        profileImage: item.profileImage,
-        organization: item.organization,
-        address: item.address,
-        reservationDate: selectedDate,
-      });
-      await userDocRef.update({
-        favorites: favoritesArray,
-      });
-      setShowLubemeup(false);
-      setShowGetButton(true);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Reservation added to favorites!',
-      });
+  
+      // Check if the item exists in favorites
+      const isItemInFavorites = favoritesArray.some(
+        (fav) =>
+          fav.profileImage === item.profileImage &&
+          fav.organization === item.organization &&
+          fav.address === item.address &&
+          fav.reservationDate === selectedDate
+      );
+  
+      if (isItemInFavorites) {
+        // Show a toast indicating that the data is already in favorites
+        Toast.show({
+          type: 'info',
+          text1: 'Info',
+          text2: 'This reservation is already in favorites!',
+        });
+      } else {
+        // Add the new reservation data to favorites
+        favoritesArray.push({
+          profileImage: item.profileImage,
+          organization: item.organization,
+          address: item.address,
+          reservationDate: selectedDate,
+        });
+  
+        await userDocRef.update({
+          favorites: favoritesArray,
+        });
+  
+        setShowLubemeup(false);
+        setShowGetButton(true);
+  
+        // Show a success toast after adding to favorites
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Reservation added to favorites!',
+        });
+      }
     } catch (error) {
       Toast.show({
         type: 'error',
@@ -168,6 +192,7 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
+  
   const { item } = route.params;
   const handleRemoveFavorite = async () => {
     try {

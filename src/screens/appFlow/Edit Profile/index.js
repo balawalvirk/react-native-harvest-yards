@@ -72,9 +72,26 @@ export default function EditProfile({ navigation }) {
       setLoading(false);
     }
   };
+  const updatePassword = async () => {
+    try {
+      const user = auth().currentUser;
+      if (!user) {
+        showToast('User not authenticated');
+        return;
+      }
+
+      if (Password !== ConfirmPassword) {
+        showToast('Passwords do not match');
+        return;
+      }
+      await user.updatePassword(Password);
+    } catch (error) {
+      console.error('Error updating password:', error);
+      showToast('Error updating password');
+    }
+  };
 
   const saveChanges = async () => {
-    
     setLoading(true);
     try {
       if (!validateInputs()) {
@@ -82,49 +99,41 @@ export default function EditProfile({ navigation }) {
         return;
       }
 
-      const currentUser = auth().currentUser;
+      // Update password
+      await updatePassword();
 
-      if (currentUser) {
-        // Update email if it has been changed
-        if (email !== currentUser.email) {
-          await currentUser.updateEmail(email);
-        }
+      const userRef = firestore().collection('users').doc(userId);
+      const notificationValue = switchValue ? 'yes' : 'no';
 
-        // Update password if it has been changed
-        if (Password) {
-          await currentUser.updatePassword(Password);
-        }
+      // Update other user profile data
+      await userRef.update({
+        firstName,
+        lastName,
+        UserName,
+        email,
+        phoneNumber,
+        street,
+        city,
+        state,
+        zip,
+        notification: notificationValue,
+      });
 
-        const userRef = firestore().collection('users').doc(userId);
-        const notificationValue = switchValue ? 'yes' : 'no';
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Save changes successfully!',
+      });
 
-        await userRef.update({
-          firstName,
-          lastName,
-          UserName,
-          email,
-          phoneNumber,
-          street,
-          city,
-          state,
-          zip,
-          notification: notificationValue,
-        });
-
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Save changes successfully!',
-        });
-
-        navigation.navigate('FindFood');
-      }
+      navigation.navigate('FindFood');
     } catch (error) {
+      console.error('Error updating profile:', error);
       showToast('Error saving changes');
     } finally {
       setLoading(false); // Set loading to false regardless of success or error
     }
   };
+  
   const [switchValue, setSwitchValue] = useState(false);
   const phonePattern = /^\d{10}$/;
   const handleToggle = (value) => {

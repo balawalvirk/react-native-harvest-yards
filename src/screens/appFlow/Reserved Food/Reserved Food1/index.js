@@ -5,7 +5,7 @@ import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import DatePickerInput from '../../../../components/DatePickerInput';
 import { scale } from 'react-native-size-matters';
-
+import { requestStoragePermission } from '../../../../services/utilities/permission'
 import { HelpCallout, LeftButton, arrowrightwhite, calendar } from '../../../../services/utilities/assets';
 import {
     responsiveHeight,
@@ -191,42 +191,42 @@ const ReservedFood1 = ({ route, navigation }) => {
     };
     const { item, userId } = route.params;
 
-    const saveImageToGallery = async (imageUri) => {
-        console.log('Image URI:', imageUri);
-        if (!imageUri) {
-            throw new Error('Image URI is null or undefined');
-        }
-        try {
-            if (Platform.OS === 'android') {
-                const granted = await requestStoragePermission();
-                if (!granted) {
-                    Alert.alert('Permission Denied', 'Storage permission required.');
-                    return;
-                }
-            }
+   
+  const saveImageToGallery = async (imageUri) => {
+    console.log('Image URI:', imageUri);
+    if (!imageUri) {
+      throw new Error('Image URI is null or undefined');
+    }
 
-            const { config, fs } = RNFetchBlob;
-            const isIOS = Platform.OS === 'ios';
-            const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
+    try {
+      const permissionGranted = await requestStoragePermission();
+      if (permissionGranted) {
+        const { config, fs } = RNFetchBlob;
+        const isIOS = Platform.OS === 'ios';
+        const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
 
-            const response = await config({
-                fileCache: true,
-                appendExt: 'jpg',
-            }).fetch('GET', imageLocation);
+        const response = await config({
+          fileCache: true,
+          appendExt: 'jpg',
+        }).fetch('GET', imageLocation);
 
-            const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
-            const imageName = `IMG_${new Date().getTime()}.jpg`;
+        const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
+        const imageName = `IMG_${new Date().getTime()}.jpg`;
 
-            await fs.cp(response.path(), `${imagePath}/${imageName}`);
-            await fs.scanFile([{ path: `${imagePath}/${imageName}`, mime: 'image/jpeg' }]);
+        await fs.cp(response.path(), `${imagePath}/${imageName}`);
+        await fs.scanFile([{ path: `${imagePath}/${imageName}`, mime: 'image/jpeg' }]);
 
-            console.log('Image saved to gallery successfully!');
-            Alert.alert('Success', 'Image saved to gallery!');
-        } catch (error) {
-            console.error('Error saving image to gallery:', error);
-            Alert.alert('Error', 'Failed to save image to gallery.');
-        }
-    };
+        console.log('Image saved to gallery successfully!');
+        Alert.alert('Success', 'Image saved to gallery!');
+      } else {
+        // Handle denied permission case
+        Alert.alert('Permission Denied', 'Storage permission required.');
+      }
+    } catch (error) {
+      console.error('Error saving image to gallery:', error);
+      Alert.alert('Error', 'Failed to save image to gallery.');
+    }
+  };
 
     return (
         <SafeAreaView style={appStyles.container}>

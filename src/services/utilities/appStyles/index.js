@@ -1200,7 +1200,14 @@ export const appStyles = StyleSheet.create({
     marginLeft:responsiveWidth(83),
     marginTop:-responsiveHeight(7.5)
   },
+  helpview:{
+    width: scale(48),
+    height: scale(48),
+  
 
+    marginLeft:responsiveWidth(83),
+    marginTop:-responsiveHeight(7.5)
+  },
   removefrt: {
     alignSelf: 'center',
     justifyContent: 'center',

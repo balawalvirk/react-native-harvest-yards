@@ -12,15 +12,16 @@ const CouponsView = ({ title, backgroundcolor = colors.color7, source1,customdes
     return (
     <View style={[appStyles.cardContainer,customstyle, { marginTop: customMarginTop,height:scale(72) ,backgroundColor:backgroundcolor,}]}>
       <Image source={source} style={appStyles.tagimage} />
-      <View>
+        <View style={{marginLeft:responsiveWidth(3),width:responsiveWidth(65),height:responsiveHeight(8)}}>
         <Text style={[appStyles.title,customstyletitle,{marginLeft:responsiveWidth(2),color:coupontxt1}]}>{title}</Text>
         <Text style={[appStyles.description,customdescriptionstyle,{marginLeft:responsiveWidth(2),color:expirecolor}]}>{description}</Text>
       </View>
   <TouchableOpacity onPress={copyToClipboard}>
+   <View style={{width:responsiveWidth(9),height:responsiveHeight(6),}}>
   <Image source={source1} style={[appStyles.copyimage,{marginLeft:imagemarginleft}]} />
+    </View>
     </TouchableOpacity>    
       </View>
   );
 };
-
 export default CouponsView;

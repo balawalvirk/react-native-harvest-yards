@@ -145,7 +145,7 @@ const ReservedFood = () => {
         showImage={true}
         onPress={() => navigation.openDrawer()}
         customTextMarginLeft={responsiveWidth(23)}
-        showImage2={true}
+        // showImage2={true}
         bellmarginleft={responsiveWidth(25.5)}
         marginleft={-responsiveWidth(2)}
       />
@@ -249,7 +249,7 @@ const ReservedFood = () => {
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
-        <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60) }]} />
+        <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60) }]} />
       </TouchableOpacity>
       <View style={appStyles.loadingContainer}>
         {loadingAnimation && (

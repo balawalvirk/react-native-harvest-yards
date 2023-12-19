@@ -142,7 +142,7 @@ const DrawerContent = ({ navigation }) => {
             onPress={() => handleLabelSelect('Aboutus')}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
         <Buttonview
           source={share}
           text="Share Our App"
@@ -163,7 +163,7 @@ const DrawerContent = ({ navigation }) => {
           customTextColor={selectedLabel === 'Follow Us' ? colors.color4 : colors.color4}
           customFontSize={selectedLabel === 'Follow Us' ? fontSize.h16 : fontSize.h10}
           customMarginTop={responsiveHeight(1.5)}
-        />
+        /> */}
         <Line />
         <TouchableOpacity>
           <Buttonview

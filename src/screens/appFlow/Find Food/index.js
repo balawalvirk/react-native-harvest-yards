@@ -63,7 +63,7 @@ const FindFood = ({ navigation }) => {
         showImage={true}
         onPress={() => navigation.openDrawer()}
         customTextMarginLeft={responsiveWidth(26)}
-        showImage2={true}
+        // showImage2={true}
         marginleft={-responsiveWidth(2)}
         bellmarginleft={responsiveWidth(32)}
       />
@@ -125,7 +125,7 @@ const FindFood = ({ navigation }) => {
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
       <TouchableOpacity  onPress={() => setHelpCalloutModalVisible(true)}>
-      <Image source={HelpCallout} style={[appStyles.locationtag,{width:scale(60),height:scale(60),marginBottom:-responsiveHeight(3)}]} />
+      <Image source={HelpCallout} style={[appStyles.helpview,{width:scale(60),height:scale(60),marginBottom:-responsiveHeight(3)}]} />
       </TouchableOpacity>
       <View style={appStyles.loadingContainer}>
       {loadingAnimation && (
