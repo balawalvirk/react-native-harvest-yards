@@ -161,12 +161,13 @@ const Coupons = ({ navigation }) => {
             key={index}
             customMarginTop={responsiveHeight(1)}
             source={tag}
-            source1={checksquare}
+            source1={copy}
             coupontxt1={colors.color4}
             expirecolor={colors.color4}
+            copyToClipboardCondition={true}
             title={coupon.couponId}
-            description={coupon.ExpiryDate}
-       
+            messageType='coupon'
+            description={coupon.ExpiryDate}       
           />
         ))}
         {couponsData.map((coupon, index) => (
@@ -178,6 +179,7 @@ const Coupons = ({ navigation }) => {
             expirecolor={colors.color4}
             customstyle={appStyles.customstyle}
             title={coupon.couponId}
+            messageType='coupon'
             customstyletitle={appStyles.customstyletitle}
             customdescriptionstyle={appStyles.customdescriptionstyle}
             description={coupon.ExpiryDate}
@@ -190,11 +192,13 @@ const Coupons = ({ navigation }) => {
             source={redtag}
             source1={x}
             customstyle={appStyles.customstyle}
+          
             title={coupon.couponId}
             customstyletitle={appStyles.customstyletitle}
             customdescriptionstyle={appStyles.customdescriptionstyle}
             description='Expired'
             expirecolor={colors.color32}
+            messageType='coupon'
             coupontxt1={colors.color32}
           
           />
@@ -205,7 +209,7 @@ const Coupons = ({ navigation }) => {
         <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60), marginLeft: responsiveWidth(85), marginBottom: responsiveHeight(3.5) }]} />
       </TouchableOpacity>
       <HelpCalloutModal
-        isVisible={isHelpCalloutModalVisible} s
+        isVisible={isHelpCalloutModalVisible} 
         Title='Coupons Help'
         onBackdropPress={() => setHelpCalloutModalVisible(false)}
         toggleModal={() => setHelpCalloutModalVisible(false)}

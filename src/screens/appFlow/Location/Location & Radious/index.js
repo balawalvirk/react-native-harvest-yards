@@ -159,6 +159,7 @@ export default function LocationRadious({ navigation }) {
                         />
                     </MapView>
                 </View>
+               
                 <TouchableOpacity onPress={handleZoomIn}>
                     <Image source={Buttonplus} style={[appStyles.plusbutton, { marginTop: -responsiveHeight(11.5) }]} />
                 </TouchableOpacity>

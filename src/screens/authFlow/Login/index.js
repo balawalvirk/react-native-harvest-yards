@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity,ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity,ScrollView, Image ,BackHandler} from 'react-native';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import LottieView from 'lottie-react-native';
@@ -16,6 +16,17 @@ export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false); 
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backPressed);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backPressed);
+    };
+  }, []);
+  const backPressed = () => {
+    if (navigation.isFocused()) {
+      BackHandler.exitApp();
+    }
+  };
   useEffect(() => {
     retrieveStoredCredentials();
   }, []);

@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import { View, ScrollView, SafeAreaView, Image, Text,TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, SafeAreaView, Image, Text,TouchableOpacity, FlatList,BackHandler } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
@@ -20,6 +20,17 @@ const FindFood = ({ navigation }) => {
   const [loading, setLoading] = useState(false); 
   const [refreshing, setRefreshing] = useState(false);
   const [loadingAnimation, setLoadingAnimation] = useState(false); 
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backPressed);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backPressed);
+    };
+  }, []);
+  const backPressed = () => {
+    if (navigation.isFocused()) {
+      BackHandler.exitApp();
+    }
+  };
   const fetchDistributorsData = async () => {
     try {
       setLoading(true);
@@ -95,7 +106,9 @@ const FindFood = ({ navigation }) => {
       )}
         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
          <View style={appStyles.locationview}>
+         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
          <Image source={mappin} style={appStyles.locationtag} />
+         </TouchableOpacity>
          </View>
         
         </TouchableOpacity>

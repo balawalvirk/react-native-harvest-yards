@@ -90,7 +90,6 @@ export default function EditProfile({ navigation }) {
       showToast('Error updating password');
     }
   };
-
   const saveChanges = async () => {
     setLoading(true);
     try {

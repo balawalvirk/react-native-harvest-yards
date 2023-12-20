@@ -5,7 +5,7 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 
 const GooglePlacesInput = () => {
   return (
-   <View style={{flex:1,backgroundColor:'yellow', height:responsiveHeight(12),marginTop:responsiveHeight(4),alignSelf:'center',width:responsiveWidth(90)}}>
+   <View style={{marginTop:responsiveHeight(4),width:responsiveWidth(90)}}>
 
 
     <GooglePlacesAutocomplete
@@ -15,7 +15,7 @@ const GooglePlacesInput = () => {
         console.log(data, details);
       }}
       query={{
-        key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss',
+         key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss',
         language: 'en',
       }}
       

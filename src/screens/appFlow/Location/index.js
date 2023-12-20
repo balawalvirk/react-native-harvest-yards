@@ -39,12 +39,12 @@ const Location = ({ navigation }) => {
         setLoading(true);
         setLoadingAnimation(true);
         const locationsSnapshot = await firestore().collection('LocationDetail').get();
-  
+
         const fetchedLocations = locationsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
-  
+
         setLocations(fetchedLocations);
         console.log('Fetched Locations:', fetchedLocations); // Add this console log
         setLoading(false);
@@ -55,21 +55,21 @@ const Location = ({ navigation }) => {
         setLoadingAnimation(false);
       }
     };
-  
+
     const onRefresh = () => {
       setRefreshing(true);
       fetchLocations().then(() => setRefreshing(false));
     };
-  
+
     fetchLocations(); // Initial data fetch
-  
+
     const unsubscribe = navigation.addListener('focus', () => {
       onRefresh(); // Fetch data when the screen comes into focus (e.g., when navigating back)
     });
-  
+
     return unsubscribe;
   }, [navigation]);
-  
+
 
   return (
     <SafeAreaView style={appStyles.container}>
@@ -82,7 +82,7 @@ const Location = ({ navigation }) => {
         marginleft={-responsiveWidth(2)}
       />
 
-<ScrollView
+      <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -133,21 +133,22 @@ const Location = ({ navigation }) => {
                   expirecolor={colors.color4}
                   coupontxt1={colors.color4}
                   title={nestedLocation.title}
+                  messageType='location'
                   description={nestedLocation.location}
                 />
               </TouchableOpacity>
             ))}
           </View>
         ))}
-<View style={{height:responsiveHeight(5)}}/>
+        <View style={{ height: responsiveHeight(5) }} />
       </ScrollView>
       <View style={appStyles.loadingContainer}>
-      {loadingAnimation && (
+        {loadingAnimation && (
           <LottieView
-            source={animation} 
+            source={animation}
             autoPlay
             loop
-            style={appStyles.loadingAnimation} 
+            style={appStyles.loadingAnimation}
           />
         )}
       </View>
