@@ -867,7 +867,7 @@ export const appStyles = StyleSheet.create({
     borderRadius: responsiveWidth(50),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: responsiveHeight(1)
+    // marginTop: responsiveHeight(1)
   },
   Available: {
     fontSize: fontSize.h2,
