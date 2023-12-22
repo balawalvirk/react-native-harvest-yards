@@ -835,7 +835,8 @@ export const appStyles = StyleSheet.create({
     borderColor: colors.color10,
     borderWidth: 0.5,
     width: scale(323),
-    height: scale(132),
+    // height: scale(132),
+    height:'auto',
     alignSelf: 'center',
   },
   customstyle: {
@@ -853,7 +854,8 @@ export const appStyles = StyleSheet.create({
   },
   cardImage: {
     width: scale(100),
-    height: scale(116),
+    // height: scale(116),
+    height:'auto',
     borderRadius: responsiveWidth(4),
     resizeMode: 'contain',
     marginLeft: -responsiveWidth(1),
@@ -867,7 +869,7 @@ export const appStyles = StyleSheet.create({
     borderRadius: responsiveWidth(50),
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: responsiveHeight(1)
+     marginTop: responsiveHeight(1)
   },
   Available: {
     fontSize: fontSize.h2,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, PermissionsAndroid, Platform, } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,11 +13,16 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { scale } from 'react-native-size-matters';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Geolocation from '@react-native-community/geolocation';
 import GooglePlacesInput from '../../../../components/GoggleLocation';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 export default function LocationRadious({ navigation }) {
     const [userId, setUserId] = useState(''); // State to store the current user's ID
-    const [title, setTitle] = useState('');
+    const [title, setTitle] = useState('');    
+    const [error, setError] = useState(null);
+    const [currentLocation, setCurrentLocation] = useState({ latitude: 0, longitude: 0 });
+
+
     const [location, setLocation] = useState('');
     useEffect(() => {
         const currentUser = auth().currentUser;
@@ -27,6 +32,70 @@ export default function LocationRadious({ navigation }) {
     }, []);
     const circleRadius = 3500;
     // Function to save data to Firestore
+
+    const getCurrentLocation = async () => {
+        if (Platform.OS === 'android') {
+            const granted = await requestLocationPermission();
+            if (!granted) {
+                // Handle permission denied
+                setError("Location permission denied. Please enable location access in settings.");
+                return;
+            }
+        }
+    
+        Geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords;
+                // Update map region and current location
+                setMapRegion({
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                });
+                setMarkerCoordinate({ latitude, longitude });
+                setCurrentLocation({ latitude, longitude });
+            },
+            error => {
+                console.log('Error getting location code:', error.code);
+                console.log('Error getting location message:', error.message);
+                console.log('Error getting location:', error);
+                setError("Error getting location. Please try again later.");
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    };
+    
+    // Request location permission for Android
+    const requestLocationPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Location Permission',
+                    message: 'App needs access to your location',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                }
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('Location permission granted');
+                return true;
+            } else {
+                console.log('Location permission denied');
+                return false;
+            }
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    };
+    
+    useEffect(() => {
+        getCurrentLocation();
+    }, []);
+
     const saveDataToFirestore = async () => {
         try {
             const userDocRef = firestore().collection('LocationDetail').doc(userId);
@@ -110,7 +179,7 @@ export default function LocationRadious({ navigation }) {
                 customTextMarginLeft={responsiveWidth(23)}
                 marginleft={-responsiveWidth(2)}
             />
-             <ScrollView contentContainerStyle={appStyles.scrollViewContainer} showsVerticalScrollIndicator={false}>
+            <ScrollView contentContainerStyle={appStyles.scrollViewContainer} showsVerticalScrollIndicator={false}>
                 <CustomTextInput
                     label="Title"
                     keyboardType="default"
@@ -142,24 +211,26 @@ export default function LocationRadious({ navigation }) {
                         style={{ width: scale(320), height: scale(247) }}
                         region={mapRegion}
                     >
-                        {/* Marker */}
-                        <Marker coordinate={markerCoordinate} pinColor={colors.color33} />
-
-                        <Marker
-                            coordinate={{ latitude: 37.78845, longitude: -122.4327 }} // Set the coordinates for the second marker
-                            pinColor={colors.color33} // Optionally, set a different pin color for the second marker
-                        />
-                        {/* Circle for Radius */}
-                        <Circle
-                            center={markerCoordinate}
-                            radius={circleRadius} // Set the radius in meters
-                            fillColor="rgba(14, 166, 39, 0.3)" // Set the fill color for the circle
-                            strokeColor="rgba(14, 166, 39, 0.7)" // Set the stroke color for the circle
-                            strokeWidth={2}
-                        />
+                        {currentLocation && (
+                            <Marker
+                                coordinate={currentLocation}
+                                pinColor={colors.color33}
+                            />
+                        )}
+                        {/* Display circle with defined radius */}
+                        {currentLocation && (
+                            <Circle
+                                center={currentLocation}
+                                radius={circleRadius} // Set the radius in meters
+                                fillColor="rgba(14, 166, 39, 0.3)" // Set the fill color for the circle
+                                strokeColor="rgba(14, 166, 39, 0.7)" // Set the stroke color for the circle
+                                strokeWidth={2}
+                            />
+                        )}
                     </MapView>
                 </View>
-               
+
+
                 <TouchableOpacity onPress={handleZoomIn}>
                     <Image source={Buttonplus} style={[appStyles.plusbutton, { marginTop: -responsiveHeight(11.5) }]} />
                 </TouchableOpacity>
@@ -199,6 +270,7 @@ export default function LocationRadious({ navigation }) {
                         onPress={saveDataToFirestore}
                     />
                 </TouchableOpacity>
+<GooglePlacesInput/>
                 <View style={{ height: responsiveHeight(16) }} />
             </ScrollView>
         </SafeAreaView>

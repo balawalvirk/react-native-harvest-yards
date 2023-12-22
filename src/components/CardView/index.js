@@ -10,7 +10,7 @@ const CardView = ({ title,pickupsource, description, Availabletxt, onPress, sour
     <TouchableOpacity onPress={onPress} style={[appStyles.cardContainer, { marginTop: customMarginTop }, viewstyle]}>
       <Image source={source} style={appStyles.cardImage} />
       <View>
-        <View style={{height:responsiveHeight(10),width:responsiveWidth(58)}}>
+        <View style={{height:'auto',width:responsiveWidth(58)}}>
         <Text style={appStyles.title}>{title}</Text>
         <Text style={[appStyles.description, descriptionStyle]}>{description}</Text>
        </View>
