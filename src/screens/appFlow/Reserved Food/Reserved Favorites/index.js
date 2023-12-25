@@ -23,8 +23,8 @@ const Reservedfavorites = ({ route, navigation }) => {
     const [selectedCardID, setSelectedCardID] = useState(null);
     const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
     const [reservedFoodData, setReservedFoodData] = useState([]);
-  
-
+    const [organizationId, setOrganizationId] = useState(null); // New state for organizationId
+    const { userId } = route.params;
     useEffect(() => {
         const fetchReservationDate = async () => {
             try {
@@ -34,35 +34,30 @@ const Reservedfavorites = ({ route, navigation }) => {
                     console.error('User is not authenticated');
                     return;
                 }
-
                 const userDocRef = firestore().collection('users').doc(userId);
                 const userDoc = await userDocRef.get();
                 const userData = userDoc.data();
-                const reservedFood = userData && userData.reservedFood ? userData.reservedFood : [];
 
-                console.log('Reserved Date from Firestore:', reservedFood.length > 0 ? reservedFood[0].reservationDate : 'No reservation date');
-                const firestoreTimestampSeconds = 1702035600; // Replace this with the retrieved timestamp from Firestore
+                if (userData && userData.reservationDate) {
+                    // Retrieve the reservation date from Firestore
+                    const reservationTimestamp = userData.reservationDate.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+                    const date = new Date(reservationTimestamp);
 
-                // Convert Firestore Timestamp to a JavaScript Date object
-                const date = new Date(firestoreTimestampSeconds * 1000);
+                    const monthNames = [
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
 
-                // Define month names
-                const monthNames = [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ];
+                    const month = monthNames[date.getMonth()];
+                    const day = date.getDate();
+                    const year = date.getFullYear();
 
-                // Extract date components
-                const month = monthNames[date.getMonth()];
-                const day = date.getDate();
-                const year = date.getFullYear();
-
-                // Format the date to "Month Day, Year" format
-                const formattedDate = `${month} ${day}, ${year}`;
-
-                console.log('Formatted Date:', formattedDate); // Output: Formatted Date: June 20, 2023
-
-                setSelectedDate(formattedDate); // Set the formatted date to selectedDate
+                    const formattedDate = `${month} ${day}, ${year}`;
+                    setSelectedDate(formattedDate); // Set the formatted date to selectedDate state
+                } else {
+                    console.log('No reservation date found');
+                    setSelectedDate(null); // If no reservation date is found in Firestore
+                }
             } catch (error) {
                 console.error('Error fetching reservation date:', error);
             }
@@ -70,6 +65,12 @@ const Reservedfavorites = ({ route, navigation }) => {
 
         fetchReservationDate();
     }, []);
+
+    const getUserData = async (userId) => {
+        const userDocRef = firestore().collection('users').doc(userId);
+        const userDoc = await userDocRef.get();
+        return userDoc.data();
+    };
     const handleReservation = async () => {
         try {
             const currentUser = auth().currentUser;
@@ -168,7 +169,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                     Availabletxt={'favorite'}
                     additionalInfo={item.additionalInfo}
                     showPickupsView={true}
-                    // onPress={() => handleCancelReservation(item.cardID)}
+                // onPress={() => handleCancelReservation(item.cardID)}
                 />
 
                 <CustomTextInput
@@ -185,7 +186,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                     editable={false}
                 />
 
-            
+
                 {showGetButton && (
                     <GetButton
                         label="Remove Favorite"
@@ -195,7 +196,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                         onPress={handleRemoveFavorite}
                     />
                 )}
-                    {showLubemeup && (
+                {showLubemeup && (
                     <TouchableOpacity
                         style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(8), width: responsiveWidth(90) }]}
                     >
@@ -213,16 +214,27 @@ const Reservedfavorites = ({ route, navigation }) => {
                     customImageSource={greensend}
                     customImageMarginRight={responsiveWidth(2)}
                     marginTop={responsiveHeight(1)}
+                    onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
                 />
-                <GetButton
+               <GetButton
                     label='Reserve Food'
                     customImageSource={greenshoppingbag}
                     customImageMarginRight={responsiveWidth(2)}
                     marginTop={responsiveHeight(1)}
-                    onPress={()=>navigation.navigate('DrawerNavigation',{screen:'ReserveFood'})}
+                    onPress={() => {
+                        navigation.navigate('AppNavigation', {
+                            screen: 'Reservedfood1',
+                            params: {
+                                item: item,
+                                organizationId: selectedCardID, // Pass the specific organizationId here
+                            }
+                        });
+                        
+                    }}
                 />
             </ScrollView>
         </SafeAreaView>
     );
 };
 export default Reservedfavorites;
+

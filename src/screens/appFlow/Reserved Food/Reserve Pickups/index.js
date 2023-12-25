@@ -23,6 +23,7 @@ const ReservedPickups = ({ route, navigation }) => {
   const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
+  
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
   };
@@ -42,7 +43,11 @@ const ReservedPickups = ({ route, navigation }) => {
     setIsRemoveUserModalVisible(false);
   };
   useEffect(() => {
-    const fetchReservationDate = async () => {
+    console.log('Route Params:', route.params);
+    const { selectedCardID } = route.params;
+    console.log('Selected Card ID:', selectedCardID);
+  
+    const logReservationDateForSelectedCard = async () => {
       try {
         const currentUser = auth().currentUser;
         const userId = currentUser ? currentUser.uid : null;
@@ -50,38 +55,40 @@ const ReservedPickups = ({ route, navigation }) => {
           console.error('User is not authenticated');
           return;
         }
-
+  
         const userDocRef = firestore().collection('users').doc(userId);
         const userDoc = await userDocRef.get();
         const userData = userDoc.data();
         const reservedFood = userData && userData.reservedFood ? userData.reservedFood : [];
-
-        console.log('Reserved Date from Firestore:', reservedFood.length > 0 ? reservedFood[0].reservationDate : 'No reservation date');
-        const firestoreTimestampSeconds = 1702035600; // Replace this with the retrieved timestamp from Firestore
-
-        // Convert Firestore Timestamp to a JavaScript Date object
-        const date = new Date(firestoreTimestampSeconds * 1000);
-
-        // Define month names
-        const monthNames = [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-        // Extract date components
-        const month = monthNames[date.getMonth()];
-        const day = date.getDate();
-        const year = date.getFullYear();
-        // Format the date to "Month Day, Year" format
-        const formattedDate = `${month} ${day}, ${year}`;
-        console.log('Formatted Date:', formattedDate); // Output: Formatted Date: June 20, 2023
-
-        setSelectedDate(formattedDate); // Set the formatted date to selectedDate
+  
+        const selectedCard = reservedFood.find(reservation => reservation.cardID === selectedCardID);
+  
+        if (selectedCard) {
+          const { reservationDate } = selectedCard;
+          if (reservationDate) {
+            const firestoreTimestamp = reservationDate;
+            const { seconds, nanoseconds } = firestoreTimestamp;
+  
+            if (!isNaN(seconds) && !isNaN(nanoseconds)) {
+              const date = new Date(seconds * 1000 + nanoseconds / 1000000);
+              const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}, ${date.getFullYear()}`;
+              setSelectedDate(formattedDate); 
+            } else {
+              console.error('Invalid timestamp for selected card');
+            }
+          } else {
+            console.error('Reservation date not found for selected card');
+          }
+        } else {
+          console.error('Selected card not found in reserved food');
+        }
       } catch (error) {
         console.error('Error fetching reservation date:', error);
       }
     };
-    fetchReservationDate();
-  }, []);
+  
+    logReservationDateForSelectedCard();
+  }, [route.params]);
   const handleCancelReservation = async (cardID) => {
     try {
       const currentUser = auth().currentUser;
@@ -267,8 +274,9 @@ const ReservedPickups = ({ route, navigation }) => {
           showPickupsView={true}
           onPress={() => handleCancelReservation(item.cardID)}
         />
+        {selectedDate && (
         <CustomTextInput
-          placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
+          placeholder={selectedDate.toString()}
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={-responsiveHeight(0.2)}
           TextinputWidth={responsiveWidth(67)}
@@ -280,6 +288,7 @@ const ReservedPickups = ({ route, navigation }) => {
           source1={checkcircle}
           editable={false}
         />
+      )}
         <View style={appStyles.qrmainview}>
           <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
           <TouchableOpacity>
@@ -352,3 +361,4 @@ const ReservedPickups = ({ route, navigation }) => {
   );
 };
 export default ReservedPickups;
+

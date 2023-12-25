@@ -437,7 +437,7 @@ export const appStyles = StyleSheet.create({
     fontWeight: '500',
     alignSelf: 'center',
     fontSize: fontSize.h5,
-    marginRight:responsiveWidth(2),
+    marginRight: responsiveWidth(2),
     opacity: 1,
   },
   input: {
@@ -476,9 +476,9 @@ export const appStyles = StyleSheet.create({
     fontWeight: '700',
     fontSize: fontSize.h2,
     marginLeft: responsiveWidth(1),
-    textDecorationColor:colors.color4,
-    textDecorationStyle:'solid',
-    textDecorationLine:'underline'
+    textDecorationColor: colors.color4,
+    textDecorationStyle: 'solid',
+    textDecorationLine: 'underline'
   },
   ResetLocktxt1: {
     alignSelf: 'center',
@@ -644,7 +644,7 @@ export const appStyles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
   },
-  imagedisaster:{
+  imagedisaster: {
     width: scale(30),
     height: scale(30),
     resizeMode: 'contain',
@@ -696,7 +696,35 @@ export const appStyles = StyleSheet.create({
     fontSize: fontSize.h6,
     fontWeight: '700'
   },
+  searchinput: {
+    width: responsiveWidth(70),
+    // borderRadius:responsiveWidth(3.2), 
+    // flexDirection: 'row',
+    // borderWidth:0.5,
+    // borderColor:colors.color10,
+    // justifyContent:'center',
+    // alignItems:'center',
+    // alignSelf:'center',
+    //  marginTop:responsiveHeight(22),
+    // position: 'absolute',
+    zIndex: 999
+  },
+  searchmain: {
+    height: responsiveHeight(6),
+    //  backgroundColor: 'green',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop:responsiveHeight(1),
+    width: responsiveWidth(90),
+    borderRadius: responsiveWidth(3.2),
+    borderWidth: 0.5,
 
+    borderColor: colors.color10,
+    position: 'relative',
+    zIndex: 999
+  },
   inputView: {
     height: responsiveHeight(6),
     width: responsiveWidth(90),
@@ -836,7 +864,7 @@ export const appStyles = StyleSheet.create({
     borderWidth: 0.5,
     width: scale(323),
     // height: scale(132),
-    height:'auto',
+    height: 'auto',
     alignSelf: 'center',
   },
   customstyle: {
@@ -855,7 +883,7 @@ export const appStyles = StyleSheet.create({
   cardImage: {
     width: scale(100),
     // height: scale(116),
-    height:'auto',
+    height: 'auto',
     borderRadius: responsiveWidth(4),
     resizeMode: 'contain',
     marginLeft: -responsiveWidth(1),
@@ -869,7 +897,7 @@ export const appStyles = StyleSheet.create({
     borderRadius: responsiveWidth(50),
     justifyContent: 'center',
     alignItems: 'center',
-     marginTop: responsiveHeight(1)
+    marginTop: responsiveHeight(1)
   },
   Available: {
     fontSize: fontSize.h2,
@@ -1114,7 +1142,7 @@ export const appStyles = StyleSheet.create({
     marginTop: -responsiveHeight(2.2),
   },
   mainview: {
-    width: responsiveWidth(100), 
+    width: responsiveWidth(100),
     flexGrow: 1,
     padding: responsiveWidth(8),
     marginTop: -responsiveHeight(1),
@@ -1192,23 +1220,23 @@ export const appStyles = StyleSheet.create({
     marginTop: responsiveHeight(6),
 
   },
-  locationview:{
+  locationview: {
     width: scale(48),
     height: scale(48),
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:colors.color13,
-    borderRadius:responsiveWidth(5),
-    marginLeft:responsiveWidth(83),
-    marginTop:-responsiveHeight(7.5)
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.color13,
+    borderRadius: responsiveWidth(5),
+    marginLeft: responsiveWidth(83),
+    marginTop: -responsiveHeight(7.5)
   },
-  helpview:{
+  helpview: {
     width: scale(48),
     height: scale(48),
-  
 
-    marginLeft:responsiveWidth(83),
-    marginTop:-responsiveHeight(7.5)
+
+    marginLeft: responsiveWidth(83),
+    marginTop: -responsiveHeight(7.5)
   },
   removefrt: {
     alignSelf: 'center',
@@ -1244,13 +1272,13 @@ export const appStyles = StyleSheet.create({
     fontFamily: fontFamily.SatoshiVariable,
     fontWeight: '700'
   },
-  DonationModal:{
+  DonationModal: {
     color: colors.color4,
-  fontSize: fontSize.h6,
-  fontFamily: fontFamily.SatoshiVariable,
-  fontWeight: '700'
+    fontSize: fontSize.h6,
+    fontFamily: fontFamily.SatoshiVariable,
+    fontWeight: '700'
   },
-  
+
   mapmainview: {
     width: scale(313),
     borderRadius: responsiveWidth(5),
@@ -1258,7 +1286,7 @@ export const appStyles = StyleSheet.create({
     borderColor: colors.color4,
     alignSelf: 'center',
     height: scale(250),
-    marginTop: responsiveHeight(5),
+    marginTop: responsiveHeight(4),
     overflow: 'hidden'
   },
   plusbutton: {
@@ -1281,8 +1309,8 @@ export const appStyles = StyleSheet.create({
   },
   qrsecondcode: {
     width: responsiveWidth(88),
-    height:responsiveHeight(10.5),
-    alignSelf:'center',
+    height: responsiveHeight(10.5),
+    alignSelf: 'center',
     alignItems: 'center'
   },
   qrmainview: {
@@ -1305,44 +1333,44 @@ export const appStyles = StyleSheet.create({
     width: responsiveWidth(90),
     alignSelf: 'center',
     alignItems: 'center',
-   
+
     height: responsiveHeight(12),
   },
-  createcheckview:{
-    flexDirection:'row',
-    marginLeft:responsiveWidth(4),
-    marginTop:responsiveHeight(3),
+  createcheckview: {
+    flexDirection: 'row',
+    marginLeft: responsiveWidth(4),
+    marginTop: responsiveHeight(3),
   },
-  createcheckview2:{
-    flexDirection:'row',
-    marginLeft:responsiveWidth(4),
-    marginTop:responsiveHeight(3),
-    width:scale(300),
-    height:scale(48),
+  createcheckview2: {
+    flexDirection: 'row',
+    marginLeft: responsiveWidth(4),
+    marginTop: responsiveHeight(3),
+    width: scale(300),
+    height: scale(48),
   },
   dropdownContainer: {
     // marginBottom: responsiveHeight(2),
   },
   Dropdown: {
-    backgroundColor:colors.color7,
-    borderRadius:responsiveWidth(3.2),
+    backgroundColor: colors.color7,
+    borderRadius: responsiveWidth(3.2),
     borderColor: colors.color29,
-    marginTop:responsiveHeight(0.1),
+    marginTop: responsiveHeight(0.1),
     width: responsiveWidth(90),
   },
   dropDownStyle: {
-    backgroundColor:colors.color7,
+    backgroundColor: colors.color7,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
     borderColor: colors.color29,
     width: responsiveWidth(90),
-    marginLeft:responsiveWidth(5)
+    marginLeft: responsiveWidth(5)
   },
   items: {
     justifyContent: 'flex-start',
     left: 10,
     top: 4,
-    color:colors.color4,
+    color: colors.color4,
   },
   dcontainer: {
     height: responsiveHeight(7),

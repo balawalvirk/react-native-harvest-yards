@@ -27,17 +27,18 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [companyData, setCompanyData] = useState({});
     const [qrCodeValue, setQRCodeValue] = useState('');
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
+
     useEffect(() => {
         const fetchCompanyData = async () => {
             try {
-                const { userId } = route.params; // Get the userId passed from FindFood
+                const { userId} = route.params; // Get the userId passed from FindFood
 
                 const organizationDoc = await firestore().collection('distributors').doc(userId).get();
 
                 if (organizationDoc.exists) {
                     setCompanyData(organizationDoc.data());
                 } else {
-                    console.log('Organization document not found');
+                    console.log('Organization document not found for UserID:', userId);
                 }
             } catch (error) {
                 console.error('Error fetching company data:', error);
@@ -46,6 +47,29 @@ const ReservedFood1 = ({ route, navigation }) => {
 
         fetchCompanyData();
     }, [route.params]);
+
+    useEffect(() => {
+        const fetchCompanyData = async () => {
+            try {
+                const { organizationId } = route.params; // Get the organizationId passed from Reservedfavorites
+    
+                const organizationDoc = await firestore().collection('distributors').doc(organizationId).get();
+    
+                if (organizationDoc.exists) {
+                    setCompanyData(organizationDoc.data());
+                } else {
+                    console.log('Organization document not found for OrganizationID:', organizationId);
+                }
+            } catch (error) {
+                console.error('Error fetching company data:', error);
+            }
+        };
+    
+        fetchCompanyData();
+    }, [route.params]);
+    
+
+
 
     const toggleModal = () => {
         setIsQRModalVisible(!isQRModalVisible);
