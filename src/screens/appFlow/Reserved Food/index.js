@@ -30,13 +30,13 @@ const ReservedFood = () => {
       // Navigate to ReservedPickups screen with parameters for 'pending'
       navigation.navigate('AppNavigation', {
         screen: 'ReservedPickups',
-        params: { item: item, selectedTouchable: selectedTouchable,selectedCardID: item.cardID }
+        params: { item: { ...item, reservationDate: item.reservationDate.toDate() }, selectedTouchable: selectedTouchable }
       });
     } else if (selectedTouchable === 'Favorites') {
       // Navigate to Reservedfavorites screen with parameters for 'favourites'
       navigation.navigate('AppNavigation', {
         screen: 'Reservedfavorites',
-        params: { item: item, selectedTouchable: selectedTouchable }
+        params: { item: item, selectedTouchable: selectedTouchable, reservationDate: item.reservationDate }
       });
     }
   };

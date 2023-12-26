@@ -23,7 +23,6 @@ const ReservedPickups = ({ route, navigation }) => {
   const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
-  
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
   };
@@ -43,52 +42,34 @@ const ReservedPickups = ({ route, navigation }) => {
     setIsRemoveUserModalVisible(false);
   };
   useEffect(() => {
-    console.log('Route Params:', route.params);
-    const { selectedCardID } = route.params;
-    console.log('Selected Card ID:', selectedCardID);
-  
-    const logReservationDateForSelectedCard = async () => {
+    const fetchReservationDate = async () => {
       try {
-        const currentUser = auth().currentUser;
-        const userId = currentUser ? currentUser.uid : null;
-        if (!userId) {
-          console.error('User is not authenticated');
-          return;
-        }
-  
-        const userDocRef = firestore().collection('users').doc(userId);
-        const userDoc = await userDocRef.get();
-        const userData = userDoc.data();
-        const reservedFood = userData && userData.reservedFood ? userData.reservedFood : [];
-  
-        const selectedCard = reservedFood.find(reservation => reservation.cardID === selectedCardID);
-  
-        if (selectedCard) {
-          const { reservationDate } = selectedCard;
-          if (reservationDate) {
-            const firestoreTimestamp = reservationDate;
-            const { seconds, nanoseconds } = firestoreTimestamp;
-  
-            if (!isNaN(seconds) && !isNaN(nanoseconds)) {
-              const date = new Date(seconds * 1000 + nanoseconds / 1000000);
-              const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}, ${date.getFullYear()}`;
-              setSelectedDate(formattedDate); 
-            } else {
-              console.error('Invalid timestamp for selected card');
-            }
-          } else {
-            console.error('Reservation date not found for selected card');
-          }
-        } else {
-          console.error('Selected card not found in reserved food');
-        }
+        // ... (Other code remains unchanged)
+        const { item } = route.params; // Destructure item from route.params
+
+        const reservationDate = item.reservationDate ? new Date(item.reservationDate) : null;
+        const formattedDate = reservationDate ? formatDate(reservationDate) : 'No reservation date';
+
+        setSelectedDate(formattedDate); // Set the formatted date in state
       } catch (error) {
         console.error('Error fetching reservation date:', error);
       }
     };
-  
-    logReservationDateForSelectedCard();
-  }, [route.params]);
+    fetchReservationDate();
+  }, []);
+
+  // Function to format date as 'Month Day, Year' (e.g., 'June 20, 2023')
+  const formatDate = (date) => {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${month} ${day}, ${year}`;
+  };
+
   const handleCancelReservation = async (cardID) => {
     try {
       const currentUser = auth().currentUser;
@@ -199,8 +180,7 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
-  
-  const { item } = route.params;
+  const { item ,reservationDate} = route.params;
   const handleRemoveFavorite = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -272,11 +252,9 @@ const ReservedPickups = ({ route, navigation }) => {
           Availabletxt={'Pending'}
           additionalInfo={item.additionalInfo}
           showPickupsView={true}
-          onPress={() => handleCancelReservation(item.cardID)}
         />
-        {selectedDate && (
         <CustomTextInput
-          placeholder={selectedDate.toString()}
+         placeholder={selectedDate || 'No reservation date'}
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={-responsiveHeight(0.2)}
           TextinputWidth={responsiveWidth(67)}
@@ -288,7 +266,6 @@ const ReservedPickups = ({ route, navigation }) => {
           source1={checkcircle}
           editable={false}
         />
-      )}
         <View style={appStyles.qrmainview}>
           <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
           <TouchableOpacity>
@@ -361,4 +338,3 @@ const ReservedPickups = ({ route, navigation }) => {
   );
 };
 export default ReservedPickups;
-

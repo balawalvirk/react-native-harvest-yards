@@ -145,60 +145,62 @@ export default function LocationRadious({ navigation }) {
                 marginleft={-responsiveWidth(2)}
             />
 
+            <ScrollView contentContainerStyle={appStyles.scrollViewContainer}
+                keyboardShouldPersistTaps={'handled'}
+                showsVerticalScrollIndicator={false}>
+                <CustomTextInput
+                    label="Title"
+                    keyboardType="default"
+                    placeholder="Home"
+                    // responsiveMarginTop={14}
+                    inputHeight={responsiveHeight(6)}
+                    placeholderTextColor={colors.color4}
+                    value={title}
+                    onChangeText={(text) => setTitle(text)}
+                />
+                <Text style={[appStyles.label, { marginTop: responsiveHeight(5), marginLeft: responsiveWidth(5.5) }]}>Location</Text>
+                <View style={appStyles.searchmain}>
+                    <Image source={mappin} style={[appStyles.Email, { marginLeft: responsiveWidth(10) }]} />
+                    <View style={appStyles.searchinput}>
+                        <GooglePlacesAutocomplete
+                            placeholder='ABC Center, New York'
+                            fetchDetails={true}
+                            onPress={(data, details = null) => {
+                                console.log(JSON.stringify(details?.geometry?.location));
+                                console.log(data, details);
+                                setLocation(data.description);
+                                moveToLocation(details?.geometry?.location.lat, details?.geometry?.location.lng);
+                                handleLocationSelect(data, details); // This is where handleLocationSelect is called
+                            }}
+                            query={{
+                                key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss',
+                                language: 'en',
+                            }}
+                            onFail={error => console.log(error)}
+                            styles={{
+                                textInput: {
+                                    height: responsiveHeight(5),
 
-            <CustomTextInput
-                label="Title"
-                keyboardType="default"
-                placeholder="Home"
-                // responsiveMarginTop={14}
-                inputHeight={responsiveHeight(6)}
-                placeholderTextColor={colors.color4}
-                value={title}
-                onChangeText={(text) => setTitle(text)}
-            />
-            <Text style={[appStyles.label, { marginTop: responsiveHeight(5), marginLeft: responsiveWidth(5.5) }]}>Location</Text>
-            <View style={appStyles.searchmain}>
-                <Image source={mappin} style={[appStyles.Email, { marginLeft: responsiveWidth(10) }]} />
-                <View style={appStyles.searchinput}>
-                    <GooglePlacesAutocomplete
-                        placeholder='ABC Center, New York'
-                        fetchDetails={true}
-                        onPress={(data, details = null) => {
-                            console.log(JSON.stringify(details?.geometry?.location));
-                            console.log(data, details);
-                            setLocation(data.description);
-                            moveToLocation(details?.geometry?.location.lat, details?.geometry?.location.lng);
-                            handleLocationSelect(data, details); // This is where handleLocationSelect is called
-                        }}
-                        query={{
-                            key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss',
-                            language: 'en',
-                        }}
-                        onFail={error => console.log(error)}
-                        styles={{
-                            textInput: {
-                                height: responsiveHeight(5),
+                                    //   backgroundColor: '#eee',
+                                    marginVertical: 5,
+                                },
+                                listView: {
+                                    // Adjust the zIndex here to control the dropdown stacking order
+                                    zIndex: 9999,
+                                    width: responsiveWidth(87),
+                                    alignSelf: 'center',
+                                    marginTop: responsiveHeight(6),
+                                    position: 'absolute'
+                                    // Additional styles if needed
+                                },
 
-                                //   backgroundColor: '#eee',
-                                marginVertical: 5,
-                            },
-                            listView: {
-                                // Adjust the zIndex here to control the dropdown stacking order
-                                zIndex: 9999,
-                                width: responsiveWidth(87),
-                                alignSelf: 'center',
+                            }}
+                        />
+                    </View>
+                    <Image source={GPS} style={[appStyles.Email, { marginRight: responsiveWidth(9) }]} />
 
-                                marginTop: responsiveHeight(6),
-                                position: 'absolute'
-                                // Additional styles if needed
-                            },
-                        }}
-                    />
                 </View>
-                <Image source={GPS} style={[appStyles.Email, { marginRight: responsiveWidth(9) }]} />
 
-            </View>
-            <ScrollView contentContainerStyle={appStyles.scrollViewContainer} showsVerticalScrollIndicator={false}>
                 <View style={appStyles.mapmainview}>
                     <MapView
                         style={{ width: scale(320), height: scale(247) }}

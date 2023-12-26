@@ -34,121 +34,176 @@ const Reservedfavorites = ({ route, navigation }) => {
                     console.error('User is not authenticated');
                     return;
                 }
+
+                const organizationName = item.organization;
+
+                const querySnapshot = await firestore()
+                    .collection('distributors')
+                    .where('organization', '==', organizationName)
+                    .get();
+                let organizationId = null;
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        organizationId = doc.id;
+                    });
+                }
+                console.log('Organization ID:', organizationId);
+
+                setSelectedCardID(organizationId);
+
                 const userDocRef = firestore().collection('users').doc(userId);
                 const userDoc = await userDocRef.get();
                 const userData = userDoc.data();
 
                 if (userData && userData.reservationDate) {
-                    // Retrieve the reservation date from Firestore
-                    const reservationTimestamp = userData.reservationDate.toDate(); // Convert Firestore Timestamp to JavaScript Date object
-                    const date = new Date(reservationTimestamp);
-
-                    const monthNames = [
-                        'January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'
-                    ];
-
-                    const month = monthNames[date.getMonth()];
-                    const day = date.getDate();
-                    const year = date.getFullYear();
-
-                    const formattedDate = `${month} ${day}, ${year}`;
-                    setSelectedDate(formattedDate); // Set the formatted date to selectedDate state
-                } else {
-                    console.log('No reservation date found');
-                    setSelectedDate(null); // If no reservation date is found in Firestore
-                }
-            } catch (error) {
-                console.error('Error fetching reservation date:', error);
-            }
-        };
-
-        fetchReservationDate();
-    }, []);
-
-    const getUserData = async (userId) => {
-        const userDocRef = firestore().collection('users').doc(userId);
-        const userDoc = await userDocRef.get();
-        return userDoc.data();
-    };
+                  // Assume userData.reservationDate is a Firestore timestamp object
+                  const seconds = userData.reservationDate.seconds; // Get seconds from Firestore timestamp
+                  const milliseconds = seconds * 1000; // Convert seconds to milliseconds
+                  const date = new Date(milliseconds); // Create a JavaScript date object
+  
+                  const monthNames = [
+                      'January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'
+                  ];
+  
+                  const month = monthNames[date.getMonth()];
+                  const day = date.getDate();
+                  const year = date.getFullYear();
+  
+                  const formattedDate = `${month} ${day}, ${year}`;
+                  setSelectedDate(formattedDate); // Set the formatted date to selectedDate state
+  
+                  console.log('Retrieved Reservation Date:', formattedDate); // Add console log to show the retrieved date
+              } else {
+                  console.log('No reservation date found');
+                  setSelectedDate(null); // If no reservation date is found in Firestore
+              }
+          } catch (error) {
+              console.error('Error fetching reservation date:', error);
+          }
+      };
+  
+      fetchReservationDate();
+  }, []);
     const handleReservation = async () => {
         try {
-            const currentUser = auth().currentUser;
-            const userId = currentUser ? currentUser.uid : null;
-            if (!userId) {
-                console.error('User ID not found');
-                return;
-            }
-            const userDocRef = firestore().collection('users').doc(userId);
-            const userDoc = await userDocRef.get();
-            const userData = userDoc.data();
-            let favoritesArray = userData && userData.favorites ? userData.favorites : [];
+          const currentUser = auth().currentUser;
+          const userId = currentUser ? currentUser.uid : null;
+          if (!userId) {
+            console.error('User ID not found');
+            return;
+          }
+          const userDocRef = firestore().collection('users').doc(userId);
+          const userDoc = await userDocRef.get();
+          const userData = userDoc.data();
+          let favoritesArray = userData && userData.favorites ? userData.favorites : [];
+      
+          // Check if the item exists in favorites
+          const isItemInFavorites = favoritesArray.some(
+            (fav) =>
+              fav.profileImage === item.profileImage &&
+              fav.organization === item.organization &&
+              fav.address === item.address &&
+              fav.reservationDate === selectedDate
+          );
+      
+          if (isItemInFavorites) {
+            // Show a toast indicating that the data is already in favorites
+            Toast.show({
+              type: 'info',
+              text1: 'Info',
+              text2: 'This reservation is already in favorites!',
+            });
+          } else {
+            // Add the new reservation data to favorites
             favoritesArray.push({
-                profileImage: item.profileImage,
-                organization: item.organization,
-                address: item.address,
-                reservationDate: selectedDate,
+              profileImage: item.profileImage,
+              organization: item.organization,
+              address: item.address,
+              reservationDate: selectedDate,
             });
+      
             await userDocRef.update({
-                favorites: favoritesArray,
+              favorites: favoritesArray,
             });
+      
             setShowLubemeup(false);
             setShowGetButton(true);
+      
+            // Show a success toast after adding to favorites
             Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Reservation added to favorites!',
+              type: 'success',
+              text1: 'Success',
+              text2: 'Reservation added to favorites!',
             });
+          }
         } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Failed to add reservation. Please try again.',
-            });
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to add reservation. Please try again.',
+          });
         }
-    };
+      };
     const { item } = route.params;
-
     const handleRemoveFavorite = async () => {
-        try {
-            const currentUser = auth().currentUser;
-            const userId = currentUser ? currentUser.uid : null;
-            if (!userId) {
-                console.error('User ID not found');
-                return;
-            }
-            const userDocRef = firestore().collection('users').doc(userId);
-            const userDoc = await userDocRef.get();
-            const userData = userDoc.data();
-            let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-            const indexToRemove = favoritesArray.findIndex(
-                (item) =>
-                    item.profileImage === item.profileImage &&
-                    item.organization === item.organization &&
-                    item.address === item.address &&
-                    item.reservationDate === selectedDate
-            );
-            if (indexToRemove !== -1) {
-                favoritesArray.splice(indexToRemove, 1);
-                await userDocRef.update({
-                    favorites: favoritesArray,
-                });
-                setShowLubemeup(true);
-                setShowGetButton(false);
-                Toast.show({
-                    type: 'success',
-                    text1: 'Success',
-                    text2: 'Item removed from favorites!',
-                });
-            }
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Failed to remove favorite. Please try again.',
-            });
+      try {
+        const currentUser = auth().currentUser;
+        const userId = currentUser ? currentUser.uid : null;
+        if (!userId) {
+          console.error('User ID not found');
+          return;
         }
+  
+        const userDocRef = firestore().collection('users').doc(userId);
+        const userDoc = await userDocRef.get();
+        const userData = userDoc.data();
+        let favoritesArray = userData && userData.favorites ? userData.favorites : [];
+  
+        const itemToRemove = {
+          profileImage: item.profileImage,
+          organization: item.organization,
+          address: item.address,
+          reservationDate: selectedDate,
+        };
+  
+        const updatedFavorites = favoritesArray.filter(
+          (fav) =>
+            fav.profileImage !== itemToRemove.profileImage ||
+            fav.organization !== itemToRemove.organization ||
+            fav.address !== itemToRemove.address
+        );
+  
+        await userDocRef.update({
+          favorites: updatedFavorites,
+        });
+  
+        setShowLubemeup(true);
+        setShowGetButton(false);
+  
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Item removed from favorites!',
+        });
+      } catch (error) {
+        console.error('Error removing favorite:', error);
+  
+        let errorMessage = 'Failed to remove favorite. Please try again.';
+        if (error.code === 'permission-denied') {
+          errorMessage = 'Permission denied. You might not have access to perform this action.';
+        } else if (error.code === 'not-found') {
+          errorMessage = 'Document not found. The specified document does not exist.';
+        }
+  
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: errorMessage,
+        });
+      }
     };
+  
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -169,17 +224,17 @@ const Reservedfavorites = ({ route, navigation }) => {
                     Availabletxt={'favorite'}
                     additionalInfo={item.additionalInfo}
                     showPickupsView={true}
-                // onPress={() => handleCancelReservation(item.cardID)}
                 />
 
                 <CustomTextInput
-                    placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
+                    // placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
                     placeholderMarginLeft={responsiveWidth(3)}
                     responsiveMarginTop={-responsiveHeight(0.2)}
                     TextinputWidth={responsiveWidth(67)}
                     source={calendar}
                     inputHeight={responsiveHeight(6)}
                     showImage={true}
+                    value={route.params.reservationDate ? route.params.reservationDate.toString() : 'No reservation date'}
                     placeholderTextColor={colors.color4}
                     marginLeft={responsiveWidth(65)}
                     source1={checkcircle}
@@ -227,6 +282,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                             params: {
                                 item: item,
                                 organizationId: selectedCardID, // Pass the specific organizationId here
+                           userId:userId
                             }
                         });
                         
@@ -237,4 +293,5 @@ const Reservedfavorites = ({ route, navigation }) => {
     );
 };
 export default Reservedfavorites;
+
 

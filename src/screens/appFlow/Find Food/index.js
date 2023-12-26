@@ -120,21 +120,22 @@ const FindFood = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <CardView
-              customMarginTop={responsiveHeight(1)}
-              source={{ uri: item.profileImage }}
-              title={item.organization}
-              description={item.address}
-              Availabletxt={`${item.availableMeals} Available`} // Concatenating label with available meals count
-              additionalInfo={item.additionalInfo}
-              onPress={() =>
-                navigation.navigate('AppNavigation', {
-                  screen: 'Reservedfood1',
-                  params: { item: item, userId: item.userId },
-                })
-              }
-            />
-          )}
-        />
+    customMarginTop={responsiveHeight(1)}
+    source={{ uri: item.profileImage }}
+    title={item.organization}
+    description={item.address}
+    Availabletxt={`${item.availableMeals} Available`}
+    additionalInfo={item.additionalInfo}
+    onPress={() => {
+      const { availableMeals, ...otherItemDetails } = item; // Destructuring to exclude availableMeals
+      navigation.navigate('AppNavigation', {
+        screen: 'Reservedfood1',
+        params: { item: otherItemDetails, userId: item.userId },
+      });
+    }}
+  />
+)}
+/>
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
       <TouchableOpacity  onPress={() => setHelpCalloutModalVisible(true)}>

@@ -27,8 +27,12 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [companyData, setCompanyData] = useState({});
     const [qrCodeValue, setQRCodeValue] = useState('');
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
-
+    const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false); // State to track the source
+   
+    
+   
     useEffect(() => {
+        
         const fetchCompanyData = async () => {
             try {
                 const { userId} = route.params; // Get the userId passed from FindFood
@@ -37,6 +41,9 @@ const ReservedFood1 = ({ route, navigation }) => {
 
                 if (organizationDoc.exists) {
                     setCompanyData(organizationDoc.data());
+                     // Fetch available meals for the organization
+                     const availableMeals = companyData.availableMeals; // Adjust the field name if needed
+                     console.log('Available meals:', availableMeals);
                 } else {
                     console.log('Organization document not found for UserID:', userId);
                 }
@@ -49,6 +56,12 @@ const ReservedFood1 = ({ route, navigation }) => {
     }, [route.params]);
 
     useEffect(() => {
+        // Check if the component was accessed from Reserved favorites
+        if (route.params?.source === 'ReservedFavorites') {
+            setIsFromReservedFavourite(true);
+        } else {
+            setIsFromReservedFavourite(false);
+        }
         const fetchCompanyData = async () => {
             try {
                 const { organizationId } = route.params; // Get the organizationId passed from Reservedfavorites
@@ -56,7 +69,13 @@ const ReservedFood1 = ({ route, navigation }) => {
                 const organizationDoc = await firestore().collection('distributors').doc(organizationId).get();
     
                 if (organizationDoc.exists) {
-                    setCompanyData(organizationDoc.data());
+                    const companyData = organizationDoc.data();
+                    setCompanyData(companyData);
+    
+                    // Fetch available meals for the organization
+                    const availableMeals = companyData.availableMeals; // Adjust the field name if needed
+                    console.log('Available meals:', availableMeals);
+                    // Update state or perform necessary operations with available meals data
                 } else {
                     console.log('Organization document not found for OrganizationID:', organizationId);
                 }
@@ -67,6 +86,7 @@ const ReservedFood1 = ({ route, navigation }) => {
     
         fetchCompanyData();
     }, [route.params]);
+    
     
 
 
@@ -268,7 +288,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                     source={{ uri: item.profileImage }}
                     title={item.organization}
                     description={item.address}
-                    Availabletxt={`${item.availableMeals} Available`}
+                    Availabletxt={`${companyData.availableMeals} Available`}
                     additionalInfo={item.additionalInfo}
                 />
                 <View style={{ marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3) }}>
@@ -278,15 +298,12 @@ const ReservedFood1 = ({ route, navigation }) => {
                         <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.address}</Text></Text>
                     <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Phone number:
                         <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.phoneNumber}</Text></Text>
-
-
                     <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
                         <Text style={[appStyles.label, { marginTop: responsiveHeight(0.3) }]}>Hours:</Text>
                         <Text style={appStyles.description}>{companyData.openAt}</Text>
                         <Text style={appStyles.label}>  _ </Text>
                         <Text style={appStyles.description}>{companyData.closeAt}</Text>
                     </View>
-
                     <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>What we offer:
                         <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{companyData.whatWeOffer}</Text></Text>
                     <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Website:</Text>
