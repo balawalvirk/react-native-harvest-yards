@@ -12,18 +12,125 @@ import MapView, { Marker, Circle } from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { scale } from 'react-native-size-matters';
+import Geocoder from 'react-native-geocoding'; 
 import DropDownPicker from 'react-native-dropdown-picker';
 import Geolocation from '@react-native-community/geolocation';
+import GetLocation from 'react-native-get-location'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 export default function LocationRadious({ navigation }) {
     const [userId, setUserId] = useState(''); // State to store the current user's ID
     const [title, setTitle] = useState('');
     const [error, setError] = useState(null);
-    const [currentLocation, setCurrentLocation] = useState({ latitude: 0, longitude: 0 });
-
-
+    const [currentLocation, setCurrentLocation] = useState({ latitude: 0, longitude: 0});
     const [location, setLocation] = useState('');
+    const [distributorsLocations, setDistributorsLocations] = useState([]);
+ 
+    GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 60000,
+    })
+    .then(location => {
+        console.log(location);
+    })
+    .catch(error => {
+        const { code, message } = error;
+        console.warn(code, message);
+    })
+    // const getCurrentLocation = async () => {
+    //     try {
+    //         const granted = await PermissionsAndroid.request(
+    //             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    //             {
+    //                 title: 'Location Permission',
+    //                 message: 'This app needs access to your location.',
+    //                 buttonPositive: 'OK',
+    //             }
+    //         );
+    //         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //             Geolocation.getCurrentPosition(
+    //                 (position) => {
+    //                     const { latitude, longitude } = position.coords;
+    //                     setCurrentLocation({ latitude, longitude });
+    //                     setMapRegion({
+    //                         latitude,
+    //                         longitude,
+    //                         latitudeDelta: 0.0922,
+    //                         longitudeDelta: 0.0421,
+    //                     });
+
+    //                     // Log latitude and longitude here
+    //                     console.log('Current Latitude:', latitude);
+    //                     console.log('Current Longitude:', longitude);
+    //                 },
+    //                 (error) => {
+    //                     console.error('Error getting location: ', error);
+    //                 },
+    //                 { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    //             );
+    //         } else {
+    //             console.log('Location permission denied');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error requesting location permission: ', error);
+    //     }
+    // };
+
+    // // Effect to get the current location when component mounts
+    // useEffect(() => {
+    //     getCurrentLocation();
+    // }, []);
+    
+     
+    // useEffect(() => {
+    //     Geocoder.init('AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss');
+    //     const fetchDistributorsAddresses = async () => {
+    //         try {
+    //             const snapshot = await firestore().collection('distributors').get();
+    //             const addresses = [];
+    //             snapshot.forEach((doc) => {
+    //                 const data = doc.data();
+    //                 // Ensure the document has an 'address' field before pushing it to the array
+    //                 if (data.address) {
+    //                     addresses.push(data.address);
+    //                 }
+    //             });
+    //             setDistributorsLocations(addresses);
+    //             console.log('Fetched addresses:', addresses);
+    //         } catch (error) {
+    //             console.error('Error fetching distributor addresses:', error);
+    //         }
+    //     };
+    //     fetchDistributorsAddresses();
+    // }, []);
+    // const [distributorsCoordinates, setDistributorsCoordinates] = useState([]);
+
+    // useEffect(() => {
+    //     Geocoder.init('AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss');
+    //     const geocodeAddresses = async () => {
+    //         try {
+    //             const coordinates = [];
+    //             for (const address of distributorsLocations) {
+    //                 const response = await Geocoder.from(address);
+    //                 if (response.results.length > 0) {
+    //                     const { lat, lng } = response.results[0].geometry.location;
+    //                     coordinates.push({ latitude: lat, longitude: lng });
+    //                 } else {
+    //                     console.warn(`No results found for address: ${address}`);
+    //                     // Handle zero results here (e.g., display a message to users)
+    //                 }
+    //             }
+    //             setDistributorsCoordinates(coordinates);
+    //         } catch (error) {
+    //             console.error('Error geocoding addresses:', error);
+    //             // Handle the error here (display a message, retry logic, etc.)
+    //         }
+    //     };
+
+    //     geocodeAddresses();
+    // }, [distributorsLocations]);
+  
     useEffect(() => {
+        
         const currentUser = auth().currentUser;
         if (currentUser) {
             setUserId(currentUser.uid);
@@ -223,6 +330,14 @@ export default function LocationRadious({ navigation }) {
                                 strokeWidth={2}
                             />
                         )}
+                        {/* {distributorsCoordinates.map((coordinate, index) => (
+                            <Marker
+                                key={index.toString()}
+                                coordinate={coordinate}
+                                title={`Distributor ${index + 1}`}
+                                pinColor={colors.color24} // Set your desired pin color
+                            />
+                        ))} */}
                     </MapView>
                 </View>
 
@@ -266,10 +381,16 @@ export default function LocationRadious({ navigation }) {
                         onPress={saveDataToFirestore}
                     />
                 </TouchableOpacity>
-
+                {/* <View style={{ marginVertical: responsiveHeight(3), paddingHorizontal: responsiveWidth(5) }}>
+                    <Text style={appStyles.label}>Distributor Addresses:</Text>
+                    <ScrollView>
+                        {distributorsLocations.map((address, index) => (
+                            <Text key={index.toString()} >{address}</Text>
+                        ))}
+                    </ScrollView>
+                </View> */}
                 <View style={{ height: responsiveHeight(16) }} />
             </ScrollView>
-
         </SafeAreaView>
     );
 }

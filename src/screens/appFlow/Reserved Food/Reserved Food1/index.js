@@ -288,7 +288,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                     source={{ uri: item.profileImage }}
                     title={item.organization}
                     description={item.address}
-                    Availabletxt={`${companyData.availableMeals} Available`}
+                   Availabletxt={`${companyData.availableMeals !== undefined ? companyData.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
                     additionalInfo={item.additionalInfo}
                 />
                 <View style={{ marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3) }}>

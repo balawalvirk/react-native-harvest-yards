@@ -124,7 +124,7 @@ const FindFood = ({ navigation }) => {
     source={{ uri: item.profileImage }}
     title={item.organization}
     description={item.address}
-    Availabletxt={`${item.availableMeals} Available`}
+    Availabletxt={`${item.availableMeals !== undefined ? item.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
     additionalInfo={item.additionalInfo}
     onPress={() => {
       const { availableMeals, ...otherItemDetails } = item; // Destructuring to exclude availableMeals
