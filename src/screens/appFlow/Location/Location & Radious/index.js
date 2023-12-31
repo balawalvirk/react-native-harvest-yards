@@ -334,6 +334,7 @@ export default function LocationRadious({ navigation, route }) {
                                 textInput: {
                                     height: responsiveHeight(5),
                                     marginVertical: 5,
+                                    color:colors.color18,
 
                                 },
                                 listView: {
