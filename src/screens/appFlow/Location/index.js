@@ -3,23 +3,20 @@ import { View, Text, Button, Image, ScrollView, TouchableOpacity, SafeAreaView }
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
 import CustomTextInput from '../../../components/Textinputs';
-import { HelpCallout, Image10, Image11, Image12, Image13, Image14, Image2, Image5, Image6, Image7, Image8, LeftButton, MenueButton, animation, blackX, checkcircle, checksquare, copy, edit, locationtag, mappin, plus, redtag, search, tag, x } from '../../../services/utilities/assets';
+import { HelpCallout,LeftButton, animation,checkcircle,edit,mappin, plus,} from '../../../services/utilities/assets';
 import {
   responsiveFontSize,
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
+import auth from '@react-native-firebase/auth';
 import LottieView from 'lottie-react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Clipboard } from '@react-native-clipboard/clipboard';
-import CustomLocationInput from '../../../components/Textinputs/Locationinput';
-import CardView from '../../../components/CardView';
-import { FlatList } from 'react-native-gesture-handler';
-import CouponsView from '../../../components/CouponsView';
 import { colors } from '../../../services/utilities/color';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { scale } from 'react-native-size-matters';
 import { RefreshControl } from 'react-native';
+import Locationview from '../../../components/locationview';
 const Location = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [locations, setLocations] = useState([]);
@@ -28,7 +25,6 @@ const Location = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
   // Your useEffect hook remains the same
-
   const handleLocationSelect = (location) => {
     // Update the selected location when a user selects from the saved locations
     setSelectedLocation(location);
@@ -38,15 +34,28 @@ const Location = ({ navigation }) => {
       try {
         setLoading(true);
         setLoadingAnimation(true);
-        const locationsSnapshot = await firestore().collection('LocationDetail').get();
-
-        const fetchedLocations = locationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setLocations(fetchedLocations);
-        console.log('Fetched Locations:', fetchedLocations); // Add this console log
+  
+        const currentUser = auth().currentUser;
+  
+        if (currentUser) {
+          const userId = currentUser.uid;
+  
+          const locationsSnapshot = await firestore()
+            .collection('LocationDetail')
+            .doc(userId) // Get the document for the current user
+            .get();
+  
+          if (locationsSnapshot.exists) {
+            const userData = locationsSnapshot.data();
+            const fetchedLocations = userData.locations || []; // Retrieve the locations array
+  
+            setLocations(fetchedLocations);
+            console.log('Fetched Locations:', fetchedLocations);
+          } else {
+            setLocations([]); // No data found for the current user
+          }
+        }
+  
         setLoading(false);
         setLoadingAnimation(false);
       } catch (error) {
@@ -55,22 +64,16 @@ const Location = ({ navigation }) => {
         setLoadingAnimation(false);
       }
     };
-
     const onRefresh = () => {
       setRefreshing(true);
       fetchLocations().then(() => setRefreshing(false));
     };
-
     fetchLocations(); // Initial data fetch
-
     const unsubscribe = navigation.addListener('focus', () => {
       onRefresh(); // Fetch data when the screen comes into focus (e.g., when navigating back)
     });
-
     return unsubscribe;
   }, [navigation]);
-
-
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -106,10 +109,18 @@ const Location = ({ navigation }) => {
         <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Selected</Text>
         {selectedLocation && ( // Conditionally render selected location if it exists
           <TouchableOpacity onPress={() => navigation.navigate('FindFood')}>
-            <CouponsView
+            <Locationview
               customMarginTop={responsiveHeight(2)}
               source={checkcircle}
               source1={edit}
+              Editpress={() => {
+                navigation.navigate('LocationRadious', {
+                  location: selectedLocation.location,
+                  id: selectedLocation.id,
+                  title: selectedLocation.title,
+                  status: selectedLocation.status,
+                });
+              }}
               expirecolor={colors.color4}
               coupontxt1={colors.color4}
               title={selectedLocation.title}
@@ -118,28 +129,37 @@ const Location = ({ navigation }) => {
             />
           </TouchableOpacity>
         )}
-        <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Saved</Text>
-        {locations.map(location => (
-          <View key={location.id}>
-            {location.locations.map((nestedLocation, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleLocationSelect(nestedLocation)} // Pass selected location to handleLocationSelect function
-              >
-                <CouponsView
-                  customMarginTop={responsiveHeight(2)}
-                  source={mappin}
-                  source1={edit}
-                  expirecolor={colors.color4}
-                  coupontxt1={colors.color4}
-                  title={nestedLocation.title}
-                  messageType='location'
-                  description={nestedLocation.location}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))}
+     <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Saved</Text>
+     {locations.map(location => (
+  <TouchableOpacity
+    key={location.id}
+    onPress={() => handleLocationSelect(location)}
+  >
+    <View>
+      <Locationview
+        customMarginTop={responsiveHeight(2)}
+        source={mappin}
+        source1={edit}
+        Editpress={() => {
+          navigation.navigate('LocationRadious', {
+            location: location.location,
+            id: location.id,
+            title: location.title,
+            status: location.status,
+          });
+        }}
+        expirecolor={colors.color4}
+        coupontxt1={colors.color4}
+        title={location.title}
+        messageType='location'
+        description={location.location}
+      />
+    </View>
+  </TouchableOpacity>
+))}
+
+
+
         <View style={{ height: responsiveHeight(5) }} />
       </ScrollView>
       <View style={appStyles.loadingContainer}>
