@@ -146,7 +146,7 @@ export default function AdditionalInfo({ route, navigation }) {
             Toast.show({
               type: 'error',
               text1: 'Error',
-              text2: 'The email address is already in use by another account.',
+              text2: 'This email address is already in use.',
             });
          }
          finally {   
