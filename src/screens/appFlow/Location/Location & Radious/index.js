@@ -405,7 +405,7 @@ export default function LocationRadious({ navigation, route }) {
                             }))}
                             arrowColor={colors.color4}
                             labelStyle={appStyles.label}
-                            placeholder={' '}
+                            placeholder={'Miles'}
                             dropDownMaxHeight={responsiveHeight(15)}
                             containerStyle={appStyles.dcontainer}
                             style={appStyles.Dropdown}
