@@ -19,6 +19,7 @@ import auth from '@react-native-firebase/auth';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
 import { QRCode } from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
+import { roundToDecimal, useLocation } from '../../../../services';
 
 const ReservedFood1 = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState('');
@@ -29,8 +30,15 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
     const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false); // State to track the source
    
-    
+    const {currentLocation,calculateDistance}=useLocation()
    
+    const { item, userId } = route.params;
+    const { latitude, longitude } = item
+    const location = latitude && longitude ? { latitude, longitude } : null
+    const distance = currentLocation && location ? calculateDistance(location) : null
+    const distanceInDecimal=distance?roundToDecimal(distance,2):null
+    const distanceInKm=distanceInDecimal?distanceInDecimal+' km away':''
+
     useEffect(() => {
         
         const fetchCompanyData = async () => {
@@ -233,7 +241,7 @@ const ReservedFood1 = ({ route, navigation }) => {
     const handleDateChange = date => {
         setSelectedDate(date);
     };
-    const { item, userId } = route.params;
+   
 
    
   const saveImageToGallery = async (imageUri) => {
@@ -289,7 +297,8 @@ const ReservedFood1 = ({ route, navigation }) => {
                     title={item.organization}
                     description={item.address}
                    Availabletxt={`${companyData.availableMeals !== undefined ? companyData.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
-                    additionalInfo={item.additionalInfo}
+                    //additionalInfo={item.additionalInfo}
+                    additionalInfo={distanceInKm}
                 />
                 <View style={{ marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3) }}>
                     <Text style={appStyles.label}>Company Name:

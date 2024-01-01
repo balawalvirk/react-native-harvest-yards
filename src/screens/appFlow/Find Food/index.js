@@ -1,25 +1,29 @@
-import React,{useState,useEffect} from 'react';
-import { View, ScrollView, SafeAreaView, Image, Text,TouchableOpacity, FlatList,BackHandler } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, SafeAreaView, Image, Text, TouchableOpacity, FlatList, BackHandler } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
-import { MenueButton, search, locationtag,HelpCallout, animation, mappin } from '../../../services/utilities/assets';
+import { MenueButton, search, locationtag, HelpCallout, animation, mappin } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import Toast from 'react-native-toast-message';
-import firestore from '@react-native-firebase/firestore'; 
+import firestore from '@react-native-firebase/firestore';
 import { scale } from 'react-native-size-matters';
 import { colors } from '../../../services/utilities/color';
 import LottieView from 'lottie-react-native';
 import { RefreshControl } from 'react-native';
+import { roundToDecimal, useLocation } from '../../../services';
 const FindFood = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [distributorsData, setDistributorsData] = useState([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [loadingAnimation, setLoadingAnimation] = useState(false); 
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
+
+  const { currentLocation, calculateDistance } = useLocation()
+  console.log('currentLocation: ', currentLocation)
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backPressed);
     return () => {
@@ -78,7 +82,7 @@ const FindFood = ({ navigation }) => {
         marginleft={-responsiveWidth(2)}
         bellmarginleft={responsiveWidth(32)}
       />
-    <ScrollView
+      <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -93,61 +97,73 @@ const FindFood = ({ navigation }) => {
           marginBottom={responsiveHeight(1)}
           inputWidth={responsiveWidth(75)}
           inneriinputtwidth={responsiveWidth(65)}
-          placeholder='Search...'       
+          placeholder='Search...'
           placeholderTextColor={colors.color29}
           maininputmarginleft={-responsiveWidth(16.6)}
           marginLeft={responsiveWidth(2)}
           onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
-      {searchText !== '' && (
-        <TouchableOpacity onPress={() => setSearchText('')}>
+        {searchText !== '' && (
+          <TouchableOpacity onPress={() => setSearchText('')}>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity onPress={() => navigation.navigate('AppNavigation', { screen: 'Location' })}>
+          <View style={appStyles.locationview}>
+            <TouchableOpacity onPress={() => navigation.navigate('AppNavigation', { screen: 'Location' })}>
+              <Image source={mappin} style={appStyles.locationtag} />
+            </TouchableOpacity>
+          </View>
+
         </TouchableOpacity>
-      )}
-        <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
-         <View style={appStyles.locationview}>
-         <TouchableOpacity onPress={ () => navigation.navigate('AppNavigation',{screen:'Location'})}>
-         <Image source={mappin} style={appStyles.locationtag} />
-         </TouchableOpacity>
-         </View>
-        
-        </TouchableOpacity>
-        <Text style={[appStyles.infotxt, {marginBottom:responsiveHeight(0.1)}]}>Nearby</Text>
-             <FlatList
+        <Text style={[appStyles.infotxt, { marginBottom: responsiveHeight(0.1) }]}>Nearby</Text>
+        <FlatList
           data={searchText === '' ? distributorsData : distributorsData.filter(item =>
             item.organization.toLowerCase().includes(searchText.toLowerCase())
           )}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <CardView
-    customMarginTop={responsiveHeight(1)}
-    source={{ uri: item.profileImage }}
-    title={item.organization}
-    description={item.address}
-    Availabletxt={`${item.availableMeals !== undefined ? item.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
-    additionalInfo={item.additionalInfo}
-    onPress={() => {
-      const { availableMeals, ...otherItemDetails } = item; // Destructuring to exclude availableMeals
-      navigation.navigate('AppNavigation', {
-        screen: 'Reservedfood1',
-        params: { item: otherItemDetails, userId: item.userId },
-      });
-    }}
-  />
-)}
-/>
+          renderItem={({ item }) => {
+            const { latitude, longitude } = item
+            const location = latitude && longitude ? { latitude, longitude } : null
+            const distance = currentLocation && location ? calculateDistance(location) : null
+            const distanceInDecimal=distance?roundToDecimal(distance,2):null
+            const distanceInKm=distanceInDecimal?distanceInDecimal+' km away':''
+           __DEV__&& console.log('location: ',location)
+           __DEV__&& console.log('distance: ',distance)
+           __DEV__&& console.log('distanceInDecimal: ',distanceInDecimal)
+           __DEV__&& console.log('distanceInKm: ',distanceInKm)
+            return (
+              <CardView
+                customMarginTop={responsiveHeight(1)}
+                source={{ uri: item.profileImage }}
+                title={item.organization}
+                description={item.address}
+                distance={distanceInKm}
+                Availabletxt={`${item.availableMeals !== undefined ? item.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
+                additionalInfo={distanceInKm}
+                onPress={() => {
+                  const { availableMeals, ...otherItemDetails } = item; // Destructuring to exclude availableMeals
+                  navigation.navigate('AppNavigation', {
+                    screen: 'Reservedfood1',
+                    params: { item: otherItemDetails, userId: item.userId },
+                  });
+                }}
+              />
+            )
+          }}
+        />
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
-      <TouchableOpacity  onPress={() => setHelpCalloutModalVisible(true)}>
-      <Image source={HelpCallout} style={[appStyles.helpview,{width:scale(60),height:scale(60),marginBottom:-responsiveHeight(3)}]} />
+      <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
+        <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60), marginBottom: -responsiveHeight(3) }]} />
       </TouchableOpacity>
       <View style={appStyles.loadingContainer}>
-      {loadingAnimation && (
+        {loadingAnimation && (
           <LottieView
-            source={animation} 
+            source={animation}
             autoPlay
             loop
-            style={appStyles.loadingAnimation} 
+            style={appStyles.loadingAnimation}
           />
         )}
       </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -11,11 +11,15 @@ import RNFS from 'react-native-fs';
 import { download } from '../../../services/utilities/assets';
 import GetButton from '../../GetButton';
 import { requestStoragePermission } from '../../../services/utilities/permission'
+import { useStorage } from '../../../services';
 const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) => {
-    const imageUri = 'nxY6upyayHZXDVRMsiAysdy6ZUE2_Web Development_Sun Dec 10 2023 20:19:00 GMT+0500';
+  const qrCodeRef = useRef(null)
+  const { saveQRCodeToGallery } = useStorage()
+  const imageUri = 'nxY6upyayHZXDVRMsiAysdy6ZUE2_Web Development_Sun Dec 10 2023 20:19:00 GMT+0500';
+
   const saveImageToGallery = async (imageUri) => {
-    console.log('Image URI:', imageUri); 
-  
+    console.log('Image URI:', imageUri);
+
     try {
       // Check and request permission if needed (Android)
       if (Platform.OS === 'android') {
@@ -64,40 +68,46 @@ const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) =>
           </Text>
           <Text style={[appStyles.modalText2, { alignSelf: 'center' }]}>Food tab.</Text>
         </View>
-        <View style={{ alignSelf: 'center',marginTop:responsiveHeight(3) }}>
-          <QRCode value={qrCodeValue} size={150} />
+        <View style={{ alignSelf: 'center', marginTop: responsiveHeight(3) }}>
+          <QRCode
+            value={qrCodeValue}
+            size={150}
+            getRef={qrCodeRef}
+          />
         </View>
         <TouchableOpacity
           style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3), width: responsiveWidth(85) }]}
           onPress={() => saveImageToGallery(qrCodeValue)}>
           <Button
             label="Download QR Code"
-            onPress={() => saveImageToGallery(qrCodeValue)}
+            //onPress={() => saveImageToGallery(qrCodeValue)}
+            onPress={()=>saveQRCodeToGallery(qrCodeRef)}
             customImageSource={download}
             customImageMarginRight={responsiveWidth(3)}
+
           />
         </TouchableOpacity>
-                <View style={appStyles.getview}>
-                    <GetButton
-                        label='Find Food'
-                        customwidth={responsiveWidth(43)}
-                        marginleft={responsiveWidth(2)}
-                        marginTop={responsiveHeight(1)}
-                        onPress={() => navigation.navigate('FindFood')}
-                    />
-                    <GetButton
-                        label='Reserved Food'
-                        customwidth={responsiveWidth(40)}
-                        marginleft={responsiveWidth(2)}
-                        customImageMarginRight={responsiveWidth(2)}
-                        marginTop={responsiveHeight(1)}
-                        onPress={() => navigation.navigate('ReserveFood')}
-                    />
-                </View>
+        <View style={appStyles.getview}>
+          <GetButton
+            label='Find Food'
+            customwidth={responsiveWidth(43)}
+            marginleft={responsiveWidth(2)}
+            marginTop={responsiveHeight(1)}
+            onPress={() => navigation.navigate('FindFood')}
+          />
+          <GetButton
+            label='Reserved Food'
+            customwidth={responsiveWidth(40)}
+            marginleft={responsiveWidth(2)}
+            customImageMarginRight={responsiveWidth(2)}
+            marginTop={responsiveHeight(1)}
+            onPress={() => navigation.navigate('ReserveFood')}
+          />
+        </View>
 
-            </View>
-        </Modal>
-    );
+      </View>
+    </Modal>
+  );
 };
 export default QRcodeModal;
 

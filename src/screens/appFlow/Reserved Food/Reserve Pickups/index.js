@@ -16,13 +16,19 @@ import GetButton from '../../../../components/GetButton';
 import { ModalRemoveUser } from '../../../../components/Modal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import QRCode from 'react-native-qrcode-svg';
+import { scale } from 'react-native-size-matters';
+import { useHooks } from './hooks';
 const ReservedPickups = ({ route, navigation }) => {
+
+  const { qrCodeRef, saveQRCodeToGallery } = useHooks()
   const [selectedDate, setSelectedDate] = useState(null);
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
+
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
   };
@@ -132,7 +138,7 @@ const ReservedPickups = ({ route, navigation }) => {
       const userDoc = await userDocRef.get();
       const userData = userDoc.data();
       let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-  
+
       // Check if the item exists in favorites
       const isItemInFavorites = favoritesArray.some(
         (fav) =>
@@ -141,7 +147,7 @@ const ReservedPickups = ({ route, navigation }) => {
           fav.address === item.address &&
           fav.reservationDate === selectedDate
       );
-  
+
       if (isItemInFavorites) {
         // Show a toast indicating that the data is already in favorites
         Toast.show({
@@ -157,14 +163,14 @@ const ReservedPickups = ({ route, navigation }) => {
           address: item.address,
           reservationDate: selectedDate,
         });
-  
+
         await userDocRef.update({
           favorites: favoritesArray,
         });
-  
+
         setShowLubemeup(false);
         setShowGetButton(true);
-  
+
         // Show a success toast after adding to favorites
         Toast.show({
           type: 'success',
@@ -180,7 +186,8 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
-  const { item ,reservationDate} = route.params;
+  const { item, reservationDate } = route.params;
+  const _id = item.id || '34534534j5bh3hj5b345j'
   const handleRemoveFavorite = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -215,7 +222,7 @@ const ReservedPickups = ({ route, navigation }) => {
         );
         await userDocRef.update({
           favorites: filteredFavorites,
-        });  
+        });
         setShowLubemeup(true);
         setShowGetButton(false);
         Toast.show({
@@ -254,7 +261,7 @@ const ReservedPickups = ({ route, navigation }) => {
           showPickupsView={true}
         />
         <CustomTextInput
-         placeholder={selectedDate || 'No reservation date'}
+          placeholder={selectedDate || 'No reservation date'}
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={-responsiveHeight(0.2)}
           TextinputWidth={responsiveWidth(67)}
@@ -267,11 +274,24 @@ const ReservedPickups = ({ route, navigation }) => {
           editable={false}
         />
         <View style={appStyles.qrmainview}>
-          <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} />
+          <View style={{ height: responsiveHeight(1) }} />
+          {_id ?
+            <QRCode
+              getRef={qrCodeRef}
+              value={_id}
+              size={scale(150)}
+            />
+            :
+            null
+          }
+
+          {/* <Image source={QRcode} style={[appStyles.QRcode, { marginTop: responsiveHeight(1) }]} /> */}
           <TouchableOpacity>
             <Image source={Buttonzoom} style={[appStyles.locationtag, { marginTop: -responsiveHeight(20), marginLeft: responsiveWidth(73) }]} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={()=>saveQRCodeToGallery(qrCodeRef)}
+          >
             <Image source={Buttondownload} style={[appStyles.locationtag, { marginTop: -responsiveHeight(13), marginLeft: responsiveWidth(73) }]} />
           </TouchableOpacity>
           <Text style={[appStyles.title, { marginTop: responsiveHeight(1) }]}>
@@ -279,7 +299,7 @@ const ReservedPickups = ({ route, navigation }) => {
           </Text>
         </View>
         <Text style={[appStyles.title, { alignSelf: 'center' }]}>
-          ID# 3737379847547
+          ID# {_id}
         </Text>
         {showLubemeup && (
           <TouchableOpacity
@@ -309,10 +329,10 @@ const ReservedPickups = ({ route, navigation }) => {
           customImageMarginRight={responsiveWidth(2)}
           marginTop={responsiveHeight(1)}
         />
-     <TouchableOpacity onPress={() => {
-        setSelectedCardID(item.cardID); // Set the selected card ID
-        setIsRemoveUserModalVisible(true); // Open the modal
-      }}>
+        <TouchableOpacity onPress={() => {
+          setSelectedCardID(item.cardID); // Set the selected card ID
+          setIsRemoveUserModalVisible(true); // Open the modal
+        }}>
           <View style={[appStyles.getdirectioncontainer, {
             backgroundColor: colors.color16,
             marginTop: responsiveHeight(1),

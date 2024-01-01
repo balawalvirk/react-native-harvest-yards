@@ -41,6 +41,7 @@
     "react-native-maps": "^1.8.0",
     "react-native-modal": "^13.0.1",
     "react-native-onesignal": "^5.0.2",
+    "react-native-permissions": "^4.0.1",
     "react-native-qrcode-svg": "^6.2.0",
     "react-native-reanimated": "^3.5.4",
     "react-native-responsive-dimensions": "^3.1.1",
