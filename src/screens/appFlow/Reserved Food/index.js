@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpacity, FlatList ,ActivityIndicator} from 'react-native';
+import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
@@ -10,12 +10,13 @@ import { scale } from 'react-native-size-matters';
 import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { colors } from '../../../services/utilities/color';
-import LottieView from 'lottie-react-native'; 
+import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Toast } from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
 import { RefreshControl } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { Loaders } from '../../../components';
 const ReservedFood = () => {
   const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
@@ -42,16 +43,16 @@ const ReservedFood = () => {
   };
   const onRefresh = () => {
     setRefreshing(true);
-    fetchDataFromFirestore(); 
+    fetchDataFromFirestore();
     fetchFavorites();
-    setRefreshing(false); 
+    setRefreshing(false);
   };
   const [favoritesData, setFavoritesData] = useState([]);
   const fetchFavorites = async () => {
     try {
-      setLoading(true); 
+      setLoading(true);
 
-      setLoadingAnimation(true); 
+      setLoadingAnimation(true);
       const currentUser = auth().currentUser;
       const userId = currentUser ? currentUser.uid : null;
       if (!userId) {
@@ -67,11 +68,11 @@ const ReservedFood = () => {
       const userData = userDoc.data();
       let favoritesArray = userData && userData.favorites ? userData.favorites : [];
       setFavoritesData(favoritesArray);
-      setLoading(false); 
+      setLoading(false);
 
       setLoadingAnimation(false);
     } catch (error) {
-      setLoading(false); 
+      setLoading(false);
       setLoadingAnimation(false);
 
       Toast.show({
@@ -103,38 +104,38 @@ const ReservedFood = () => {
 
     setFilteredData(filteredItems);
   };
-    const fetchDataFromFirestore = async () => {
-      try {
-        setLoading(true);
-        setLoadingAnimation(true); 
-        const currentUser = auth().currentUser;
-        const userId = currentUser ? currentUser.uid : null;
-        if (!userId) {
-          console.error('User ID not found');
-          return;
-        }
-        const userDocRef = firestore().collection('users').doc(userId);
-        const userDoc = await userDocRef.get();
-        const userData = userDoc.data();
-
-        if (userData && userData.reservedFood) {
-          // Set the reserved food data fetched from Firestore to state
-          setReservedFoodData(userData.reservedFood);
-        }
-        setLoading(false); 
-        setLoadingAnimation(false); 
-      } catch (error) {
-        setLoading(false); 
-        setLoadingAnimation(false); 
-        console.error('Error fetching reserved food information:', error);
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to fetch reserved food information. Please try again.',
-        });
+  const fetchDataFromFirestore = async () => {
+    try {
+      setLoading(true);
+      setLoadingAnimation(true);
+      const currentUser = auth().currentUser;
+      const userId = currentUser ? currentUser.uid : null;
+      if (!userId) {
+        console.error('User ID not found');
+        return;
       }
-    };
-    useEffect(() => {
+      const userDocRef = firestore().collection('users').doc(userId);
+      const userDoc = await userDocRef.get();
+      const userData = userDoc.data();
+
+      if (userData && userData.reservedFood) {
+        // Set the reserved food data fetched from Firestore to state
+        setReservedFoodData(userData.reservedFood);
+      }
+      setLoading(false);
+      setLoadingAnimation(false);
+    } catch (error) {
+      setLoading(false);
+      setLoadingAnimation(false);
+      console.error('Error fetching reserved food information:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to fetch reserved food information. Please try again.',
+      });
+    }
+  };
+  useEffect(() => {
     fetchDataFromFirestore();
   }, []);
   return (
@@ -236,8 +237,8 @@ const ReservedFood = () => {
               description={item.address}
               Availabletxt={
                 selectedTouchable === 'Pending Pick-ups'
-                  ? 'Pending' 
-                  : 'Favorite' 
+                  ? 'Pending'
+                  : 'Favorite'
               }
               additionalInfo={item.additionalInfo}
 
@@ -251,7 +252,7 @@ const ReservedFood = () => {
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
         <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60) }]} />
       </TouchableOpacity>
-      <View style={appStyles.loadingContainer}>
+      {/* <View style={appStyles.loadingContainer}>
         {loadingAnimation && (
           <LottieView
             source={animation} // Your animation source
@@ -260,7 +261,10 @@ const ReservedFood = () => {
             style={appStyles.loadingAnimation} // Apply your animation styles
           />
         )}
-      </View>
+      </View> */}
+      <Loaders.AbsolutePrimary
+        isVisible={loading}
+      />
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
         onBackdropPress={() => setHelpCalloutModalVisible(false)}

@@ -29,6 +29,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 import { scale } from 'react-native-size-matters';
+import { Loaders } from '../../../components';
 export default function BecomeaPartner({ navigation }) {
   const [fullName, setFullName] = useState('');
   const [organization, setOrganization] = useState('');
@@ -236,7 +237,7 @@ export default function BecomeaPartner({ navigation }) {
             onPress={handleCreateBtn}
           />
         </TouchableOpacity>
-        <View style={appStyles.loadingContainer}>
+        {/* <View style={appStyles.loadingContainer}>
               {loading && (
                 <LottieView
                   source={animation}
@@ -245,7 +246,10 @@ export default function BecomeaPartner({ navigation }) {
                   style={appStyles.loadingAnimation}
                 />
               )}
-            </View>
+            </View> */}
+             <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
         <View style={{ height: responsiveHeight(12) }} />
 
       </KeyboardAwareScrollView>

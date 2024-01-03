@@ -123,7 +123,7 @@ const CustomTextInput = ({
           multiline={multiline}
           value={value}
           onChangeText={onChangeText}
-          autoCapitalize={autoCapitalize}
+          autoCapitalize={autoCapitalize?'words':'none'}
         />
         {showImage && (
           // <TouchableOpacity style={{width:responsiveWidth(5),height:responsiveHeight(3)}} onPress={onpress}>

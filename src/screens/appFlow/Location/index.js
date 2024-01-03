@@ -17,6 +17,7 @@ import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
 import { scale } from 'react-native-size-matters';
 import { RefreshControl } from 'react-native';
 import Locationview from '../../../components/locationview';
+import { Loaders } from '../../../components';
 const Location = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [locations, setLocations] = useState([]);
@@ -162,7 +163,7 @@ const Location = ({ navigation }) => {
 
         <View style={{ height: responsiveHeight(5) }} />
       </ScrollView>
-      <View style={appStyles.loadingContainer}>
+      {/* <View style={appStyles.loadingContainer}>
         {loadingAnimation && (
           <LottieView
             source={animation}
@@ -171,7 +172,10 @@ const Location = ({ navigation }) => {
             style={appStyles.loadingAnimation}
           />
         )}
-      </View>
+      </View> */}
+       <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
         <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60) }]} />
       </TouchableOpacity>

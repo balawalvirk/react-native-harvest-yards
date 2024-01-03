@@ -14,6 +14,7 @@ import { colors } from '../../../services/utilities/color';
 import LottieView from 'lottie-react-native';
 import { RefreshControl } from 'react-native';
 import { roundToDecimal, useLocation } from '../../../services';
+import { Loaders } from '../../../components';
 const FindFood = ({ navigation }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -128,10 +129,10 @@ const FindFood = ({ navigation }) => {
             const distance = currentLocation && location ? calculateDistance(location) : null
             const distanceInDecimal=distance?roundToDecimal(distance,2):null
             const distanceInKm=distanceInDecimal?distanceInDecimal+' km away':''
-           __DEV__&& console.log('location: ',location)
-           __DEV__&& console.log('distance: ',distance)
-           __DEV__&& console.log('distanceInDecimal: ',distanceInDecimal)
-           __DEV__&& console.log('distanceInKm: ',distanceInKm)
+          //  __DEV__&& console.log('location: ',location)
+          //  __DEV__&& console.log('distance: ',distance)
+          //  __DEV__&& console.log('distanceInDecimal: ',distanceInDecimal)
+          //  __DEV__&& console.log('distanceInKm: ',distanceInKm)
             return (
               <CardView
                 customMarginTop={responsiveHeight(1)}
@@ -157,7 +158,7 @@ const FindFood = ({ navigation }) => {
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
         <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60), marginBottom: -responsiveHeight(3) }]} />
       </TouchableOpacity>
-      <View style={appStyles.loadingContainer}>
+      {/* <View style={appStyles.loadingContainer}>
         {loadingAnimation && (
           <LottieView
             source={animation}
@@ -166,7 +167,10 @@ const FindFood = ({ navigation }) => {
             style={appStyles.loadingAnimation}
           />
         )}
-      </View>
+      </View> */}
+       <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
         onBackdropPress={() => setHelpCalloutModalVisible(false)}

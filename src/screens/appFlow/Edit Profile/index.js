@@ -24,6 +24,7 @@ import firestore from '@react-native-firebase/firestore'; // Correct import stat
 import auth from '@react-native-firebase/auth'; // Make sure you've imported auth if used
 import LottieView from 'lottie-react-native';
 import CustomSwitch from '../../../components/Switch';
+import { Loaders } from '../../../components';
 export default function EditProfile({ navigation }) {
   const [userId, setUserId] = useState('');
   const [firstName, setfirstName] = useState('');
@@ -369,7 +370,7 @@ export default function EditProfile({ navigation }) {
         </TouchableOpacity>
         <View style={{ height: responsiveHeight(6) }} />
 
-        <View style={appStyles.loadingContainer}>
+        {/* <View style={appStyles.loadingContainer}>
           {loading && (
             <LottieView
               source={animation}
@@ -378,9 +379,11 @@ export default function EditProfile({ navigation }) {
               style={appStyles.loadingAnimation}
             />
           )}
-        </View>
+        </View> */}
       </ScrollView>
-
+      <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
     </SafeAreaView>
 
   );

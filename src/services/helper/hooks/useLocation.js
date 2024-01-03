@@ -20,7 +20,7 @@ export default function useLocation() {
             } else if (Platform.OS === 'ios') {
                 locationPermission = await requestIOSLocationPermission();
             }
-
+console.log('locationPermission: ',locationPermission)
             if (locationPermission === RESULTS.GRANTED) {
                 // Get current location
                 Geolocation.getCurrentPosition(

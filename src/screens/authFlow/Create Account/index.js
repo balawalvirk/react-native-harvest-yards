@@ -29,6 +29,7 @@ import Toast from 'react-native-toast-message';
 import HorizontalLine from '../../../components/Line';
 import auth from '@react-native-firebase/auth';
 import { scale } from 'react-native-size-matters';
+import { Loaders } from '../../../components';
 export default function Index({ navigation }) {
   const [firstName, setfirstName] = useState('');
   const [lastName, setlastName] = useState('');
@@ -273,7 +274,7 @@ export default function Index({ navigation }) {
           />
         </TouchableOpacity>
         <View style={{ height: responsiveHeight(12) }} />
-        <View style={appStyles.loadingContainer}>
+        {/* <View style={appStyles.loadingContainer}>
           {loading && (
             <LottieView
               source={animation}
@@ -282,7 +283,10 @@ export default function Index({ navigation }) {
               style={appStyles.loadingAnimation}
             />
           )}
-        </View>
+        </View> */}
+         <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

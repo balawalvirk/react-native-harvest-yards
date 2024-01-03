@@ -19,6 +19,7 @@ import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 import { DonationModal } from '../../../../components/Modal/Donation Modal';
 import { SentModal } from '../../../../components/Modal';
+import { Loaders } from '../../../../components';
 const NewDonation = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isLinkSentModalVisible, setIsLinkSentModalVisible] = useState(false);
@@ -192,7 +193,7 @@ const NewDonation = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{ height: responsiveHeight(6) }} />
-                <View style={appStyles.loadingContainer}>
+                {/* <View style={appStyles.loadingContainer}>
                     {loading && (
                         <LottieView
                             source={animation}
@@ -201,8 +202,11 @@ const NewDonation = ({ route, navigation }) => {
                             style={appStyles.loadingAnimation}
                         />
                     )}
-                </View>
+                </View> */}
             </ScrollView>
+            <Loaders.AbsolutePrimary
+          isVisible={loading}
+        />
             <DonationModal
                 isVisible={isLinkSentModalVisible}
                 Title='Thank you for your interest.We will contact'
