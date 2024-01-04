@@ -146,7 +146,7 @@ const FindFood = ({ navigation }) => {
                   const { availableMeals, ...otherItemDetails } = item; // Destructuring to exclude availableMeals
                   navigation.navigate('AppNavigation', {
                     screen: 'Reservedfood1',
-                    params: { item: otherItemDetails, userId: item.userId },
+                    params: {item, userId: item.userId },
                   });
                 }}
               />

@@ -30,14 +30,14 @@ exports.onOrderCreated =
         return;
     }
     const orderData = snapshot.data();
-    const distributerId = orderData.distributerId;
+    const distributorId = orderData.distributorId;
 
     try {
       // Retrieve the corresponding distributer document
-      const distributerDoc = await admin.firestore().collection('distributers').doc(distributerId).get();
+      const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
       
       if (!distributerDoc.exists) {
-        console.error(`Distributer with ID ${distributerId} not found.`);
+        console.error(`Distributer with ID ${distributorId} not found.`);
         return null;
       }
 
@@ -45,11 +45,11 @@ exports.onOrderCreated =
       const currentAvailableMeals = distributerDoc.data().availableMeals;
       const updatedAvailableMeals = currentAvailableMeals - 1; // Assuming you decrement by 1, adjust as needed.
 
-      await admin.firestore().collection('distributers').doc(distributerId).update({
+      await admin.firestore().collection('distributors').doc(distributorId).update({
         availableMeals: updatedAvailableMeals,
       });
 
-      console.log(`Updated availableMeals for Distributer ID ${distributerId}: ${updatedAvailableMeals}`);
+      console.log(`Updated availableMeals for Distributer ID ${distributorId}: ${updatedAvailableMeals}`);
       return null;
     } catch (error) {
       console.error('Error updating availableMeals:', error);
@@ -65,14 +65,14 @@ exports.onOrderCreated =
         return;
     }
     const orderData = snapshot.data();
-    const distributerId = orderData.distributerId;
+    const distributorId = orderData.distributorId;
 
     try {
       // Retrieve the corresponding distributer document
-      const distributerDoc = await admin.firestore().collection('distributers').doc(distributerId).get();
+      const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
       
       if (!distributerDoc.exists) {
-        console.error(`Distributer with ID ${distributerId} not found.`);
+        console.error(`Distributer with ID ${distributorId} not found.`);
         return null;
       }
 
@@ -80,11 +80,11 @@ exports.onOrderCreated =
       const currentAvailableMeals = distributerDoc.data().availableMeals;
       const updatedAvailableMeals = currentAvailableMeals + 1; // Assuming you decrement by 1, adjust as needed.
 
-      await admin.firestore().collection('distributers').doc(distributerId).update({
+      await admin.firestore().collection('distributors').doc(distributorId).update({
         availableMeals: updatedAvailableMeals,
       });
 
-      console.log(`Updated availableMeals for Distributer ID ${distributerId}: ${updatedAvailableMeals}`);
+      console.log(`Updated availableMeals for Distributer ID ${distributorId}: ${updatedAvailableMeals}`);
       return null;
     } catch (error) {
       console.error('Error updating availableMeals:', error);
@@ -97,14 +97,14 @@ exports.onOrderCreated =
 //   .document('orders/{orderId}')
 //   .onCreate(async (snapshot, context) => {
 //     const orderData = snapshot.data();
-//     const distributerId = orderData.distributerId;
+//     const distributorId = orderData.distributorId;
 
 //     try {
 //       // Retrieve the corresponding distributer document
-//       const distributerDoc = await admin.firestore().collection('distributers').doc(distributerId).get();
+//       const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
       
 //       if (!distributerDoc.exists) {
-//         console.error(`Distributer with ID ${distributerId} not found.`);
+//         console.error(`Distributer with ID ${distributorId} not found.`);
 //         return null;
 //       }
 
@@ -112,11 +112,11 @@ exports.onOrderCreated =
 //       const currentAvailableMeals = distributerDoc.data().availableMeals;
 //       const updatedAvailableMeals = currentAvailableMeals - 1; // Assuming you decrement by 1, adjust as needed.
 
-//       await admin.firestore().collection('distributers').doc(distributerId).update({
+//       await admin.firestore().collection('distributors').doc(distributorId).update({
 //         availableMeals: updatedAvailableMeals,
 //       });
 
-//       console.log(`Updated availableMeals for Distributer ID ${distributerId}: ${updatedAvailableMeals}`);
+//       console.log(`Updated availableMeals for Distributer ID ${distributorId}: ${updatedAvailableMeals}`);
 //       return null;
 //     } catch (error) {
 //       console.error('Error updating availableMeals:', error);

@@ -54,22 +54,7 @@ const DatePickerInput = ({
     >
       <Text style={appStyles.label}>{label}</Text>
 
-      {isDatePickerVisible && (
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            onPress={() => setDatePickerVisible(false)}
-          />
-          <DatePicker
-            style={{ width: '100%', backgroundColor: 'white' }}
-            value={selectedDate || currentDate}
-            mode="date"
-            display="calendar"
-            minimumDate={currentDate}
-            onChange={handleDateChange}
-          />
-        </View>
-      )}
+      
       <TouchableOpacity
         onPress={() => setDatePickerVisible(true)}
         style={[
@@ -101,6 +86,22 @@ const DatePickerInput = ({
         )}
       </TouchableOpacity>
       {error && <Text style={{ color: colors.color32 }}>{error}</Text>}
+      {isDatePickerVisible && (
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => setDatePickerVisible(false)}
+          />
+          <DatePicker
+            style={{ width: '100%', backgroundColor: 'white' }}
+            value={selectedDate || currentDate}
+            mode="date"
+            display="calendar"
+            minimumDate={currentDate}
+            onChange={handleDateChange}
+          />
+        </View>
+      )}
     </View>
   );
 };
