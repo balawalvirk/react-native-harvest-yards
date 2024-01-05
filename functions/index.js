@@ -67,11 +67,11 @@ exports.onOrderCreated =
         console.log("No data associated with the event");
         return;
     }
-    const newData = event.after.data();
-    const oldData = event.before.data();
+    const newData = snapshot.after.data();
+    const oldData = snapshot.before.data();
     
     if (oldData.status === 'pending' && newData.status === 'cancelled') {
-    const orderData = snapshot.data();
+    const orderData = newData;
     const distributorId = orderData.distributorId;
     try {
       // Retrieve the corresponding distributer document
