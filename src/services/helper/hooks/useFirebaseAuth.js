@@ -47,6 +47,7 @@ export default function useFirebaseAuth() {
         return response
       };
     return {
+      auth,
         user: auth().currentUser,
         isUserLoggedIn,
         deleteUser: handleDeleteUser,

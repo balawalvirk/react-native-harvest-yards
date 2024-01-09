@@ -19,15 +19,24 @@ import auth from '@react-native-firebase/auth';
 import QRCode from 'react-native-qrcode-svg';
 import { scale } from 'react-native-size-matters';
 import { useHooks } from './hooks';
-const ReservedPickups = ({ route, navigation }) => {
+import { orderStatuses, updateOrder, useFirebaseAuth } from '../../../../services';
+import { Loaders } from '../../../../components';
 
+const ReservedPickups = ({ route, navigation }) => {
+  const { item, reservationDate } = route.params || {};
+  const distributerDetail = item?.distributor || null
   const { qrCodeRef, saveQRCodeToGallery } = useHooks()
+  const { user } = useFirebaseAuth()
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
+  const [loadingCancelReservation, setLoadingCancelReservation] = useState(false);
+
+  const _id = item.id || '34534534j5bh3hj5b345j'
 
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
@@ -78,55 +87,82 @@ const ReservedPickups = ({ route, navigation }) => {
 
   const handleCancelReservation = async (cardID) => {
     try {
-      const currentUser = auth().currentUser;
-      const userId = currentUser ? currentUser.uid : null;
-      if (!userId) {
-        console.error('User ID not found');
-        return;
-      }
-
-      const userDocRef = firestore().collection('users').doc(userId);
-      const userDoc = await userDocRef.get();
-      const userData = userDoc.data();
-      let reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
-
-      const indexToRemove = reservedFoodArray.findIndex((item) => item.cardID === cardID);
-
-      if (indexToRemove !== -1) {
-        reservedFoodArray.splice(indexToRemove, 1);
-        await userDocRef.update({
-          reservedFood: reservedFoodArray,
-        });
-
-        // Fetch updated reserved food data after successful cancellation
-        const updatedUserDoc = await userDocRef.get();
-        const updatedUserData = updatedUserDoc.data();
-
-        if (updatedUserData && updatedUserData.reservedFood) {
-          // Set the updated reserved food data fetched from Firestore to state
-          setReservedFoodData(updatedUserData.reservedFood);
-        }
-
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Reservation canceled and removed!',
-        });
-
-        navigation.navigate('DrawerNavigation', { screen: 'ReserveFood' });
-      } else {
-        console.error('Item not found in reserved food array');
-      }
+      setIsRemoveUserModalVisible(false)
+      setLoadingCancelReservation(true)
+      await updateOrder({ id: item?.id, data: { status: orderStatuses.cancelled } }).
+        then(res => {
+          if (res) {
+            Toast.show({
+              type: 'success',
+              text1: 'Reservation Cancelled',
+              text2: 'Your reservation has been cancelled.',
+            });
+            navigation.goBack()
+          }
+        })
+      setLoadingCancelReservation(false)
     } catch (error) {
-      console.error('Error removing reservation:', error);
+      __DEV__ && console.log('handleCancelReservation error: ', error)
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Failed to cancel reservation. Please try again.',
+        text2: error?.message || 'Message...',
       });
+      setLoadingCancelReservation(false)
     }
   };
-  const handleReservation = async () => {
+  // const handleCancelReservation = async (cardID) => {
+  //   try {
+  //     const currentUser = auth().currentUser;
+  //     const userId = currentUser ? currentUser.uid : null;
+  //     if (!userId) {
+  //       console.error('User ID not found');
+  //       return;
+  //     }
+
+  //     const userDocRef = firestore().collection('users').doc(userId);
+  //     const userDoc = await userDocRef.get();
+  //     const userData = userDoc.data();
+  //     let reservedFoodArray = userData && userData.reservedFood ? userData.reservedFood : [];
+
+  //     const indexToRemove = reservedFoodArray.findIndex((item) => item.cardID === cardID);
+
+  //     if (indexToRemove !== -1) {
+  //       reservedFoodArray.splice(indexToRemove, 1);
+  //       await userDocRef.update({
+  //         reservedFood: reservedFoodArray,
+  //       });
+
+  //       // Fetch updated reserved food data after successful cancellation
+  //       const updatedUserDoc = await userDocRef.get();
+  //       const updatedUserData = updatedUserDoc.data();
+
+  //       if (updatedUserData && updatedUserData.reservedFood) {
+  //         // Set the updated reserved food data fetched from Firestore to state
+  //         setReservedFoodData(updatedUserData.reservedFood);
+  //       }
+
+  //       Toast.show({
+  //         type: 'success',
+  //         text1: 'Success',
+  //         text2: 'Reservation canceled and removed!',
+  //       });
+
+  //       navigation.navigate('DrawerNavigation', { screen: 'ReserveFood' });
+  //     } else {
+  //       console.error('Item not found in reserved food array');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error removing reservation:', error);
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Error',
+  //       text2: 'Failed to cancel reservation. Please try again.',
+  //     });
+  //   }
+  // };
+
+  const handleAddFavDistributor = async () => {
     try {
       const currentUser = auth().currentUser;
       const userId = currentUser ? currentUser.uid : null;
@@ -142,9 +178,9 @@ const ReservedPickups = ({ route, navigation }) => {
       // Check if the item exists in favorites
       const isItemInFavorites = favoritesArray.some(
         (fav) =>
-          fav.profileImage === item.profileImage &&
-          fav.organization === item.organization &&
-          fav.address === item.address &&
+          fav.profileImage === distributerDetail.profileImage &&
+          fav.organization === distributerDetail.organization &&
+          fav.address === distributerDetail.address &&
           fav.reservationDate === selectedDate
       );
 
@@ -158,9 +194,9 @@ const ReservedPickups = ({ route, navigation }) => {
       } else {
         // Add the new reservation data to favorites
         favoritesArray.push({
-          profileImage: item.profileImage,
-          organization: item.organization,
-          address: item.address,
+          profileImage: distributerDetail.profileImage,
+          organization: distributerDetail.organization,
+          address: distributerDetail.address,
           reservationDate: selectedDate,
         });
 
@@ -186,8 +222,8 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
-  const { item, reservationDate } = route.params;
-  const _id = item.id || '34534534j5bh3hj5b345j'
+
+
   const handleRemoveFavorite = async () => {
     try {
       const currentUser = auth().currentUser;
@@ -239,6 +275,7 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
+
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -252,12 +289,12 @@ const ReservedPickups = ({ route, navigation }) => {
       <ScrollView>
         <CardView
           customMarginTop={responsiveHeight(1)}
-          source={{ uri: item.profileImage }}
-          title={item.organization}
+          source={{ uri: distributerDetail?.profileImage }}
+          title={distributerDetail?.organization}
           pickupsource={pocket1}
-          description={item.address}
+          description={distributerDetail?.address}
           Availabletxt={'Pending'}
-          additionalInfo={item.additionalInfo}
+          additionalInfo={distributerDetail?.additionalInfo || ''}
           showPickupsView={true}
         />
         <CustomTextInput
@@ -290,7 +327,7 @@ const ReservedPickups = ({ route, navigation }) => {
             <Image source={Buttonzoom} style={[appStyles.locationtag, { marginTop: -responsiveHeight(20), marginLeft: responsiveWidth(73) }]} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={()=>saveQRCodeToGallery(qrCodeRef)}
+            onPress={() => saveQRCodeToGallery(qrCodeRef)}
           >
             <Image source={Buttondownload} style={[appStyles.locationtag, { marginTop: -responsiveHeight(13), marginLeft: responsiveWidth(73) }]} />
           </TouchableOpacity>
@@ -310,7 +347,7 @@ const ReservedPickups = ({ route, navigation }) => {
               customImageSource={heart}
               customImageMarginRight={responsiveWidth(2)}
               // onPress={toggleContainer}
-              onPress={handleReservation}
+              onPress={handleAddFavDistributor}
             />
           </TouchableOpacity>
         )}
@@ -330,7 +367,8 @@ const ReservedPickups = ({ route, navigation }) => {
           marginTop={responsiveHeight(1)}
         />
         <TouchableOpacity onPress={() => {
-          setSelectedCardID(item.cardID); // Set the selected card ID
+          //setSelectedCardID(item.cardID); // Set the selected card ID
+          setSelectedCardID(item?.id); // Set the selected card ID
           setIsRemoveUserModalVisible(true); // Open the modal
         }}>
           <View style={[appStyles.getdirectioncontainer, {
@@ -353,6 +391,9 @@ const ReservedPickups = ({ route, navigation }) => {
         onCancelPress={handleCancelReject} // Call handleCancelReject when user presses 'No'
         onRemovePress={() => setIsRemoveUserModalVisible(false)}
         navigation={navigation}
+      />
+      <Loaders.AbsolutePrimary
+      isVisible={loadingCancelReservation}
       />
     </SafeAreaView>
   );

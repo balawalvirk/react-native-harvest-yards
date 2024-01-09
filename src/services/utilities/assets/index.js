@@ -98,3 +98,7 @@ export const Buttonzoom= require('../../../../src/assets/images/Buttonzoom.png')
 export const greenshoppingbag= require('../../../../src/assets/images/greenshoppingbag.png');
 export const animation= require('../../../../src/assets/lottie/v3Bjl8xfoW.json');
 export const icon8= require('../../../../src/assets/images/icons8.png');
+
+export const appImages={
+    noUser: 'https://icon-library.com/images/no-user-image-icon/no-user-image-icon-27.jpg',
+}

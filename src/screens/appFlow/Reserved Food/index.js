@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, SafeAreaView, Text, Image, TouchableOpaci
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { appStyles } from '../../../services/utilities/appStyles';
 import Header from '../../../components/Headers';
-import { MenueButton, search, pocket8, heart, HelpCallout, pocket1, greenheart, Refresh, animation } from '../../../services/utilities/assets';
+import { MenueButton, search, pocket8, heart, HelpCallout, pocket1, greenheart, Refresh, animation, appImages } from '../../../services/utilities/assets';
 import CustomLocationInput from '../../../components/Textinputs/Locationinput';
 import CardView from '../../../components/CardView';
 import { scale } from 'react-native-size-matters';
@@ -17,127 +17,34 @@ import firestore from '@react-native-firebase/firestore';
 import { RefreshControl } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { Loaders } from '../../../components';
-const ReservedFood = () => {
-  const [selectedTouchable, setSelectedTouchable] = useState('Pending Pick-ups');
-  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-  const [showQRMainView, setShowQRMainView] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+import { useHooks } from './hooks';
+const ReservedFood = (props) => {
   const navigation = useNavigation();
 
-  const handleCardPress = (item) => {
-    if (selectedTouchable === 'Pending Pick-ups') {
-      // Navigate to ReservedPickups screen with parameters for 'pending'
-      navigation.navigate('AppNavigation', {
-        screen: 'ReservedPickups',
-        params: { item: { ...item, reservationDate: item.reservationDate.toDate() }, selectedTouchable: selectedTouchable }
-      });
-    } else if (selectedTouchable === 'Favorites') {
-      // Navigate to Reservedfavorites screen with parameters for 'favourites'
-      navigation.navigate('AppNavigation', {
-        screen: 'Reservedfavorites',
-        params: { item: item, selectedTouchable: selectedTouchable, reservationDate: item.reservationDate }
-      });
-    }
-  };
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchDataFromFirestore();
-    fetchFavorites();
-    setRefreshing(false);
-  };
-  const [favoritesData, setFavoritesData] = useState([]);
-  const fetchFavorites = async () => {
-    try {
-      setLoading(true);
+  const {
+    //local states
+    pendingPickups, setPendingPickups,
+    selectedTouchable, setSelectedTouchable,
+    isHelpCalloutModalVisible, setHelpCalloutModalVisible,
+    showQRMainView, setShowQRMainView,
+    refreshing, setRefreshing,
+    loading, setLoading,
+    loadingAnimation, setLoadingAnimation,
+    reservedFoodData, setReservedFoodData,
+    searchQuery, setSearchQuery,
+    filteredData, setFilteredData,
+    favoritesData, setFavoritesData,
 
-      setLoadingAnimation(true);
-      const currentUser = auth().currentUser;
-      const userId = currentUser ? currentUser.uid : null;
-      if (!userId) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'User ID not found',
-        });
-        return;
-      }
-      const userDocRef = firestore().collection('users').doc(userId);
-      const userDoc = await userDocRef.get();
-      const userData = userDoc.data();
-      let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-      setFavoritesData(favoritesArray);
-      setLoading(false);
+    //data
+    viewableData,
+    isPendingPickupsTab,
+    //local methods
+    handleCardPress,
+    handleSearch,
+    onRefresh
+  } = useHooks()
 
-      setLoadingAnimation(false);
-    } catch (error) {
-      setLoading(false);
-      setLoadingAnimation(false);
 
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to fetch favorites. Please try again.',
-      });
-    }
-  };
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
-  const [reservedFoodData, setReservedFoodData] = useState([]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearch = (text) => {
-    const formattedQuery = text.toLowerCase();
-    setSearchQuery(formattedQuery);
-
-    const filteredItems = selectedTouchable === 'Pending Pick-ups'
-      ? reservedFoodData.filter(item =>
-        item.organization.toLowerCase().includes(formattedQuery)
-      )
-      : favoritesData.filter(item =>
-        item.organization.toLowerCase().includes(formattedQuery)
-      );
-
-    setFilteredData(filteredItems);
-  };
-  const fetchDataFromFirestore = async () => {
-    try {
-      setLoading(true);
-      setLoadingAnimation(true);
-      const currentUser = auth().currentUser;
-      const userId = currentUser ? currentUser.uid : null;
-      if (!userId) {
-        console.error('User ID not found');
-        return;
-      }
-      const userDocRef = firestore().collection('users').doc(userId);
-      const userDoc = await userDocRef.get();
-      const userData = userDoc.data();
-
-      if (userData && userData.reservedFood) {
-        // Set the reserved food data fetched from Firestore to state
-        setReservedFoodData(userData.reservedFood);
-      }
-      setLoading(false);
-      setLoadingAnimation(false);
-    } catch (error) {
-      setLoading(false);
-      setLoadingAnimation(false);
-      console.error('Error fetching reserved food information:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to fetch reserved food information. Please try again.',
-      });
-    }
-  };
-  useEffect(() => {
-    fetchDataFromFirestore();
-  }, []);
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -218,34 +125,41 @@ const ReservedFood = () => {
           placeholder='Search...'
           placeholderTextColor={colors.color29}
           marginLeft={responsiveWidth(2)}
-          onChangeText={handleSearch} // Call handleSearch on input change
+          //onChangeText={handleSearch} // Call handleSearch on input change
+          onChangeText={setSearchQuery} // Call handleSearch on input change
           value={searchQuery} // Bind the input value to the searchQuery state
         />
         <FlatList
-          data={searchQuery !== '' ? filteredData : selectedTouchable === 'Pending Pick-ups' ? reservedFoodData : favoritesData}
+          data={viewableData}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <CardView
-              customMarginTop={responsiveHeight(1)}
-              source={{ uri: item.profileImage }}
-              title={item.organization}
-              pickupsource={
-                selectedTouchable === 'Pending Pick-ups'
-                  ? pocket1
-                  : greenheart
-              }
-              description={item.address}
-              Availabletxt={
-                selectedTouchable === 'Pending Pick-ups'
-                  ? 'Pending'
-                  : 'Favorite'
-              }
-              additionalInfo={item.additionalInfo}
+          renderItem={({ item }) => {
+            const { profileImage,address,organization,distributor } = item||{}
+            const imageUrl=distributor?.profileImage||profileImage||appImages.noUser
+            const title=distributor?.organization||organization||'-- -- -- --'
+            const description=distributor?.address||address||'-- -- -- --'
+            return (
+              <CardView
+                customMarginTop={responsiveHeight(1)}
+                source={{ uri: imageUrl }}
+                title={title}
+                pickupsource={
+                  selectedTouchable === 'Pending Pick-ups'
+                    ? pocket1
+                    : greenheart
+                }
+                description={description}
+                Availabletxt={
+                  selectedTouchable === 'Pending Pick-ups'
+                    ? 'Pending'
+                    : 'Favorite'
+                }
+                additionalInfo={item.additionalInfo}
 
-              showPickupsView={true}
-              onPress={() => handleCardPress(item)}
-            />
-          )}
+                showPickupsView={true}
+                onPress={() => handleCardPress(item)}
+              />
+            )
+          }}
         />
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
@@ -263,7 +177,7 @@ const ReservedFood = () => {
         )}
       </View> */}
       <Loaders.AbsolutePrimary
-        isVisible={loading}
+        isVisible={loading || !pendingPickups}
       />
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible}
