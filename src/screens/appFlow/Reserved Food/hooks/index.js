@@ -32,17 +32,30 @@ export function useHooks() {
         const collectionRef = firestore().
             collection(firestoreCollections.orders).
             where('userId', '==', user?.uid).
-            where('status', '==', orderStatuses.pending);
+            where('status', '==', orderStatuses.pending)
+            // orderBy("reservationDate", "asc")
+            ;
+
 
         // Subscribe to changes in the collection
         const unsubscribe = collectionRef.onSnapshot((snapshot) => {
-            const newData = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            console.log('pending pickes data: ', newData)
-            setPendingPickups(newData);
-            getDistributorData(newData)
+            if (snapshot && snapshot.docs) {
+                const newData = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                console.log('pending pickes data: ', newData)
+
+                // Sort the data by reservationDate (client-side sorting)
+                const sortedData = newData.sort((a, b) => a.reservationDate - b.reservationDate);
+
+                setPendingPickups(sortedData);
+                getDistributorData(sortedData)
+            } else {
+                // Handle the case when snapshot is null or has no documents
+                //console.error("Snapshot is null or has no documents.");
+                setPendingPickups([]);
+            }
         });
 
 
@@ -72,9 +85,15 @@ export function useHooks() {
 
 
     const getDistributorData = async (ordersData) => {
+        const _pendingPickups = ordersData
+
         // Collect all distributorIds from the orders
-        const _pendingPickups=ordersData
-        const distributorIds = _pendingPickups.map((order) => order.distributorId);
+        //const distributorIds = _pendingPickups.map((order) => order.distributorId);
+
+        // Collect all unique distributorIds from the orders
+        const uniqueDistributorIds = new Set(_pendingPickups.map((order) => order.distributorId));
+        const distributorIds = Array.from(uniqueDistributorIds);
+
         console.log('distributorIds: ', distributorIds)
         // Fetch distributor details from "distributors" collection
         const distributorPromises = distributorIds.map(async (distributorId) => {
@@ -103,7 +122,7 @@ export function useHooks() {
         setPendingPickups(updatedOrdersData);
     };
 
-  
+
 
 
 
@@ -126,7 +145,7 @@ export function useHooks() {
     };
     const onRefresh = () => {
         setRefreshing(true);
-       // fetchDataFromFirestore();
+        // fetchDataFromFirestore();
         fetchFavorites();
         setRefreshing(false);
     };

@@ -19,7 +19,7 @@ import auth from '@react-native-firebase/auth';
 import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
 import { QRCode } from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
-import { createOrder, firestoreCollections, roundToDecimal, useFirebaseAuth, useLocation } from '../../../../services';
+import { createOrder, firestoreCollections, orderStatuses, roundToDecimal, useFirebaseAuth, useLocation } from '../../../../services';
 import { Loaders } from '../../../../components';
 import moment from 'moment';
 
@@ -274,9 +274,10 @@ const ReservedFood1 = ({ route, navigation }) => {
 
                 const ordersCollectionRef = firestore().collection('orders').where('userId', '==', user?.uid);
                 const ordersCollectionCheckDistributerRef = ordersCollectionRef.where('distributorId', '==', distributorDetails?.id);
+                const ordersCollectionCheckStatusRef = ordersCollectionCheckDistributerRef.where('status', '==', orderStatuses.pending);
 
                 // Query to check if a document with the same reservationDate already exists
-                const existingDocumentQuery = ordersCollectionCheckDistributerRef
+                const existingDocumentQuery = ordersCollectionCheckStatusRef
                     .where('reservationDate', '>=', startOfDay)
                     .where('reservationDate', '<=', endOfDay);
 
