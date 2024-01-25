@@ -25,6 +25,8 @@ import auth from '@react-native-firebase/auth'; // Make sure you've imported aut
 import LottieView from 'lottie-react-native';
 import CustomSwitch from '../../../components/Switch';
 import { Loaders } from '../../../components';
+
+
 export default function EditProfile({ navigation }) {
   const [userId, setUserId] = useState('');
   const [firstName, setfirstName] = useState('');
@@ -38,7 +40,10 @@ export default function EditProfile({ navigation }) {
   const [zip, setZip] = useState('');
   const [Password, setPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
+  const [ConfirmPasswordNew, setConfirmPasswordNew] = useState('');
   const [loading, setLoading] = useState(true);
+  // const [currentPassword, setCurrentPassword] = useState('');
+  // const [newPassword, setNewPassword] = useState('');
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -73,24 +78,51 @@ export default function EditProfile({ navigation }) {
       setLoading(false);
     }
   };
-  const updatePassword = async () => {
+  const handleUpdatePassword = async () => {
     try {
-      const user = auth().currentUser;
-      if (!user) {
-        showToast('User not authenticated');
-        return;
-      }
+      // Prompt the user for their current password
+      // (You may want to use a secure input method instead of window.prompt)
+      // const currentPassword = window.prompt('Please enter current password');
 
-      if (Password !== ConfirmPassword) {
-        showToast('Passwords do not match');
-        return;
-      }
-      await user.updatePassword(Password);
+      // Reauthenticate the user with their current credentials
+      const emailCredential = auth.EmailAuthProvider.credential(
+        auth().currentUser.email,
+        Password,
+      );
+
+      await auth().currentUser.reauthenticateWithCredential(emailCredential);
+
+      // Get the new password from the user
+      // (You may want to use a secure input method instead of window.prompt)
+      // const newPassword = window.prompt('Please enter new password');
+
+      // Update the user's password
+      await auth().currentUser.updatePassword(ConfirmPassword);
+
+      console.log('Password updated successfully');
     } catch (error) {
-      console.error('Error updating password:', error);
-      showToast('Error updating password');
+      console.error('Error updating password:', error.message);
+      // Handle error
     }
   };
+  // const updatePassword = async () => {
+  //   try {
+  //     const user = auth().currentUser;
+  //     if (!user) {
+  //       showToast('User not authenticated');
+  //       return;
+  //     }
+
+  //     if (Password !== ConfirmPassword) {
+  //       showToast('Passwords do not match');
+  //       return;
+  //     }
+  //     await user.updatePassword(Password);
+  //   } catch (error) {
+  //     console.error('Error updating password:', error);
+  //     showToast('Error updating password');
+  //   }
+  // };
   const saveChanges = async () => {
     setLoading(true);
     try {
@@ -100,7 +132,7 @@ export default function EditProfile({ navigation }) {
       }
 
       // Update password
-      await updatePassword();
+      await handleUpdatePassword();
 
       const userRef = firestore().collection('users').doc(userId);
       const notificationValue = switchValue ? 'yes' : 'no';
@@ -192,13 +224,15 @@ export default function EditProfile({ navigation }) {
     if (!Password) {
       showToast('Password is required');
       return false;
-    } else if (Password.length < 8) {
-      showToast('Password should be at least 8 characters');
+    } else if (ConfirmPassword.length < 8) {
+      showToast('ConfirmPassword should be at least 8 characters');
       return false;
     } else if (!ConfirmPassword) {
       showToast('Confirm Password is required');
       return false;
-    } else if (ConfirmPassword !== Password) {
+    } 
+    
+    else if (ConfirmPassword !== ConfirmPasswordNew) {
       showToast('Passwords do not match');
       return false;
     }
@@ -325,7 +359,7 @@ export default function EditProfile({ navigation }) {
 
         <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(7) }]}>Secure Your Account</Text>
         <CustomTextInput
-          label="Password"
+          label="Current Password"
           keyboardType="default"
           placeholder="Minimum 8 characters"
           placeholderMarginLeft={responsiveWidth(3)}
@@ -337,7 +371,7 @@ export default function EditProfile({ navigation }) {
           onChangeText={(text) => setPassword(text)}
         />
         <CustomTextInput
-          label="Confirm Password"
+          label="New Password"
           keyboardType="default"
           placeholder="Minimum 8 characters"
           placeholderMarginLeft={responsiveWidth(3)}
@@ -347,6 +381,18 @@ export default function EditProfile({ navigation }) {
           showeye={true}
           value={ConfirmPassword}
           onChangeText={(text) => setConfirmPassword(text)}
+        />
+        <CustomTextInput
+          label="Confirm New Password"
+          keyboardType="default"
+          placeholder="Minimum 8 characters"
+          placeholderMarginLeft={responsiveWidth(3)}
+          responsiveMarginTop={7}
+          TextinputWidth={responsiveWidth(67)}
+          source={lock}
+          showeye={true}
+          value={ConfirmPasswordNew}
+          onChangeText={(text) => setConfirmPasswordNew(text)}
         />
         <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
           <CustomSwitch

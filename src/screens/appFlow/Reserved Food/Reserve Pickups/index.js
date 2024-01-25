@@ -32,6 +32,7 @@ const ReservedPickups = ({ route, navigation }) => {
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
+  console.log("selectedCardID>>>",selectedCardID);
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
   const [loadingCancelReservation, setLoadingCancelReservation] = useState(false);

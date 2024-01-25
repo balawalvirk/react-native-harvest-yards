@@ -117,7 +117,7 @@ export function useHooks() {
             };
         });
 
-        console.log('updatedOrdersData: ', updatedOrdersData)
+        // console.log('updatedOrdersData: ',JSON.stringify (updatedOrdersData,null,2))
         // Update the state with the updated pendingPickups
         setPendingPickups(updatedOrdersData);
     };
@@ -191,15 +191,18 @@ export function useHooks() {
 
 
     const handleSearch = (text) => {
-        const formattedQuery = text.toLowerCase();
+        const formattedQuery = text?.toLowerCase();
+        console.log("formattedQuery",formattedQuery);
         setSearchQuery(formattedQuery);
 
         const filteredItems = isPendingPickupsTab
             ? pendingPickups.filter(item =>
-                item.organization.toLowerCase().includes(formattedQuery)
+                item?.distributor?.organization?.toLowerCase()?.includes(formattedQuery)
+                // console.log("item>>>",item.distributor.organization)
             )
             : favoritesData.filter(item =>
-                item.organization.toLowerCase().includes(formattedQuery)
+                item?.organization?.toLowerCase()?.includes(formattedQuery)
+               
             );
 
         //setFilteredData(filteredItems);

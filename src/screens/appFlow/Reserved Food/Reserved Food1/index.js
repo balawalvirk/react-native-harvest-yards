@@ -74,29 +74,7 @@ const ReservedFood1 = ({ route, navigation }) => {
 
     }, [distributorId]);
 
-    // useEffect(() => {
-
-    //     const fetchCompanyData = async () => {
-    //         try {
-    //             const { userId } = route.params; // Get the userId passed from FindFood
-
-    //             const organizationDoc = await firestore().collection('distributors').doc(userId).get();
-
-    //             if (organizationDoc.exists) {
-    //                 setCompanyData(organizationDoc.data());
-    //                 // Fetch available meals for the organization
-    //                 const availableMeals = distributorDetails.availableMeals; // Adjust the field name if needed
-    //                 console.log('Available meals:', availableMeals);
-    //             } else {
-    //                 console.log('Organization document not found for UserID:', userId);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching company data:', error);
-    //         }
-    //     };
-
-    //     fetchCompanyData();
-    // }, [route.params]);
+  
 
     useEffect(() => {
         // Check if the component was accessed from Reserved favorites
@@ -163,75 +141,7 @@ const ReservedFood1 = ({ route, navigation }) => {
             return null;
         }
     };
-    // const addReservedFoodToOrdersCollection = async (userId, item, userData, qrCodeValue) => {
-    //     try {
-    //         const userDocRef = firestore().collection('users').doc(userId);
-
-    //         const reservedFoodEntry = {
-    //             profileImage: item.profileImage,
-    //             organization: item.organization,
-    //             address: item.address,
-    //             reservationDate: selectedDate,
-    //             qrCodeValue: qrCodeValue,
-    //         };
-
-    //         // Fetch the existing reservedFood array from the user document
-    //         const userDoc = await userDocRef.get();
-    //         const existingReservedFood = userDoc.data()?.reservedFood || [];
-
-    //         // Check if there is an exact match for the reservation entry in the array
-    //         const isExistingReservation = existingReservedFood.find(
-    //             (reservation) =>
-    //                 reservation.organization === reservedFoodEntry.organization &&
-    //                 reservation.address === reservedFoodEntry.address &&
-    //                 reservation.reservationDate === reservedFoodEntry.reservationDate &&
-    //                 reservation.qrCodeValue === reservedFoodEntry.qrCodeValue
-    //         );
-
-    //         if (isExistingReservation) {
-    //             console.log('Reservation already exists for this entry');
-    //             // Handle if the reservation already exists, e.g., show a message or perform necessary actions
-    //             return;
-    //         }
-
-    //         // Add the new reserved food entry to the existing reservedFood array
-    //         const updatedReservedFood = [...existingReservedFood, reservedFoodEntry];
-
-    //         // Update the user document with the updated reservedFood array
-    //         await userDocRef.update({
-    //             reservedFood: updatedReservedFood,
-    //         });
-    //         // Add data to the reserved_orders collection
-    //         const reservedOrderRef = firestore().collection('reserved_orders').doc(userId);
-    //         const reservedOrderSnapshot = await reservedOrderRef.get();
-
-    //         if (reservedOrderSnapshot.exists) {
-    //             reservedOrderRef.update({
-    //                 reservations: firestore.FieldValue.arrayUnion({
-    //                     userId: userId,
-    //                     firstName: userData.firstName,
-    //                     lastName: userData.lastName,
-    //                     reservationDate: selectedDate,
-    //                     qrCodeValue: qrCodeValue,
-    //                 }),
-    //             });
-    //         } else {
-    //             reservedOrderRef.set({
-    //                 reservations: [{
-    //                     userId: userId,
-    //                     firstName: userData.firstName,
-    //                     lastName: userData.lastName,
-    //                     reservationDate: selectedDate,
-    //                     qrCodeValue: qrCodeValue,
-    //                 }],
-    //             });
-    //         }
-    //         console.log('Reserved food added to user document and reserved_orders collection successfully!');
-    //     } catch (error) {
-    //         console.error('Error adding reserved food information:', error);
-    //         Alert.alert('Error', 'Failed to add reserved food information.');
-    //     }
-    // };
+   
 
     const handleReserveFoodValidation = () => {
         if (!selectedDate) {

@@ -28,7 +28,9 @@ export default function () {
                 // Write the base64 content to a file
                 await RNFS.writeFile(filePath, qrCodeDataURL, 'base64')
                     .then((success) => {
+                        console.log(">>>00");
                         return CameraRoll.saveToCameraRoll(filePath, 'photo')
+                       
                     })
                     .then(() => {
                         Toast.show({
@@ -38,6 +40,7 @@ export default function () {
                         });
                     })
                     ;
+                   
 
 
                 console.log('QR code saved to gallery:', filePath);

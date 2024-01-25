@@ -19,6 +19,7 @@ const Coupons = ({ navigation }) => {
 
 
   const [couponsData, setCouponsData] = useState([]);
+  console.log("couponsData",JSON.stringify(couponsData,null,2));
 
   useEffect(() => {
     const fetchCouponsFromFirestore = async () => {

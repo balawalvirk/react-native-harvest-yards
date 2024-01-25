@@ -120,7 +120,7 @@ const FindFood = ({ navigation }) => {
         <Text style={[appStyles.infotxt, { marginBottom: responsiveHeight(0.1) }]}>Nearby</Text>
         <FlatList
           data={searchText === '' ? distributorsData : distributorsData.filter(item =>
-            item.organization.toLowerCase().includes(searchText.toLowerCase())
+            item.organization?.toLowerCase()?.includes(searchText?.toLowerCase())
           )}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {

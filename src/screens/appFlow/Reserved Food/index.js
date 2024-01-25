@@ -42,8 +42,9 @@ const ReservedFood = (props) => {
     handleCardPress,
     handleSearch,
     onRefresh
+    
   } = useHooks()
-
+  // const [searchText, setSearchText] = useState('');
 
   return (
     <SafeAreaView style={appStyles.container}>
@@ -119,18 +120,27 @@ const ReservedFood = (props) => {
         <CustomLocationInput
           showsearch={true}
           source={search}
-          inputWidth={responsiveWidth(92)}
           marginBottom={responsiveHeight(1)}
-          inneriinputtwidth={responsiveWidth(82)}
+          inputWidth={responsiveWidth(75)}
+          inneriinputtwidth={responsiveWidth(65)}
           placeholder='Search...'
           placeholderTextColor={colors.color29}
+          maininputmarginleft={-responsiveWidth(16.6)}
           marginLeft={responsiveWidth(2)}
-          //onChangeText={handleSearch} // Call handleSearch on input change
-          onChangeText={setSearchQuery} // Call handleSearch on input change
-          value={searchQuery} // Bind the input value to the searchQuery state
+          onChangeText={(text) => setSearchQuery(text)}
+          value={searchQuery}
         />
+        {searchQuery !== '' && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+          </TouchableOpacity>
+        )}
+        {console.log("viewableData>>>",JSON.stringify(viewableData,null,2))}
         <FlatList
           data={viewableData}
+          // data={searchQuery === '' ? viewableData : viewableData?.filter(item =>
+          //   // item?.organization?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+          //   console.log("item>>",JSON.stringify(item,null,2))
+          // )}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
             const { profileImage,address,organization,distributor } = item||{}

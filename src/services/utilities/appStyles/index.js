@@ -1291,9 +1291,10 @@ export const appStyles = StyleSheet.create({
   },
   plusbutton: {
     width: scale(48),
-    height: scale(48),
-    resizeMode: 'contain',
-    marginLeft: responsiveWidth(81),
+  height: scale(48),
+  resizeMode: 'contain',
+  marginLeft: responsiveWidth(81),
+  // padding: 5,
   },
   QRcode: {
     width: scale(150),
