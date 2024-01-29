@@ -116,7 +116,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 return;
               }
             // Create user in Firebase Authentication
-            const authResponse = await auth().createUserWithEmailAndPassword(email, password);
+            const authResponse = await auth().createUserWithEmailAndPassword(email.trim(), password);
             const userId = authResponse.user.uid;
             setIslinksentModalVisible(true);
             console.log('Modal should show now...'); 
@@ -175,7 +175,7 @@ export default function AdditionalInfo({ route, navigation }) {
                     responsiveMarginTop={5}
                     source={User}
                     autoCapitalize={true}
-                    value={email}
+                    value={email.trim()}
                     onChangeText={(text) => setEmail(text)}
                 />
 

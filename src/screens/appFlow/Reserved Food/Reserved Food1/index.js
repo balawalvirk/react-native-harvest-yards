@@ -30,6 +30,7 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
+    console.log("isHelpCalloutModalVisible",isHelpCalloutModalVisible);
     const [companyData, setCompanyData] = useState({});
     const [qrCodeValue, setQRCodeValue] = useState('');
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
@@ -228,43 +229,6 @@ const ReservedFood1 = ({ route, navigation }) => {
         }
     };
 
-    // const handleQR = async (item) => {
-    //     try {
-    //         if (!selectedDate) {
-    //             Toast.show({
-    //                 type: 'error',
-    //                 text1: 'Error',
-    //                 text2: 'Reservation Date is required',
-    //             });
-    //             return;
-    //         }
-    //         const currentUser = auth().currentUser;
-    //         const userId = currentUser ? currentUser.uid : null;
-
-    //         if (!userId) {
-    //             console.error('User ID not found');
-    //             return;
-    //         }
-
-    //         const qrValue = `${userId}`;
-    //         setQRCodeValue(qrValue);
-
-    //         setIsQRModalVisible(true);
-
-    //         const userData = await fetchUserData(userId);
-
-    //         if (userData) {
-    //             await addReservedFoodToOrdersCollection(userId, item, userData, qrValue);
-    //         } else {
-    //             console.error('User data not found');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error adding reserved food information:', error);
-    //     }
-    // };
-
-
-
     const handleDateChange = date => {
         setSelectedDate(date);
     };
@@ -357,6 +321,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                     showImage={true}
                     onDateChange={handleDateChange}
                 />
+                {console.log(" item?.availableMeals ", item?.availableMeals )}
                 {
                     item?.availableMeals ?
                         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
@@ -376,6 +341,7 @@ const ReservedFood1 = ({ route, navigation }) => {
             <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
                 <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60), marginLeft: responsiveWidth(85) }]} />
             </TouchableOpacity>
+            {isHelpCalloutModalVisible&&(
             <HelpCalloutModal
                 isVisible={isHelpCalloutModalVisible}
                 onBackdropPress={() => setHelpCalloutModalVisible(false)}
@@ -386,7 +352,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                 Push the “Reserve Food” button to reserve a food package. 
                 The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package. 
                 A QR code will be issued to you that must be scanned when you are picking up your food package.'
-            />
+            />)}
             {isQRModalVisible && (
                 <QRcodeModal
                     navigation={navigation}

@@ -3,9 +3,9 @@ import firestore from '@react-native-firebase/firestore'
 import { firestoreCollections, orderStatuses, useFirebaseAuth } from "../../../../services";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
-
+import { useIsFocused } from "@react-navigation/native";
 export function useHooks() {
-
+   const isFocused=useIsFocused()
     const navigation = useNavigation();
 
     const { user, auth } = useFirebaseAuth()
@@ -63,34 +63,8 @@ export function useHooks() {
         return () => unsubscribe();
     }, []); // Empty dependency array means it runs once on mount
 
-    //fetch favourite distributer
-    // useEffect(() => {
-    //     // Reference to the Firestore collection
-    //     const collectionRef = firestore().
-    //         collection(firestoreCollections.distributors).
-    //         where('usersFavourit', 'array-contains', user?.uid)
-
-    //     // Subscribe to changes in the collection
-    //     const unsubscribe = collectionRef.onSnapshot((snapshot) => {
-    //         const newData = snapshot.docs.map((doc) => ({
-    //             id: doc.id,
-    //             ...doc.data(),
-    //         }));
-    //         setFavourites(newData);
-    //     });
-
-    //     // Unsubscribe when the component unmounts
-    //     return () => unsubscribe();
-    // }, []); // Empty dependency array means it runs once on mount
-
-
     const getDistributorData = async (ordersData) => {
         const _pendingPickups = ordersData
-
-        // Collect all distributorIds from the orders
-        //const distributorIds = _pendingPickups.map((order) => order.distributorId);
-
-        // Collect all unique distributorIds from the orders
         const uniqueDistributorIds = new Set(_pendingPickups.map((order) => order.distributorId));
         const distributorIds = Array.from(uniqueDistributorIds);
 
@@ -117,8 +91,6 @@ export function useHooks() {
             };
         });
 
-        // console.log('updatedOrdersData: ',JSON.stringify (updatedOrdersData,null,2))
-        // Update the state with the updated pendingPickups
         setPendingPickups(updatedOrdersData);
     };
 
@@ -187,7 +159,7 @@ export function useHooks() {
 
     useEffect(() => {
         fetchFavorites();
-    }, []);
+    }, [isFocused]);
 
 
     const handleSearch = (text) => {
@@ -208,44 +180,6 @@ export function useHooks() {
         //setFilteredData(filteredItems);
         return filteredItems
     };
-
-
-
-    // const fetchDataFromFirestore = async () => {
-    //     try {
-    //         setLoading(true);
-    //         setLoadingAnimation(true);
-    //         const currentUser = auth().currentUser;
-    //         const userId = currentUser ? currentUser.uid : null;
-    //         if (!userId) {
-    //             console.error('User ID not found');
-    //             return;
-    //         }
-    //         const userDocRef = firestore().collection('users').doc(userId);
-    //         const userDoc = await userDocRef.get();
-    //         const userData = userDoc.data();
-
-    //         if (userData && userData.reservedFood) {
-    //             // Set the reserved food data fetched from Firestore to state
-    //             setReservedFoodData(userData.reservedFood);
-    //         }
-    //         setLoading(false);
-    //         setLoadingAnimation(false);
-    //     } catch (error) {
-    //         setLoading(false);
-    //         setLoadingAnimation(false);
-    //         console.error('Error fetching reserved food information:', error);
-    //         Toast.show({
-    //             type: 'error',
-    //             text1: 'Error',
-    //             text2: 'Failed to fetch reserved food information. Please try again.',
-    //         });
-    //     }
-    // };
-    // useEffect(() => {
-    //     fetchDataFromFirestore();
-    // }, []);
-
 
     const filteredData = useMemo(() => {
         let _data = []

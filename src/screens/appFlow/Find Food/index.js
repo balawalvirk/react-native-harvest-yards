@@ -158,16 +158,6 @@ const FindFood = ({ navigation }) => {
       <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
         <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60), marginBottom: -responsiveHeight(3) }]} />
       </TouchableOpacity>
-      {/* <View style={appStyles.loadingContainer}>
-        {loadingAnimation && (
-          <LottieView
-            source={animation}
-            autoPlay
-            loop
-            style={appStyles.loadingAnimation}
-          />
-        )}
-      </View> */}
        <Loaders.AbsolutePrimary
           isVisible={loading}
         />

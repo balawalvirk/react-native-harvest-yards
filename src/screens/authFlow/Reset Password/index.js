@@ -53,7 +53,7 @@ export default function Index({ navigation }) {
             return;
         }
         setIslinksentModalVisible(true);
-        await auth().sendPasswordResetEmail(email);
+        await auth().sendPasswordResetEmail(email.trim());
     
         navigation.navigate('Login');
     } catch (error) {
@@ -88,7 +88,7 @@ export default function Index({ navigation }) {
           placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={5}
           source={Email}
-          value={email}
+          value={email.trim()}
           autoCapitalize={true}
           onChangeText={(text) => setEmail(text)}
         />

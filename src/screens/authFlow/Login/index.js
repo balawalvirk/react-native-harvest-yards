@@ -116,7 +116,7 @@ export default function Login({ navigation }) {
         return;
       }
 
-      const response = await auth().signInWithEmailAndPassword(email, password);
+      const response = await auth().signInWithEmailAndPassword(email.trim(), password);
 
       // Additional logic after successful login, if needed
       console.log('Login successful!', response.user.uid);
@@ -163,7 +163,7 @@ export default function Login({ navigation }) {
           responsiveMarginTop={5}
           source={Email}
           autoCapitalize={true}
-          value={email}
+          value={email.trim()}
           onChangeText={(text) => setEmail(text)}
         />
         <CustomTextInput
