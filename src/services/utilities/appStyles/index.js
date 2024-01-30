@@ -1225,18 +1225,19 @@ export const appStyles = StyleSheet.create({
     height: scale(48),
     justifyContent: 'center',
     alignItems: 'center',
+    // backgroundColor: "green",
     backgroundColor: colors.color13,
     borderRadius: responsiveWidth(5),
     marginLeft: responsiveWidth(83),
     marginTop: -responsiveHeight(7.5)
   },
   helpview: {
-    width: scale(48),
-    height: scale(48),
+    width: responsiveHeight(9),
+    height: responsiveHeight(9),
 
 
-    marginLeft: responsiveWidth(83),
-    marginTop: -responsiveHeight(7.5)
+    // marginLeft: responsiveWidth(83),
+    // marginTop: -responsiveHeight(7.5)
   },
   removefrt: {
     alignSelf: 'center',
@@ -1261,7 +1262,7 @@ export const appStyles = StyleSheet.create({
     padding: responsiveHeight(2),
     borderRadius: responsiveWidth(4),
     position: 'absolute',
-    bottom: responsiveHeight(16),
+    bottom: responsiveHeight(18),
     width: responsiveWidth(85),
     right: -responsiveWidth(1),
     height: responsiveHeight(17),

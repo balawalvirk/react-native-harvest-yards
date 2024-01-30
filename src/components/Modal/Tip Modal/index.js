@@ -18,7 +18,7 @@ export const HelpCalloutModal = ({
   height,
   helpcallouttxt,
   Title,
-  bottom =responsiveHeight(16)
+  bottom =responsiveHeight(18)
 }) => {
   return (
     <Modal

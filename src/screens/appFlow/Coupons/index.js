@@ -206,9 +206,29 @@ const Coupons = ({ navigation }) => {
         ))}
         <View style={{height:responsiveHeight(4)}}/>
       </ScrollView>
-      <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
-        <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60), marginLeft: responsiveWidth(85), marginBottom: responsiveHeight(3.5) }]} />
-      </TouchableOpacity>
+      <TouchableOpacity 
+  activeOpacity={0.8}
+  style={{
+    right: responsiveWidth(0), 
+    bottom: responsiveHeight(0), 
+    alignItems:'center',
+    alignSelf:'flex-end',
+    position:'absolute'
+   
+  }}
+  onPress={() => {setHelpCalloutModalVisible(true)}}
+>
+  <Image
+    source={HelpCallout}
+    resizeMode='cover'
+    style={[
+      appStyles.helpview,
+      {
+       
+      },
+    ]}
+  />
+</TouchableOpacity>
       <HelpCalloutModal
         isVisible={isHelpCalloutModalVisible} 
         Title='Coupons Help'

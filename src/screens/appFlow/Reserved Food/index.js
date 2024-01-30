@@ -173,9 +173,29 @@ const ReservedFood = (props) => {
         />
         <View style={{ height: responsiveHeight(4) }} />
       </ScrollView>
-      <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
-        <Image source={HelpCallout} style={[appStyles.helpview, { width: scale(60), height: scale(60) }]} />
-      </TouchableOpacity>
+      <TouchableOpacity 
+  activeOpacity={0.8}
+  style={{
+    right: responsiveWidth(0), 
+    bottom: responsiveHeight(0), 
+    alignItems:'center',
+    alignSelf:'flex-end',
+    position:'absolute'
+   
+  }}
+  onPress={() => {setHelpCalloutModalVisible(true)}}
+>
+  <Image
+    source={HelpCallout}
+    resizeMode='cover'
+    style={[
+      appStyles.helpview,
+      {
+       
+      },
+    ]}
+  />
+</TouchableOpacity>
       {/* <View style={appStyles.loadingContainer}>
         {loadingAnimation && (
           <LottieView

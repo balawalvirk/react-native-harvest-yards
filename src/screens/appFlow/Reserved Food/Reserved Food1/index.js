@@ -41,7 +41,7 @@ const ReservedFood1 = ({ route, navigation }) => {
 
     const { item, userId } = route.params;
     const distributorId = item?.id || ''
-    console.log('distributer Item: ', item)
+    // console.log('distributer Item: ', item)
 
     const distributorDetails = useMemo(() => companyData || item, [companyData])
 
@@ -148,7 +148,7 @@ const ReservedFood1 = ({ route, navigation }) => {
         if (!selectedDate) {
             Toast.show({
                 type: 'error',
-                text1: 'Error',
+                text1: 'Select date',
                 text2: 'Reservation Date is required',
             });
         }
@@ -321,7 +321,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                     showImage={true}
                     onDateChange={handleDateChange}
                 />
-                {console.log(" item?.availableMeals ", item?.availableMeals )}
+                {/* {console.log(" item?.availableMeals ", item?.availableMeals )} */}
                 {
                     item?.availableMeals ?
                         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
@@ -338,9 +338,29 @@ const ReservedFood1 = ({ route, navigation }) => {
                         null
                 }
             </ScrollView>
-            <TouchableOpacity onPress={() => setHelpCalloutModalVisible(true)}>
-                <Image source={HelpCallout} style={[appStyles.locationtag, { width: scale(60), height: scale(60), marginLeft: responsiveWidth(85) }]} />
-            </TouchableOpacity>
+            <TouchableOpacity 
+  activeOpacity={0.8}
+  style={{
+    right: responsiveWidth(0), 
+    bottom: responsiveHeight(0), 
+    alignItems:'center',
+    alignSelf:'flex-end',
+    position:'absolute'
+   
+  }}
+  onPress={() => {setHelpCalloutModalVisible(true)}}
+>
+  <Image
+    source={HelpCallout}
+    resizeMode='cover'
+    style={[
+      appStyles.helpview,
+      {
+       
+      },
+    ]}
+  />
+</TouchableOpacity>
             {isHelpCalloutModalVisible&&(
             <HelpCalloutModal
                 isVisible={isHelpCalloutModalVisible}
