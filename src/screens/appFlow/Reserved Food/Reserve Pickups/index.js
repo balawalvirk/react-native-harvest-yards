@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, TouchableOpacity, FlatList, Text, SafeAreaView, Image } from 'react-native';
+import { View, ScrollView, TouchableOpacity, FlatList, Text, SafeAreaView, Image, Linking } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
@@ -21,10 +21,13 @@ import { scale } from 'react-native-size-matters';
 import { useHooks } from './hooks';
 import { orderStatuses, updateOrder, useFirebaseAuth } from '../../../../services';
 import { Loaders } from '../../../../components';
-
+import {useLocation} from '../../../../services/helper';
 const ReservedPickups = ({ route, navigation }) => {
+  const {currentLocation, calculateDistance} = useLocation();
+  console.log('currentLocation: ', currentLocation)
   const { item, reservationDate } = route.params || {};
   const distributerDetail = item?.distributor || null
+  console.log("distributerDetail>>>>>000",distributerDetail);
   const { qrCodeRef, saveQRCodeToGallery } = useHooks()
   const { user } = useFirebaseAuth()
 
@@ -32,11 +35,45 @@ const ReservedPickups = ({ route, navigation }) => {
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
-  console.log("selectedCardID>>>",selectedCardID);
+  console.log("selectedCardID>>>",JSON.stringify(selectedCardID,null,2));
   const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
   const [reservedFoodData, setReservedFoodData] = useState([]);
   const [loadingCancelReservation, setLoadingCancelReservation] = useState(false);
+  // const { latitude, longitude } = locationDetails;
+  const start_address = `${currentLocation?.latitude},${currentLocation?.longitude}`;
+  const destination_address = `${distributerDetail?.latitude},${distributerDetail?.longitude}`;
+  
+  console.log('start_address --> ', start_address);
+  console.log('destination_address --> ', destination_address);
+  
+  const url = Platform.select({
+    // Google Maps app
+    android: `google.navigation:q=${distributerDetail?.latitude}+${distributerDetail?.longitude}`,
+    ios: `comgooglemaps://?center=${distributerDetail?.latitude},${distributerDetail?.longitude}&q=${distributerDetail?.latitude},${distributerDetail?.longitude}&zoom=14&views=traffic`,
+  });
+  
+  const appleMaps = `maps://app?saddr=${start_address}&daddr=${destination_address}`;
+  const googleMapSite = `https://www.google.com/maps/dir/?api=1&destination=${distributerDetail?.latitude},${distributerDetail?.longitude}&dir_action=navigate`;
 
+
+  const handleLinkPress = () => {
+    Linking.canOpenURL(url)
+    .then((supported) => {
+        if (supported) {
+            return Linking.openURL(url);
+        } else {
+            return Linking.openURL(googleMapSite);
+        }
+    })
+    .catch(() => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL(
+                googleMapSite
+                // appleMaps
+            );
+        }
+    });
+};
   const _id = item.id || '34534534j5bh3hj5b345j'
 
   const handleRemoveUserPress = () => {
@@ -150,6 +187,9 @@ const ReservedPickups = ({ route, navigation }) => {
           organization: distributerDetail.organization,
           address: distributerDetail.address,
           reservationDate: selectedDate,
+          latitude:distributerDetail.latitude,
+          longitude:distributerDetail.longitude
+
         });
 
         await userDocRef.update({
@@ -227,7 +267,6 @@ const ReservedPickups = ({ route, navigation }) => {
       });
     }
   };
-
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -317,6 +356,8 @@ const ReservedPickups = ({ route, navigation }) => {
           customImageSource={greensend}
           customImageMarginRight={responsiveWidth(2)}
           marginTop={responsiveHeight(1)}
+          onPress={()=>handleLinkPress()}
+          // onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
         />
         <TouchableOpacity onPress={() => {
           //setSelectedCardID(item.cardID); // Set the selected card ID

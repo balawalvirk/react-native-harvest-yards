@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, TouchableOpacity, FlatList, Text, SafeAreaView, Image } from 'react-native';
+import { View, ScrollView, TouchableOpacity, FlatList, Text, SafeAreaView, Image, Linking } from 'react-native';
 import { appStyles } from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
@@ -16,6 +16,7 @@ import GetButton from '../../../../components/GetButton';
 import { ModalRemoveUser } from '../../../../components/Modal';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {useLocation} from '../../../../services/helper';
 const Reservedfavorites = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [showLubemeup, setShowLubemeup] = useState(false);
@@ -23,8 +24,26 @@ const Reservedfavorites = ({ route, navigation }) => {
     const [selectedCardID, setSelectedCardID] = useState(null);
     const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
     const [reservedFoodData, setReservedFoodData] = useState([]);
-    const [organizationId, setOrganizationId] = useState(null); // New state for organizationId
+    const [organizationId, setOrganizationId] = useState(null); 
+    const {currentLocation, calculateDistance} = useLocation();
+    console.log('currentLocation: ', currentLocation)// New state for organizationId
     const { userId } = route.params;
+    const { item } = route.params;
+    const start_address = `${currentLocation?.latitude},${currentLocation?.longitude}`;
+    const destination_address = `${item?.latitude},${item?.longitude}`;
+    
+    console.log('start_address --> ', start_address);
+    console.log('destination_address --> ', destination_address);
+    
+    const url = Platform.select({
+      // Google Maps app
+      android: `google.navigation:q=${item?.latitude}+${item?.longitude}`,
+      ios: `comgooglemaps://?center=${item?.latitude},${item?.longitude}&q=${item?.latitude},${item?.longitude}&zoom=14&views=traffic`,
+    });
+    
+    const appleMaps = `maps://app?saddr=${start_address}&daddr=${destination_address}`;
+    const googleMapSite = `https://www.google.com/maps/dir/?api=1&destination=${item?.latitude},${item?.longitude}&dir_action=navigate`;
+  
     useEffect(() => {
         const fetchReservationDate = async () => {
             try {
@@ -145,7 +164,8 @@ const Reservedfavorites = ({ route, navigation }) => {
           });
         }
       };
-    const { item } = route.params;
+    
+    console.log("item>>>",JSON.stringify(item,null,2));
     const handleRemoveFavorite = async () => {
       try {
         const currentUser = auth().currentUser;
@@ -204,6 +224,24 @@ const Reservedfavorites = ({ route, navigation }) => {
       }
     };
   
+    const handleLinkPress = () => {
+      Linking.canOpenURL(url)
+      .then((supported) => {
+          if (supported) {
+              return Linking.openURL(url);
+          } else {
+              return Linking.openURL(googleMapSite);
+          }
+      })
+      .catch(() => {
+          if (Platform.OS === 'ios') {
+              Linking.openURL(
+                  googleMapSite
+                  // appleMaps
+              );
+          }
+      });
+  };
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -269,7 +307,8 @@ const Reservedfavorites = ({ route, navigation }) => {
                     customImageSource={greensend}
                     customImageMarginRight={responsiveWidth(2)}
                     marginTop={responsiveHeight(1)}
-                    onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
+                    onPress={()=>handleLinkPress()}
+                    // onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
                 />
                <GetButton
                     label='Reserve Food'

@@ -134,7 +134,7 @@ const ReservedFood = (props) => {
           <TouchableOpacity onPress={() => setSearchQuery('')}>
           </TouchableOpacity>
         )}
-        {console.log("viewableData>>>",JSON.stringify(viewableData,null,2))}
+        {/* {console.log("viewableData>>>",JSON.stringify(viewableData,null,2))} */}
         <FlatList
           data={viewableData}
           // data={searchQuery === '' ? viewableData : viewableData?.filter(item =>

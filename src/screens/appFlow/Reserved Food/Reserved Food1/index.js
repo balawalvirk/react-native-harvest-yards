@@ -30,7 +30,7 @@ const ReservedFood1 = ({ route, navigation }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-    console.log("isHelpCalloutModalVisible",isHelpCalloutModalVisible);
+    // console.log("isHelpCalloutModalVisible",isHelpCalloutModalVisible);
     const [companyData, setCompanyData] = useState({});
     const [qrCodeValue, setQRCodeValue] = useState('');
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
