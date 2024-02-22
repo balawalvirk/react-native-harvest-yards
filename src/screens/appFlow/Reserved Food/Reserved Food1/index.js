@@ -8,6 +8,7 @@ import { scale } from 'react-native-size-matters';
 import { requestStoragePermission } from '../../../../services/utilities/permission'
 import { HelpCallout, LeftButton, arrowrightwhite, calendar } from '../../../../services/utilities/assets';
 import {
+    responsiveFontSize,
     responsiveHeight,
     responsiveWidth,
 } from 'react-native-responsive-dimensions';
@@ -230,7 +231,10 @@ const ReservedFood1 = ({ route, navigation }) => {
     };
 
     const handleDateChange = date => {
-        setSelectedDate(date);
+if(date){
+
+    setSelectedDate(date);
+}
     };
 
 
@@ -319,11 +323,13 @@ const ReservedFood1 = ({ route, navigation }) => {
                     customWidth={responsiveWidth(92)}
                     selectedDate={selectedDate}
                     showImage={true}
+                    setSelectedDate={setSelectedDate}
                     onDateChange={handleDateChange}
                 />
+                
                 {/* {console.log(" item?.availableMeals ", item?.availableMeals )} */}
-                {
-                    item?.availableMeals ?
+                {/* {
+                    item?.availableMeals ? */}
                         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
                             <Button
                                 label="Reserve Food"
@@ -334,9 +340,7 @@ const ReservedFood1 = ({ route, navigation }) => {
                                 ImageMarginLeft={responsiveWidth(3)}
                             />
                         </TouchableOpacity>
-                        :
-                        null
-                }
+                 
             </ScrollView>
             <TouchableOpacity 
   activeOpacity={0.8}

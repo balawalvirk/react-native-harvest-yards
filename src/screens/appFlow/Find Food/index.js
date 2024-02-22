@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   ScrollView,
@@ -45,6 +45,7 @@ const FindFood = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const hasLocationPermission = useRef(false);
 
   const {currentLocation, calculateDistance} = useLocation();
   // console.log('currentLocation: ', currentLocation)
@@ -59,6 +60,19 @@ const FindFood = ({navigation}) => {
       BackHandler.exitApp();
     }
   };
+  useEffect(() => {
+    const checkLocationPermission = async () => {
+      const result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+
+      if (result === RESULTS.GRANTED) {
+        hasLocationPermission.current = true;
+      } else {
+        hasLocationPermission.current = false;
+      }
+    };
+
+    checkLocationPermission();
+  }, []);
   const fetchDistributorsData = async () => {
     try {
       setLoading(true);
@@ -71,11 +85,18 @@ const FindFood = ({navigation}) => {
         fetchedData.push({...doc.data(), userId: doc.id});
       });
       setDistributorsData(fetchedData);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Data fetched successfully!',
-      });
+      if (hasLocationPermission.current) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Data fetched successfully!',
+        });
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Data fetched successfully!',
+        });
+      }
       setLoading(false);
       setLoadingAnimation(false);
     } catch (error) {

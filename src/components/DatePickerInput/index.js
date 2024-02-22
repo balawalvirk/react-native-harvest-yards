@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, Text, Image, Modal } from 'react-native';
 import { appStyles } from '../../services/utilities/appStyles';
 import {
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
-import DatePicker from '@react-native-community/datetimepicker';
+// import DatePicker from '@react-native-community/datetimepicker';
 import { colors } from '../../services/utilities/color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { fontFamily, fontSize } from '../../services/utilities/fonts';
 import moment from 'moment';
+// import DatePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+
 
 const DatePickerInput = ({
   label,
@@ -35,12 +38,20 @@ const DatePickerInput = ({
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const currentDate = new Date();
 
-  const handleDateChange = (event, selectedPickedDate) => {
-    if (selectedPickedDate) {
+  const handleDateChange = (selectedPickedDate) => {
+    // if (selectedPickedDate) {
       onDateChange(selectedPickedDate);
       setDatePickerVisible(false);
-    }
+      
+    // }
   };
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+  useEffect(()=>{
+
+  },[isDatePickerVisible])
+  
   return (
     <View
       style={[
@@ -56,7 +67,7 @@ const DatePickerInput = ({
 
       
       <TouchableOpacity
-        onPress={() => setDatePickerVisible(true)}
+        onPress={() => {console.log(isDatePickerVisible);setDatePickerVisible(true)}}
         style={[
           appStyles.inputView,
           {
@@ -86,22 +97,22 @@ const DatePickerInput = ({
         )}
       </TouchableOpacity>
       {error && <Text style={{ color: colors.color32 }}>{error}</Text>}
-      {isDatePickerVisible && (
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            onPress={() => setDatePickerVisible(false)}
-          />
-          <DatePicker
+       <View style={{ flex: 1 }}>
+
+          <DateTimePicker
+          isVisible={isDatePickerVisible}
             style={{ width: '100%', backgroundColor: 'white' }}
-            value={selectedDate || currentDate}
+            value={selectedDate}
             mode="date"
-            display="calendar"
+            
+            // display="calendar"
             minimumDate={currentDate}
-            onChange={handleDateChange}
+            onConfirm={handleDateChange}
+            onCancel={hideDatePicker}
+
           />
         </View>
-      )}
+      {/* )} */}
     </View>
   );
 };

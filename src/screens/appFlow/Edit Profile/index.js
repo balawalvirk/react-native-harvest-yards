@@ -42,7 +42,7 @@ export default function EditProfile({ navigation }) {
   const [ConfirmPassword, setConfirmPassword] = useState('');
   const [ConfirmPasswordNew, setConfirmPasswordNew] = useState('');
   const [loading, setLoading] = useState(true);
-  // const [currentPassword, setCurrentPassword] = useState('');
+  const [useremail, setUser] = useState('');
   // const [newPassword, setNewPassword] = useState('');
   useEffect(() => {
     fetchUserData();
@@ -59,6 +59,8 @@ export default function EditProfile({ navigation }) {
         if (doc.exists) {
           const userData = doc.data();
           setUserId(currentUser.uid);
+          setUser(userData)
+
           setfirstName(userData.firstName || '');
           setlastName(userData.lastName || '');
           setemail(userData.email || '');
@@ -101,6 +103,8 @@ export default function EditProfile({ navigation }) {
 
       console.log('Password updated successfully');
     } catch (error) {
+      showToast(error.message);
+
       console.error('Error updating password:', error.message);
       // Handle error
     }
@@ -123,7 +127,30 @@ export default function EditProfile({ navigation }) {
   //     showToast('Error updating password');
   //   }
   // };
+  const updateEmail = async (newEmail) => {
+    // debugger
+    try {
+      const currentUser = auth().currentUser;
+      console.log(useremail.email.trim(), Password)
+      if (currentUser) {
+        await auth()
+    .signInWithEmailAndPassword(useremail.email.trim(), Password)
+    .then(function(userCredential) {
+        userCredential.user.updateEmail(newEmail)
+    })
+        // await currentUser.updateEmail(newEmail);
+        console.log('Email updated successfully:', newEmail);
+        return true;
+      }
+  
+      return false;
+    } catch (error) {
+      console.error('Error updating email:', error.message);
+      return false;
+    }
+  };
   const saveChanges = async () => {
+    // debugger
     setLoading(true);
     try {
       if (!validateInputs()) {
@@ -150,6 +177,9 @@ export default function EditProfile({ navigation }) {
         zip,
         notification: notificationValue,
       });
+      // if(useremail.email!==email){
+      //   updateEmail(email)
+      // }
 
       Toast.show({
         type: 'success',
@@ -296,7 +326,8 @@ export default function EditProfile({ navigation }) {
           responsiveMarginTop={7}
           autoCapitalize={true}
           value={email}
-          onChangeText={(text) => setemail(text)}
+          editable={false}
+          // onChangeText={(text) => setemail(text)}
         />
 
         <CustomTextInput

@@ -74,7 +74,7 @@ const ReservedPickups = ({ route, navigation }) => {
         }
     });
 };
-  const _id = item.id || '34534534j5bh3hj5b345j'
+  const _id = item.id.slice(-4) || '34534534j5bh3hj5b345j'
 
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
