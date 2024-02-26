@@ -19,6 +19,7 @@ const Stack = createStackNavigator();
 const AppNavigation = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      
          <Stack.Screen name="Editprofile" component={Editprofile} />     
          <Stack.Screen name="AppSetting" component={AppSetting} />       
          <Stack.Screen name="PrivicyPolicy" component={PrivicyPolicy} />                  

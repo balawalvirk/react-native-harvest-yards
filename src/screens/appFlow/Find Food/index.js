@@ -36,6 +36,7 @@ import {RefreshControl} from 'react-native';
 import {roundToDecimal, useLocation} from '../../../services';
 import {Loaders} from '../../../components';
 import MemoizedRenderItem from '../../../components/MemoComponent';
+import { PERMISSIONS, RESULTS } from 'react-native-permissions';
 const FindFood = ({navigation}) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] =
     useState(false);
@@ -71,7 +72,7 @@ const FindFood = ({navigation}) => {
       }
     };
 
-    checkLocationPermission();
+    // checkLocationPermission();
   }, []);
   const fetchDistributorsData = async () => {
     try {
@@ -91,11 +92,7 @@ const FindFood = ({navigation}) => {
           text1: 'Success',
           text2: 'Data fetched successfully!',
         });
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Data fetched successfully!',
-        });
+     
       }
       setLoading(false);
       setLoadingAnimation(false);

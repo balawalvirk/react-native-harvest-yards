@@ -17,7 +17,7 @@ const MemoizedRenderItem = React.memo(({ item, currentLocation, calculateDistanc
       title={item.organization}
       description={item.address}
       distance={distanceInKm}
-      Availabletxt={`${item.availableMeals !== undefined ? item?.availableMeals : '0'} Available`}
+      Availabletxt={`${item.availableMeals !== undefined ? item?.availableMeals : 0} Available`}
       additionalInfo={distanceInKm}
       onPress={() => {
         const { availableMeals, ...otherItemDetails } = item;
