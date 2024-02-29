@@ -3,7 +3,7 @@ import { generateFirestoreUid } from "../../helper/methods"
 import { addDocument, deleteDocument, setDocument, updateDocument } from "../../utilities"
 
 
-export const createOrder = async ({ userId, distributorId, reservationDate }) => {
+export const createOrder = async ({ userId, distributorId, reservationDate, numberOfPeople }) => {
     let response = null
     const id = generateFirestoreUid()
     const data = {
@@ -11,7 +11,7 @@ export const createOrder = async ({ userId, distributorId, reservationDate }) =>
         distributorId,
         reservationDate,
         id,
-        reservationDate,
+        numberOfPeople,
         status: orderStatuses.pending
     }
     console.log('createOrder: \ndata: ', data)

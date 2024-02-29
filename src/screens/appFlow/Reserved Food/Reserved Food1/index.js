@@ -1,53 +1,52 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { ScrollView, Image, View, Text, Linking, TouchableOpacity, SafeAreaView, Platform, Alert } from 'react-native';
-import { appStyles } from '../../../../services/utilities/appStyles';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Alert, Image, Linking, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
+import {appStyles} from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import DatePickerInput from '../../../../components/DatePickerInput';
-import { scale } from 'react-native-size-matters';
-import { requestStoragePermission } from '../../../../services/utilities/permission'
-import { HelpCallout, LeftButton, arrowrightwhite, calendar } from '../../../../services/utilities/assets';
-import {
-    responsiveFontSize,
-    responsiveHeight,
-    responsiveWidth,
-} from 'react-native-responsive-dimensions';
+import {requestStoragePermission} from '../../../../services/utilities/permission'
+import {arrowrightwhite, calendar, HelpCallout, LeftButton} from '../../../../services/utilities/assets';
+import {responsiveHeight, responsiveWidth,} from 'react-native-responsive-dimensions';
 import Toast from 'react-native-toast-message';
 import CardView from '../../../../components/CardView';
 import QRcodeModal from '../../../../components/Modal/QR Code Modal';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import { HelpCalloutModal } from '../../../../components/Modal/Tip Modal';
-import { QRCode } from 'react-native-qrcode-svg';
+import {HelpCalloutModal} from '../../../../components/Modal/Tip Modal';
+import {QRCode} from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
-import { createOrder, firestoreCollections, orderStatuses, roundToDecimal, useFirebaseAuth, useLocation } from '../../../../services';
-import { Loaders } from '../../../../components';
-import moment from 'moment';
+import {
+    createOrder,
+    firestoreCollections,
+    orderStatuses,
+    roundToDecimal,
+    useFirebaseAuth,
+    useLocation
+} from '../../../../services';
+import {Loaders} from '../../../../components';
 
-const ReservedFood1 = ({ route, navigation }) => {
+const ReservedFood1 = ({route, navigation}) => {
 
-    const { user } = useFirebaseAuth()
+    const {user} = useFirebaseAuth();
 
     const [selectedDate, setSelectedDate] = useState('');
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-    // console.log("isHelpCalloutModalVisible",isHelpCalloutModalVisible);
     const [companyData, setCompanyData] = useState({});
     const [qrCodeValue, setQRCodeValue] = useState('');
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
-    const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false); // State to track the source
-    const [loadingReserveFood, setLoadingReserveFood] = useState(false); // State to track the source
+    const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false);
+    const [loadingReserveFood, setLoadingReserveFood] = useState(false);
+    const [numberOfPeople, setNumberOfPeople] = useState(1); // Added state for number of people
+    const {currentLocation, calculateDistance} = useLocation()
 
-    const { currentLocation, calculateDistance } = useLocation()
-
-    const { item, userId } = route.params;
+    const {item, userId} = route.params;
     const distributorId = item?.id || ''
     // console.log('distributer Item: ', item)
 
     const distributorDetails = useMemo(() => companyData || item, [companyData])
 
-    const { latitude, longitude } = item
-    const location = latitude && longitude ? { latitude, longitude } : null
+    const {latitude, longitude} = item
+    const location = latitude && longitude ? {latitude, longitude} : null
     const distance = currentLocation && location ? calculateDistance(location) : null
     const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null
     const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km away' : ''
@@ -76,7 +75,6 @@ const ReservedFood1 = ({ route, navigation }) => {
 
     }, [distributorId]);
 
-  
 
     useEffect(() => {
         // Check if the component was accessed from Reserved favorites
@@ -87,7 +85,7 @@ const ReservedFood1 = ({ route, navigation }) => {
         }
         const fetchCompanyData = async () => {
             try {
-                const { organizationId } = route.params; // Get the organizationId passed from Reservedfavorites
+                const {organizationId} = route.params; // Get the organizationId passed from Reservedfavorites
 
                 const organizationDoc = await firestore().collection('distributors').doc(organizationId).get();
 
@@ -143,7 +141,7 @@ const ReservedFood1 = ({ route, navigation }) => {
             return null;
         }
     };
-   
+
 
     const handleReserveFoodValidation = () => {
         if (!selectedDate) {
@@ -165,40 +163,32 @@ const ReservedFood1 = ({ route, navigation }) => {
         // console.log('user: ', user?.uid)
 
         if (selectedDate && distributorDetails?.availableMeals && user) {
-            return true
+            return true;
         }
     }
 
     const handleReserveFood = async () => {
         try {
             if (handleReserveFoodValidation()) {
-                setLoadingReserveFood(true)
-                const _reservationDate = selectedDate
-                //const _reservationDate = moment(selectedDate).format('YYYY-MM-DD')
-                // Calculate the start and end timestamps for the given date
+                setLoadingReserveFood(true);
+                const _reservationDate = selectedDate;
                 const startOfDay = new Date(_reservationDate);
                 startOfDay.setHours(0, 0, 0, 0);
 
                 const endOfDay = new Date(_reservationDate);
                 endOfDay.setHours(23, 59, 59, 999);
 
-                console.log('_reservationDate: ', _reservationDate)
-
                 const ordersCollectionRef = firestore().collection('orders').where('userId', '==', user?.uid);
                 const ordersCollectionCheckDistributerRef = ordersCollectionRef.where('distributorId', '==', distributorDetails?.id);
                 const ordersCollectionCheckStatusRef = ordersCollectionCheckDistributerRef.where('status', '==', orderStatuses.pending);
 
-                // Query to check if a document with the same reservationDate already exists
                 const existingDocumentQuery = ordersCollectionCheckStatusRef
                     .where('reservationDate', '>=', startOfDay)
                     .where('reservationDate', '<=', endOfDay);
 
-                //const existingDocumentQuery = ordersCollectionRef.where('reservationDate', '==', _reservationDate);
-
                 await existingDocumentQuery.get().then(async (querySnapshot) => {
                     if (!querySnapshot.empty) {
-                        // Document with the same reservationDate already exists
-                        const errorMessage = 'Reservation with the same date already exists.'
+                        const errorMessage = 'Reservation with the same date already exists.';
                         console.log(errorMessage);
                         Toast.show({
                             type: 'error',
@@ -206,37 +196,35 @@ const ReservedFood1 = ({ route, navigation }) => {
                             text2: errorMessage,
                         });
                     } else {
-                        //console.log('Create Order')
                         await createOrder({
                             userId: user.uid,
                             distributorId: distributorDetails.id,
-                            reservationDate: selectedDate
-                        }).then(res => {
+                            reservationDate: selectedDate,
+                            numberOfPeople: numberOfPeople, // Added number of people
+                        }).then((res) => {
                             if (res) {
                                 const qrValue = res?.id;
                                 setQRCodeValue(qrValue);
                                 setIsQRModalVisible(true);
                             }
-                        })
+                        });
                     }
-                })
+                });
 
-
-                setLoadingReserveFood(false)
+                setLoadingReserveFood(false);
             }
         } catch (error) {
             console.error('Error adding reserved food information:', error);
-            setLoadingReserveFood(false)
+            setLoadingReserveFood(false);
         }
     };
 
     const handleDateChange = date => {
-if(date){
+        if (date) {
 
-    setSelectedDate(date);
-}
+            setSelectedDate(date);
+        }
     };
-
 
 
     const saveImageToGallery = async (imageUri) => {
@@ -248,7 +236,7 @@ if(date){
         try {
             const permissionGranted = await requestStoragePermission();
             if (permissionGranted) {
-                const { config, fs } = RNFetchBlob;
+                const {config, fs} = RNFetchBlob;
                 const isIOS = Platform.OS === 'ios';
                 const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
 
@@ -261,7 +249,7 @@ if(date){
                 const imageName = `IMG_${new Date().getTime()}.jpg`;
 
                 await fs.cp(response.path(), `${imagePath}/${imageName}`);
-                await fs.scanFile([{ path: `${imagePath}/${imageName}`, mime: 'image/jpeg' }]);
+                await fs.scanFile([{path: `${imagePath}/${imageName}`, mime: 'image/jpeg'}]);
 
                 console.log('Image saved to gallery successfully!');
                 Alert.alert('Success', 'Image saved to gallery!');
@@ -288,31 +276,39 @@ if(date){
             <ScrollView>
                 <CardView
                     customMarginTop={responsiveHeight(1)}
-                    source={{ uri: distributorDetails.profileImage }}
+                    source={{uri: distributorDetails.profileImage}}
                     title={distributorDetails.organization}
                     description={distributorDetails.address}
                     Availabletxt={`${distributorDetails.availableMeals !== undefined ? distributorDetails.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
                     //additionalInfo={item.additionalInfo}
                     additionalInfo={distanceInKm}
                 />
-                <View style={{ marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3) }}>
+                <View style={{marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3)}}>
                     <Text style={appStyles.label}>Company Name:
-                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{distributorDetails.organization}</Text></Text>
-                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Address:
-                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{distributorDetails.address}</Text></Text>
-                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Phone number:
-                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{distributorDetails.phoneNumber}</Text></Text>
-                    <View style={{ flexDirection: 'row', marginTop: responsiveHeight(3) }}>
-                        <Text style={[appStyles.label, { marginTop: responsiveHeight(0.3) }]}>Hours:</Text>
+                        <Text
+                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.organization}</Text></Text>
+                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Address:
+                        <Text
+                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.address}</Text></Text>
+                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Phone number:
+                        <Text
+                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.phoneNumber}</Text></Text>
+                    <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
+                        <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>Hours:</Text>
                         <Text style={appStyles.description}>{distributorDetails.openAt}</Text>
-                        <Text style={appStyles.label}>  _ </Text>
+                        <Text style={appStyles.label}> _ </Text>
                         <Text style={appStyles.description}>{distributorDetails.closeAt}</Text>
                     </View>
-                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>What we offer:
-                        <Text style={[appStyles.description, { marginTop: responsiveHeight(3) }]}>{distributorDetails.whatWeOffer}</Text></Text>
-                    <Text style={[appStyles.label, { marginTop: responsiveHeight(3) }]}>Website:</Text>
+                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>What we offer:
+                        <Text
+                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.whatWeOffer}</Text></Text>
+                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Website:</Text>
                     <TouchableOpacity onPress={handleLinkPress}>
-                        <Text style={[appStyles.description, { textDecorationLine: 'underline', marginTop: -responsiveHeight(2), marginLeft: responsiveWidth(13) }]}>{distributorDetails.website}</Text>
+                        <Text style={[appStyles.description, {
+                            textDecorationLine: 'underline',
+                            marginTop: -responsiveHeight(2),
+                            marginLeft: responsiveWidth(13)
+                        }]}>{distributorDetails.website}</Text>
                     </TouchableOpacity>
                 </View>
                 <DatePickerInput
@@ -326,57 +322,70 @@ if(date){
                     setSelectedDate={setSelectedDate}
                     onDateChange={handleDateChange}
                 />
-                
-                {/* {console.log(" item?.availableMeals ", item?.availableMeals )} */}
-                {/* {
-                    item?.availableMeals ? */}
-                        <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(9) }]}>
-                            <Button
-                                label="Reserve Food"
-                                onPress={() => handleReserveFood()}
-                                // onPress={() => handleQR(item)}
-                                ImageSource={arrowrightwhite}
-                                ImageSource1={true}
-                                ImageMarginLeft={responsiveWidth(3)}
-                            />
-                        </TouchableOpacity>
-                 
+                <View style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(14), flexDirection: 'row', alignItems: 'center' }]}>
+                    <Text style={[appStyles.labelPeopleSelection, { marginRight: responsiveWidth(0.5) }]}>Number of People: </Text>
+                    <TouchableOpacity
+                        onPress={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}
+                        style={appStyles.numberButton}
+                    >
+                        <Text style={appStyles.buttonText}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={appStyles.numberOfPeopleText}>{numberOfPeople}</Text>
+                    <TouchableOpacity
+                        onPress={() => setNumberOfPeople(Math.min(6, numberOfPeople + 1))}
+                        style={appStyles.numberButton}
+                    >
+                        <Text style={appStyles.buttonText}>+</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop: 30}]}>
+                    <Button
+                        label="Reserve Food"
+                        onPress={() => handleReserveFood()}
+                        // onPress={() => handleQR(item)}
+                        ImageSource={arrowrightwhite}
+                        ImageSource1={true}
+                        ImageMarginLeft={responsiveWidth(3)}
+                    />
+                </TouchableOpacity>
+
             </ScrollView>
-            <TouchableOpacity 
-  activeOpacity={0.8}
-  style={{
-    right: responsiveWidth(0), 
-    bottom: responsiveHeight(0), 
-    alignItems:'center',
-    alignSelf:'flex-end',
-    position:'absolute'
-   
-  }}
-  onPress={() => {setHelpCalloutModalVisible(true)}}
->
-  <Image
-    source={HelpCallout}
-    resizeMode='cover'
-    style={[
-      appStyles.helpview,
-      {
-       
-      },
-    ]}
-  />
-</TouchableOpacity>
-            {isHelpCalloutModalVisible&&(
-            <HelpCalloutModal
-                isVisible={isHelpCalloutModalVisible}
-                onBackdropPress={() => setHelpCalloutModalVisible(false)}
-                toggleModal={() => setHelpCalloutModalVisible(false)}
-                bottom={responsiveHeight(5)}
-                Title='Reserve Food Help'
-                helpcallouttxt='The available bubble needs to show more than 0 for you to reserve a food package.
-                Push the “Reserve Food” button to reserve a food package. 
-                The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package. 
+            <TouchableOpacity
+                activeOpacity={0.8}
+                style={{
+                    right: responsiveWidth(0),
+                    bottom: responsiveHeight(0),
+                    alignItems: 'center',
+                    alignSelf: 'flex-end',
+                    position: 'absolute'
+
+                }}
+                onPress={() => {
+                    setHelpCalloutModalVisible(true)
+                }}
+            >
+                <Image
+                    source={HelpCallout}
+                    resizeMode='cover'
+                    style={[
+                        appStyles.helpview,
+                        {},
+                    ]}
+                />
+            </TouchableOpacity>
+            {isHelpCalloutModalVisible && (
+                <HelpCalloutModal
+                    isVisible={isHelpCalloutModalVisible}
+                    onBackdropPress={() => setHelpCalloutModalVisible(false)}
+                    toggleModal={() => setHelpCalloutModalVisible(false)}
+                    bottom={responsiveHeight(5)}
+                    Title='Reserve Food Help'
+                    helpcallouttxt='The available bubble needs to show more than 0 for you to reserve a food package.
+                Push the “Reserve Food” button to reserve a food package.
+                The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package.
                 A QR code will be issued to you that must be scanned when you are picking up your food package.'
-            />)}
+                />)}
             {isQRModalVisible && (
                 <QRcodeModal
                     navigation={navigation}

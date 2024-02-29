@@ -698,7 +698,7 @@ export const appStyles = StyleSheet.create({
   },
   searchinput: {
     width: responsiveWidth(70),
-    // borderRadius:responsiveWidth(3.2), 
+    // borderRadius:responsiveWidth(3.2),
     // flexDirection: 'row',
     // borderWidth:0.5,
     // borderColor:colors.color10,
@@ -1393,5 +1393,30 @@ export const appStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  numberButton: {
+    padding: 10,
+    backgroundColor: '#4CAF50', // Add your desired background color
+    borderRadius: 5,
+    marginHorizontal: 0,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  numberOfPeopleText: {
+    fontSize: 18,
+    color: "white",
+    marginHorizontal: 10,
+  },
+
+  labelPeopleSelection: {
+    fontSize: fontSize.h5,
+    fontFamily: fontFamily.SatoshiVariable,
+    fontWeight: '700',
+    color: "white",
+    textAlign: 'left',
+    marginBottom: -responsiveHeight(0.2),
   },
 });
