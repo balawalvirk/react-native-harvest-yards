@@ -203,7 +203,9 @@ const ReservedFood1 = ({route, navigation}) => {
                             numberOfPeople: numberOfPeople, // Added number of people
                         }).then((res) => {
                             if (res) {
+                                console.log("QR CODE VALUE", res)
                                 const qrValue = res?.id;
+                                console.log("QR CODE ID", qrValue)
                                 setQRCodeValue(qrValue);
                                 setIsQRModalVisible(true);
                             }
@@ -221,7 +223,6 @@ const ReservedFood1 = ({route, navigation}) => {
 
     const handleDateChange = date => {
         if (date) {
-
             setSelectedDate(date);
         }
     };
@@ -332,7 +333,7 @@ const ReservedFood1 = ({route, navigation}) => {
                     </TouchableOpacity>
                     <Text style={appStyles.numberOfPeopleText}>{numberOfPeople}</Text>
                     <TouchableOpacity
-                        onPress={() => setNumberOfPeople(Math.min(6, numberOfPeople + 1))}
+                        onPress={() => setNumberOfPeople(Math.min(10, numberOfPeople + 1))}
                         style={appStyles.numberButton}
                     >
                         <Text style={appStyles.buttonText}>+</Text>

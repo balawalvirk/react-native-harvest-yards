@@ -74,7 +74,7 @@ const ReservedPickups = ({ route, navigation }) => {
         }
     });
 };
-  const _id = item.id.slice(-4) || '34534534j5bh3hj5b345j'
+  const _id = item.id || '34534534j5bh3hj5b345j'
 
   const handleRemoveUserPress = () => {
     setIsRemoveUserModalVisible(true);
@@ -327,7 +327,7 @@ const ReservedPickups = ({ route, navigation }) => {
           </Text>
         </View>
         <Text style={[appStyles.title, { alignSelf: 'center' }]}>
-          ID# {_id}
+          ID# {_id.slice(-4)}
         </Text>
         {showLubemeup && (
           <TouchableOpacity

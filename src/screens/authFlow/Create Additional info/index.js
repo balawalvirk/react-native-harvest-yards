@@ -23,10 +23,10 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 export default function AdditionalInfo({ route, navigation }) {
-    const { firstName,lastName,phoneNumber, street, city, state,zip, isOver13, isUnhoused, isReceivingAssistance } = route.params;
+    const { firstName,lastName,phoneNumber,dob, street, city, state,zip, isOver13, isUnhoused, isReceivingAssistance } = route.params;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [Confirmpassword, setConfirmPassword] = useState(''); 
+    const [Confirmpassword, setConfirmPassword] = useState('');
     const [householdSize, setHouseholdSize] = useState('');
     const [smsUpdates, setSmsUpdates] = useState('');
     const [acceptTerms, setAcceptTerms] = useState('');
@@ -38,10 +38,10 @@ export default function AdditionalInfo({ route, navigation }) {
       // Implement your email validation logic
       return /\S+@\S+\.\S+/.test(email);
     };
-  
+
     const handlesendresetlink = async () => {
         try {
-           
+
             if (!email) {
                 Toast.show({
                   type: 'error',
@@ -58,7 +58,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
-        
+
               // Validate password
               if (!password) {
                 Toast.show({
@@ -68,7 +68,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
-        
+
               // Validate password length
               if (password.length < 8) {
                 Toast.show({
@@ -78,7 +78,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
-        
+
               // Validate Confirm Password
               if (!Confirmpassword) {
                 Toast.show({
@@ -88,7 +88,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
-        
+
               // Validate password match
               if (password !== Confirmpassword) {
                 Toast.show({
@@ -97,7 +97,7 @@ export default function AdditionalInfo({ route, navigation }) {
                   text2: 'Password and Confirm Password do not match',
                 });
                 return;
-              }  
+              }
               if (!householdSize) {
                 Toast.show({
                   type: 'error',
@@ -119,12 +119,13 @@ export default function AdditionalInfo({ route, navigation }) {
             const authResponse = await auth().createUserWithEmailAndPassword(email.trim(), password);
             const userId = authResponse.user.uid;
             setIslinksentModalVisible(true);
-            console.log('Modal should show now...'); 
+            console.log('Modal should show now...');
             // Pass data to Firestore
             await firestore().collection('users').doc(authResponse.user.uid).set({
                 userId,
                 firstName,
                 lastName,
+                dob: dob.toISOString(),
                 street,
                 city,
                 state,
@@ -149,8 +150,8 @@ export default function AdditionalInfo({ route, navigation }) {
               text2: 'This email address is already in use.',
             });
          }
-         finally {   
-          setIslinksentModalVisible(false)     
+         finally {
+          setIslinksentModalVisible(false)
         }
     };
 
@@ -201,7 +202,7 @@ export default function AdditionalInfo({ route, navigation }) {
                     value={Confirmpassword}
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
-               
+
                 <CustomTextInput
                     label="How many people in your household?"
                     keyboardType="phone-pad"

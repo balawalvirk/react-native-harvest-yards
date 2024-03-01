@@ -42,7 +42,7 @@ const DatePickerInput = ({
     // if (selectedPickedDate) {
       onDateChange(selectedPickedDate);
       setDatePickerVisible(false);
-      
+
     // }
   };
   const hideDatePicker = () => {
@@ -51,7 +51,7 @@ const DatePickerInput = ({
   useEffect(()=>{
 
   },[isDatePickerVisible])
-  
+
   return (
     <View
       style={[
@@ -65,7 +65,7 @@ const DatePickerInput = ({
     >
       <Text style={appStyles.label}>{label}</Text>
 
-      
+
       <TouchableOpacity
         onPress={() => {console.log(isDatePickerVisible);setDatePickerVisible(true)}}
         style={[
@@ -81,7 +81,7 @@ const DatePickerInput = ({
         ]}
       >
         {selectedDate ? (
-          <Text style={{ color: colors.color18 }}>
+          <Text style={{ color: colors.color18, paddingLeft:16 }}>
             {' ' + moment(selectedDate).format('YYYY/MM/DD')}
           </Text>
         ) : (
@@ -104,9 +104,9 @@ const DatePickerInput = ({
             style={{ width: '100%', backgroundColor: 'white' }}
             value={selectedDate}
             mode="date"
-            
+
             // display="calendar"
-            minimumDate={currentDate}
+            minimumDate={label === "Date of Birth" ? new Date(currentDate.getFullYear() - 100, 0, 1) : currentDate}
             onConfirm={handleDateChange}
             onCancel={hideDatePicker}
 

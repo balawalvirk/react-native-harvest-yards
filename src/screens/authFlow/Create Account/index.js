@@ -5,6 +5,7 @@ import Button from '../../../components/Button';
 import { colors } from '../../../services/utilities/color';
 import CustomCheckbox from '../../../components/Checkbox';
 import firestore from '@react-native-firebase/firestore';
+import DatePickerInput from '../../../components/DatePickerInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   responsiveFontSize,
@@ -20,6 +21,7 @@ import {
   lock,
   mappin,
   users,
+  calendar,
 } from '../../../services/utilities/assets';
 import LottieView from 'lottie-react-native';
 import { appStyles } from '../../../services/utilities/appStyles';
@@ -37,6 +39,7 @@ export default function Index({ navigation }) {
   const [street, setStreet] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
+  const [dob, setDOB] = useState('');
   const [zip, setZip] = useState('');
   const [isOver13, setIsOver13] = useState('');
   const [isUnhoused, setIsUnhoused] = useState('');
@@ -45,10 +48,16 @@ export default function Index({ navigation }) {
   const handlearrow = () => {
     navigation.goBack();
   };
-  const phoneRegex = /^[0-9]{10}$/; 
+  const phoneRegex = /^[0-9]{10}$/;
+
+  const handleDateChange = date => {
+    if (date) {
+      setDOB(date);
+    }
+  };
   const handleCreateAccount = async () => {
-    if (!firstName || !street || !city || !state || !zip) {
-   
+    if (!firstName || !street || !city || !state || !zip || !dob) {
+
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -60,6 +69,14 @@ export default function Index({ navigation }) {
           text1: 'Error',
           text2: 'Zip is required',
         });
+      }
+      if (!dob) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Date of Birth is required',
+        });
+        return;
       }
       if (!state) {
         Toast.show({
@@ -90,7 +107,7 @@ export default function Index({ navigation }) {
     //       text2: 'Cell Phone is required',
     //     });
     //   }
-  
+
     //  else if (!phoneRegex.test(phoneNumber)) {
     //     Toast.show({
     //       type: 'error',
@@ -115,7 +132,7 @@ export default function Index({ navigation }) {
           });
        return;
         }
-     
+
       if (!firstName) {
         Toast.show({
           type: 'error',
@@ -145,6 +162,7 @@ export default function Index({ navigation }) {
         firstName,
         lastName,
         phoneNumber,
+        dob,
         street,
         city,
         state,
@@ -203,6 +221,17 @@ export default function Index({ navigation }) {
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
         />
+        <DatePickerInput
+            label='Date of Birth'
+            inputWidth={responsiveWidth(90)}
+            responsiveMarginTop={7}
+            source1={calendar}
+            customWidth={responsiveWidth(90)}
+            selectedDate={dob}
+            showImage={true}
+            setSelectedDate={setDOB}
+            onDateChange={handleDateChange}
+        />
         <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(7) }]}>Address</Text>
         <CustomTextInput
           label="Street"
@@ -252,7 +281,7 @@ export default function Index({ navigation }) {
           />
         </View>
         <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
-        <View style={appStyles.createcheckview}>  
+        <View style={appStyles.createcheckview}>
           <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
           <CustomCheckbox checked={isUnhoused} onPress={() => setIsUnhoused(!isUnhoused)}/>
         </View>
@@ -260,10 +289,10 @@ export default function Index({ navigation }) {
           <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
           <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
         </View>
-      
+
         <View style={appStyles.createcheckview2}>
           <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
-          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/> 
+          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/>
         </View>
         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(4) }]}>
           <Button
