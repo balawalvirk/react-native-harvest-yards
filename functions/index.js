@@ -23,7 +23,7 @@ admin.initializeApp();
 // });
 
 //On create a food reservation order
-exports.onOrderCreated = 
+exports.onOrderCreated =
   onDocumentCreated('orders/{orderId}',async (event, context) => {
     const snapshot = event.data;
     if (!snapshot) {
@@ -32,11 +32,13 @@ exports.onOrderCreated =
     }
     const orderData = snapshot.data();
     const distributorId = orderData.distributorId;
+    const numberOfPeople = orderData.numberOfPeople || 1;
+
 
     try {
       // Retrieve the corresponding distributer document
       const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
-      
+
       if (!distributerDoc.exists) {
         console.error(`Distributer with ID ${distributorId} not found.`);
         return null;
@@ -44,7 +46,7 @@ exports.onOrderCreated =
 
       // Update availableMeals field in the distributer document
       const currentAvailableMeals = distributerDoc.data().availableMeals;
-      const updatedAvailableMeals = Number(currentAvailableMeals) - 1; // Assuming you decrement by 1, adjust as needed.
+      const updatedAvailableMeals = Number(currentAvailableMeals) - Number(numberOfPeople);
 
       await admin.firestore().collection('distributors').doc(distributorId).update({
         availableMeals: updatedAvailableMeals,
@@ -60,7 +62,7 @@ exports.onOrderCreated =
 
 
   //On cancel a food reservation order
-  exports.onOrderCancelled = 
+  exports.onOrderCancelled =
   onDocumentUpdated('orders/{orderId}',async (event,context) => {
     const snapshot = event.data;
     if (!snapshot) {
@@ -69,14 +71,15 @@ exports.onOrderCreated =
     }
     const newData = snapshot.after.data();
     const oldData = snapshot.before.data();
-    
     if (oldData.status === 'pending' && newData.status === 'cancelled') {
     const orderData = newData;
     const distributorId = orderData.distributorId;
+    const numberOfPeople = oldData.numberOfPeople || 1;
+
     try {
       // Retrieve the corresponding distributer document
       const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
-      
+
       if (!distributerDoc.exists) {
         console.error(`Distributer with ID ${distributorId} not found.`);
         return null;
@@ -84,7 +87,7 @@ exports.onOrderCreated =
 
       // Update availableMeals field in the distributer document
       const currentAvailableMeals = distributerDoc.data().availableMeals;
-      const updatedAvailableMeals = Number(currentAvailableMeals) + 1; // Assuming you decrement by 1, adjust as needed.
+      const updatedAvailableMeals = Number(currentAvailableMeals) + Number(numberOfPeople);
 
       await admin.firestore().collection('distributors').doc(distributorId).update({
         availableMeals: updatedAvailableMeals,
@@ -99,36 +102,61 @@ exports.onOrderCreated =
   }
   })
 
+
+
+
+
+
+
+
   //On check the expired pending foor reservation orders
   exports.checkAndUpdateExpiredOrders = onSchedule("every day 00:01", async (event) => {
     const currentDate = new Date();
-  
+
     // Set the time to midnight for accurate date comparison
     currentDate.setUTCHours(0, 0, 0, 0);
-  
+
     try {
       // Query orders with status 'pending' and reservation date less than the current date
       const querySnapshot = await admin.firestore().collection('orders')
         .where('status', '==', 'pending')
         .where('reservationDate', '<=', currentDate)
         .get();
-  
+
       // Update the status of each expired order to 'cancelled'
       const batch = admin.firestore().batch();
       querySnapshot.forEach((doc) => {
         const orderRef = admin.firestore().collection('orders').doc(doc.id);
         batch.update(orderRef, { status: 'cancelled' });
       });
-  
+
       await batch.commit();
-  
+
       console.log(`Updated status for expired orders: ${querySnapshot.size}`);
     } catch (error) {
       console.error('Error updating expired orders:', error);
     }
-  
+
     return null;
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // exports.updateAvailableMeals = functions.firestore
 //   .document('orders/{orderId}')
@@ -139,7 +167,7 @@ exports.onOrderCreated =
 //     try {
 //       // Retrieve the corresponding distributer document
 //       const distributerDoc = await admin.firestore().collection('distributors').doc(distributorId).get();
-      
+
 //       if (!distributerDoc.exists) {
 //         console.error(`Distributer with ID ${distributorId} not found.`);
 //         return null;

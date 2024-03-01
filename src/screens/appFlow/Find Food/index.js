@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef,useLayoutEffect} from 'react';
 import {
   View,
   ScrollView,
@@ -15,6 +15,7 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import {appStyles} from '../../../services/utilities/appStyles';
+import { useFocusEffect } from '@react-navigation/native';
 import Header from '../../../components/Headers';
 import {HelpCalloutModal} from '../../../components/Modal/Tip Modal';
 import {
@@ -92,7 +93,6 @@ const FindFood = ({navigation}) => {
           text1: 'Success',
           text2: 'Data fetched successfully!',
         });
-     
       }
       setLoading(false);
       setLoadingAnimation(false);
@@ -114,7 +114,14 @@ const FindFood = ({navigation}) => {
   useEffect(() => {
     fetchDistributorsData();
   }, []);
-  
+
+  useFocusEffect(
+      React.useCallback(() => {
+        fetchDistributorsData();
+      }, [searchText])
+  );
+
+
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -132,7 +139,7 @@ const FindFood = ({navigation}) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[colors.color33]} // Set the colors for the refresh indicator
+            colors={[colors.color33]}
           />
         }>
         <CustomLocationInput
@@ -159,7 +166,7 @@ const FindFood = ({navigation}) => {
               }>
               <Image source={mappin} style={appStyles.locationtag} />
             </TouchableOpacity>
-       
+
         <Text
           style={[appStyles.infotxt, {marginBottom: responsiveHeight(0.1)}]}>
           Nearby
@@ -167,28 +174,27 @@ const FindFood = ({navigation}) => {
         <FlatList
           data={
             searchText === ''
-              ? distributorsData
-              : distributorsData.filter(item =>
-                  item.organization
-                    ?.toLowerCase()
-                    ?.includes(searchText?.toLowerCase()),
+                ? distributorsData.filter(item => !isNaN(item.availableMeals) && item.availableMeals > 0)
+                : distributorsData.filter(item =>
+                    item.organization?.toLowerCase()?.includes(searchText?.toLowerCase()) &&
+                    item.availableMeals > 0
                 )
           }
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => <MemoizedRenderItem navigation={navigation} item={item} />}
-         
+          renderItem={({item}) => <MemoizedRenderItem navigation={navigation} item={item}/>}
+
         />
         <View style={{height: responsiveHeight(4)}} />
       </ScrollView>
-      <TouchableOpacity 
+      <TouchableOpacity
   activeOpacity={0.8}
   style={{
-    right: responsiveWidth(0), 
-    bottom: responsiveHeight(0), 
+    right: responsiveWidth(0),
+    bottom: responsiveHeight(0),
     alignItems:'center',
     alignSelf:'flex-end',
     position:'absolute'
-   
+
   }}
   onPress={() => {setHelpCalloutModalVisible(true)}}
 >
@@ -198,7 +204,7 @@ const FindFood = ({navigation}) => {
     style={[
       appStyles.helpview,
       {
-       
+
       },
     ]}
   />
