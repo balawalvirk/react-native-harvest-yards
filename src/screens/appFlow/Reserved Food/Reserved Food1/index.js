@@ -14,6 +14,7 @@ import firestore from '@react-native-firebase/firestore';
 import {HelpCalloutModal} from '../../../../components/Modal/Tip Modal';
 import {QRCode} from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
+import DateSelector from '../../../../components/DateSelector';
 import {
     createOrder,
     firestoreCollections,
@@ -38,7 +39,8 @@ const ReservedFood1 = ({route, navigation}) => {
     const [loadingReserveFood, setLoadingReserveFood] = useState(false);
     const [numberOfPeople, setNumberOfPeople] = useState(1); // Added state for number of people
     const {currentLocation, calculateDistance} = useLocation()
-
+    const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
+    const [isDateSelectorVisible, setDateSelectorVisible] = useState(false);
     const {item, userId} = route.params;
     const distributorId = item?.id || ''
     // console.log('distributer Item: ', item)
@@ -145,6 +147,7 @@ const ReservedFood1 = ({route, navigation}) => {
 
     const handleReserveFoodValidation = () => {
         if (!selectedDate) {
+            setDateSelectorVisible(true);
             Toast.show({
                 type: 'error',
                 text1: 'Select date',
@@ -171,6 +174,7 @@ const ReservedFood1 = ({route, navigation}) => {
         try {
             if (handleReserveFoodValidation()) {
                 setLoadingReserveFood(true);
+                setShowDateSelector(true);
                 const _reservationDate = selectedDate;
                 const startOfDay = new Date(_reservationDate);
                 startOfDay.setHours(0, 0, 0, 0);
@@ -222,11 +226,13 @@ const ReservedFood1 = ({route, navigation}) => {
     };
 
     const handleDateChange = date => {
-        if (date) {
-            setSelectedDate(date);
-        }
+        setSelectedDate(date);
     };
 
+    const closeDateSelector = () => {
+        // Close the DateSelector component
+        setDateSelectorVisible(false);
+    };
 
     const saveImageToGallery = async (imageUri) => {
         console.log('Image URI:', imageUri);
@@ -275,6 +281,7 @@ const ReservedFood1 = ({route, navigation}) => {
                 marginleft={-responsiveWidth(2)}
             />
             <ScrollView>
+
                 <CardView
                     customMarginTop={responsiveHeight(1)}
                     source={{uri: distributorDetails.profileImage}}
@@ -312,35 +319,35 @@ const ReservedFood1 = ({route, navigation}) => {
                         }]}>{distributorDetails.website}</Text>
                     </TouchableOpacity>
                 </View>
-                <DatePickerInput
-                    label='Reservation Date'
-                    inputWidth={responsiveWidth(92)}
-                    responsiveMarginTop={3}
-                    source1={calendar}
-                    customWidth={responsiveWidth(92)}
-                    selectedDate={selectedDate}
-                    showImage={true}
-                    setSelectedDate={setSelectedDate}
-                    onDateChange={handleDateChange}
-                />
-                <View style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(14), flexDirection: 'row', alignItems: 'center' }]}>
-                    <Text style={[appStyles.labelPeopleSelection, { marginRight: responsiveWidth(0.5) }]}>Number of People: </Text>
-                    <TouchableOpacity
-                        onPress={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}
-                        style={appStyles.numberButton}
-                    >
-                        <Text style={appStyles.buttonText}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={appStyles.numberOfPeopleText}>{numberOfPeople}</Text>
-                    <TouchableOpacity
-                        onPress={() => setNumberOfPeople(Math.min(10, numberOfPeople + 1))}
-                        style={appStyles.numberButton}
-                    >
-                        <Text style={appStyles.buttonText}>+</Text>
-                    </TouchableOpacity>
-                </View>
+                {/*<DatePickerInput*/}
+                {/*    label='Reservation Date'*/}
+                {/*    inputWidth={responsiveWidth(92)}*/}
+                {/*    responsiveMarginTop={3}*/}
+                {/*    source1={calendar}*/}
+                {/*    customWidth={responsiveWidth(92)}*/}
+                {/*    selectedDate={selectedDate}*/}
+                {/*    showImage={true}*/}
+                {/*    setSelectedDate={setSelectedDate}*/}
+                {/*    onDateChange={handleDateChange}*/}
+                {/*/>*/}
+                {/*<View style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(14), flexDirection: 'row', alignItems: 'center' }]}>*/}
+                {/*    <Text style={[appStyles.labelPeopleSelection, { marginRight: responsiveWidth(0.5) }]}>Number of People: </Text>*/}
+                {/*    <TouchableOpacity*/}
+                {/*        onPress={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}*/}
+                {/*        style={appStyles.numberButton}*/}
+                {/*    >*/}
+                {/*        <Text style={appStyles.buttonText}>-</Text>*/}
+                {/*    </TouchableOpacity>*/}
+                {/*    <Text style={appStyles.numberOfPeopleText}>{numberOfPeople}</Text>*/}
+                {/*    <TouchableOpacity*/}
+                {/*        onPress={() => setNumberOfPeople(Math.min(10, numberOfPeople + 1))}*/}
+                {/*        style={appStyles.numberButton}*/}
+                {/*    >*/}
+                {/*        <Text style={appStyles.buttonText}>+</Text>*/}
+                {/*    </TouchableOpacity>*/}
+                {/*</View>*/}
 
-                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop: 30}]}>
+                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop: 290}]}>
                     <Button
                         label="Reserve Food"
                         onPress={() => handleReserveFood()}
@@ -399,6 +406,13 @@ const ReservedFood1 = ({route, navigation}) => {
             <Loaders.AbsolutePrimary
                 isVisible={loadingReserveFood}
             />
+
+            {isDateSelectorVisible && (
+            <DateSelector
+              isVisible={isDateSelectorVisible}
+              onClose={() => setDateSelectorVisible(false)} // Step 3: Close the DateSelector when needed
+            />
+              )}
         </SafeAreaView>
     );
 };
