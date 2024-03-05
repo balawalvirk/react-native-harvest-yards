@@ -39,9 +39,7 @@ import {Loaders} from '../../../components';
 import MemoizedRenderItem from '../../../components/MemoComponent';
 import { PERMISSIONS, RESULTS } from 'react-native-permissions';
 const FindFood = ({navigation}) => {
-  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] =
-    useState(false);
-  console.log('isHelpCalloutModalVisible', isHelpCalloutModalVisible);
+  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [distributorsData, setDistributorsData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -131,7 +129,7 @@ const FindFood = ({navigation}) => {
         onPress={() => navigation.openDrawer()}
         customTextMarginLeft={responsiveWidth(26)}
         // showImage2={true}
-        marginleft={-responsiveWidth(2)}
+        marginleft={-responsiveWidth(0)}
         bellmarginleft={responsiveWidth(32)}
       />
       <ScrollView

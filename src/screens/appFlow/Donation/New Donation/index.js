@@ -128,7 +128,7 @@ const NewDonation = ({ route, navigation }) => {
                 showImage={true}
                 onPress={() => navigation.goBack()}
                 customTextMarginLeft={responsiveWidth(29)}
-                marginleft={-responsiveWidth(2)}
+                marginleft={-responsiveWidth(0)}
             />
             <ScrollView
                 contentContainerStyle={appStyles.scrollViewContainer}

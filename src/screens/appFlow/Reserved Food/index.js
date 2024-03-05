@@ -56,7 +56,7 @@ const ReservedFood = (props) => {
         customTextMarginLeft={responsiveWidth(23)}
         // showImage2={true}
         bellmarginleft={responsiveWidth(25.5)}
-        marginleft={-responsiveWidth(2)}
+        marginleft={-responsiveWidth(0)}
       />
       <ScrollView
         refreshControl={

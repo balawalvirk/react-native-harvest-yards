@@ -250,7 +250,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                 showImage={true}
                 onPress={() => navigation.goBack()}
                 customTextMarginLeft={responsiveWidth(26)}
-                marginleft={-responsiveWidth(2)}
+                marginleft={-responsiveWidth(0)}
             />
             <ScrollView>
                 <CardView

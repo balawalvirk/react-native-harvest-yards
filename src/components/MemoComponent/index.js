@@ -2,7 +2,6 @@ import React from 'react';
 import CardView from '../../components/CardView';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 const MemoizedRenderItem = React.memo(({ item, currentLocation, calculateDistance, roundToDecimal, navigation }) => {
-  console.log("item>>");
 
   const { latitude, longitude } = item;
   const location = latitude && longitude ? { latitude, longitude } : null;

@@ -14,7 +14,7 @@ import firestore from '@react-native-firebase/firestore';
 import {HelpCalloutModal} from '../../../../components/Modal/Tip Modal';
 import {QRCode} from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
-import DateSelector from '../../../../components/DateSelector';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import {
     createOrder,
     firestoreCollections,
@@ -40,7 +40,6 @@ const ReservedFood1 = ({route, navigation}) => {
     const [numberOfPeople, setNumberOfPeople] = useState(1); // Added state for number of people
     const {currentLocation, calculateDistance} = useLocation()
     const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
-    const [isDateSelectorVisible, setDateSelectorVisible] = useState(false);
     const {item, userId} = route.params;
     const distributorId = item?.id || ''
     // console.log('distributer Item: ', item)
@@ -76,7 +75,6 @@ const ReservedFood1 = ({route, navigation}) => {
         return () => unsubscribe(); // Unsubscribe when the component unmounts
 
     }, [distributorId]);
-
 
     useEffect(() => {
         // Check if the component was accessed from Reserved favorites
@@ -144,37 +142,10 @@ const ReservedFood1 = ({route, navigation}) => {
         }
     };
 
-
-    const handleReserveFoodValidation = () => {
-        if (!selectedDate) {
-            setDateSelectorVisible(true);
-            Toast.show({
-                type: 'error',
-                text1: 'Select date',
-                text2: 'Reservation Date is required',
-            });
-        }
-        if (!distributorDetails?.availableMeals) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No meal available',
-            });
-        }
-        // console.log('selectedDate: ', selectedDate)
-        // console.log('distributorDetails?.availableMeals: ', distributorDetails?.availableMeals)
-        // console.log('user: ', user?.uid)
-
-        if (selectedDate && distributorDetails?.availableMeals && user) {
-            return true;
-        }
-    }
-
-    const handleReserveFood = async () => {
+    
+    const reserveOrder = async () => {
         try {
-            if (handleReserveFoodValidation()) {
                 setLoadingReserveFood(true);
-                setShowDateSelector(true);
                 const _reservationDate = selectedDate;
                 const startOfDay = new Date(_reservationDate);
                 startOfDay.setHours(0, 0, 0, 0);
@@ -200,38 +171,81 @@ const ReservedFood1 = ({route, navigation}) => {
                             text2: errorMessage,
                         });
                     } else {
-                        await createOrder({
-                            userId: user.uid,
-                            distributorId: distributorDetails.id,
-                            reservationDate: selectedDate,
-                            numberOfPeople: numberOfPeople, // Added number of people
-                        }).then((res) => {
-                            if (res) {
-                                console.log("QR CODE VALUE", res)
-                                const qrValue = res?.id;
-                                console.log("QR CODE ID", qrValue)
-                                setQRCodeValue(qrValue);
-                                setIsQRModalVisible(true);
-                            }
-                        });
-                    }
-                });
-
+                            await createOrder({
+                                userId: user.uid,
+                                distributorId: distributorDetails.id,
+                                reservationDate: selectedDate,
+                                numberOfPeople: numberOfPeople, // Added number of people
+                            }).then((res) => {
+                                if (res) {
+                                    console.log("QR CODE VALUE", res)
+                                    const qrValue = res?.id;
+                                    console.log("QR CODE ID", qrValue)
+                                    setQRCodeValue(qrValue);
+                                    setIsQRModalVisible(true);
+                                }
+                            });
+                        }
+                
+            });
                 setLoadingReserveFood(false);
-            }
         } catch (error) {
             console.error('Error adding reserved food information:', error);
             setLoadingReserveFood(false);
         }
     };
 
+    const showAlert = (date) => {
+        Alert.alert(
+            'Confirmation',
+            `Are you sure you want to proceed? Your selected date is ${date.toLocaleDateString('en-GB')}`,
+            [
+                {
+                    text: 'No',
+                    onPress: () => {
+                        console.log('No pressed',showDateSelector);
+                        setShowDateSelector(true);
+                    },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => {reserveOrder()},
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+    
+    
+
+
+    const handleReserveFoodValidation = () => {
+        if (!distributorDetails?.availableMeals) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'No meal available',
+            });
+        }
+        if ( distributorDetails?.availableMeals && user) {
+            return true;
+        }
+    }
+
+    const handleReserveFood = async () => {
+        if (handleReserveFoodValidation()) setShowDateSelector(true); 
+    };
+
     const handleDateChange = date => {
         setSelectedDate(date);
+        setShowDateSelector(false);
+        showAlert(date)
     };
 
     const closeDateSelector = () => {
         // Close the DateSelector component
-        setDateSelectorVisible(false);
+        setShowDateSelector(false);
     };
 
     const saveImageToGallery = async (imageUri) => {
@@ -278,7 +292,7 @@ const ReservedFood1 = ({route, navigation}) => {
                 showImage={true}
                 onPress={() => navigation.goBack()}
                 customTextMarginLeft={responsiveWidth(26)}
-                marginleft={-responsiveWidth(2)}
+                marginleft={-responsiveWidth(0)}
             />
             <ScrollView>
 
@@ -319,35 +333,19 @@ const ReservedFood1 = ({route, navigation}) => {
                         }]}>{distributorDetails.website}</Text>
                     </TouchableOpacity>
                 </View>
-                {/*<DatePickerInput*/}
-                {/*    label='Reservation Date'*/}
-                {/*    inputWidth={responsiveWidth(92)}*/}
-                {/*    responsiveMarginTop={3}*/}
-                {/*    source1={calendar}*/}
-                {/*    customWidth={responsiveWidth(92)}*/}
-                {/*    selectedDate={selectedDate}*/}
-                {/*    showImage={true}*/}
-                {/*    setSelectedDate={setSelectedDate}*/}
-                {/*    onDateChange={handleDateChange}*/}
-                {/*/>*/}
-                {/*<View style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(14), flexDirection: 'row', alignItems: 'center' }]}>*/}
-                {/*    <Text style={[appStyles.labelPeopleSelection, { marginRight: responsiveWidth(0.5) }]}>Number of People: </Text>*/}
-                {/*    <TouchableOpacity*/}
-                {/*        onPress={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}*/}
-                {/*        style={appStyles.numberButton}*/}
-                {/*    >*/}
-                {/*        <Text style={appStyles.buttonText}>-</Text>*/}
-                {/*    </TouchableOpacity>*/}
-                {/*    <Text style={appStyles.numberOfPeopleText}>{numberOfPeople}</Text>*/}
-                {/*    <TouchableOpacity*/}
-                {/*        onPress={() => setNumberOfPeople(Math.min(10, numberOfPeople + 1))}*/}
-                {/*        style={appStyles.numberButton}*/}
-                {/*    >*/}
-                {/*        <Text style={appStyles.buttonText}>+</Text>*/}
-                {/*    </TouchableOpacity>*/}
-                {/*</View>*/}
+                {showDateSelector&&(
+                <DateTimePicker
+                isVisible={true}
+                  style={{ width: '100%', backgroundColor: 'white' }}
+                  value={selectedDate}
+                  mode="date"
+                  minimumDate={new Date()}
+                  onConfirm={handleDateChange}
+                  onCancel={closeDateSelector}
+      
+                />)}
 
-                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop: 290}]}>
+                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop:250}]}>
                     <Button
                         label="Reserve Food"
                         onPress={() => handleReserveFood()}
@@ -406,13 +404,6 @@ const ReservedFood1 = ({route, navigation}) => {
             <Loaders.AbsolutePrimary
                 isVisible={loadingReserveFood}
             />
-
-            {isDateSelectorVisible && (
-            <DateSelector
-              isVisible={isDateSelectorVisible}
-              onClose={() => setDateSelectorVisible(false)} // Step 3: Close the DateSelector when needed
-            />
-              )}
         </SafeAreaView>
     );
 };

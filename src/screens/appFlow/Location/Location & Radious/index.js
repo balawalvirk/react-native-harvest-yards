@@ -300,7 +300,7 @@ export default function LocationRadious({navigation, route}) {
         showImage={true}
         onPress={() => navigation.goBack()}
         customTextMarginLeft={responsiveWidth(23)}
-        marginleft={-responsiveWidth(2)}
+        marginleft={-responsiveWidth(0)}
       />
 
       <ScrollView

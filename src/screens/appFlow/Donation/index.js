@@ -69,7 +69,7 @@ const Donation = ({ navigation }) => {
                 showImage={true}
                 onPress={() => navigation.goBack()}
                 customTextMarginLeft={responsiveWidth(28)}
-                marginleft={-responsiveWidth(2)}
+                marginleft={-responsiveWidth(0)}
 
             />
             <ScrollView>

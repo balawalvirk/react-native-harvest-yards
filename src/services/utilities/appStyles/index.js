@@ -66,7 +66,7 @@ export const appStyles = StyleSheet.create({
     borderColor: colors.color11,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 23,
+    paddingLeft: 12,
   },
   arrow: {
     width: scale(29),
@@ -571,7 +571,8 @@ export const appStyles = StyleSheet.create({
     backgroundColor: colors.color33,
     height: scale(49),
     borderRadius: responsiveWidth(50),
-  },
+},
+
   Lubemeuptext: {
     color: colors.color7,
     fontSize: fontSize.h6,
