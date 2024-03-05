@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useEffect,useRef } from 'react';
 import Header from '../../../components/Headers';
 import Button from '../../../components/Button';
 import { colors } from '../../../services/utilities/color';
@@ -15,6 +15,7 @@ import {
     User,
     lock,
 } from '../../../services/utilities/assets';
+import { Picker } from '@react-native-picker/picker';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,6 +32,7 @@ export default function AdditionalInfo({ route, navigation }) {
     const [smsUpdates, setSmsUpdates] = useState('');
     const [acceptTerms, setAcceptTerms] = useState('');
     const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
+    const pickerRef = useRef(null);
     const handlearrow = () => {
         navigation.goBack();
     };
@@ -203,15 +205,24 @@ export default function AdditionalInfo({ route, navigation }) {
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
 
-                <CustomTextInput
-                    label="How many people in your household?"
-                    keyboardType="phone-pad"
-                    placeholder="How many people in your household?"
-                    placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={7}
-                    source={User}
-                    value={householdSize}
-                    onChangeText={(text) => setHouseholdSize(text)} />
+<View style={[appStyles.inputView , { marginTop: responsiveHeight(10), alignItems: 'center' }]}>
+    <TouchableWithoutFeedback onPress={() => pickerRef.current.focus()}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image source={User} style={[appStyles.Email, { marginRight: 0 }]} /> 
+            <Text style={[appStyles.abc,{marginHorizontal:16}]}>People in your household:</Text>
+            <Picker
+                selectedValue={householdSize}
+                style={{ height: 50, width: responsiveWidth(90) }}
+                onValueChange={(itemValue, itemIndex) => setHouseholdSize(itemValue)}
+                ref={pickerRef}>
+                <Picker.Item label=" " value="" />
+                <Picker.Item label="1-4" value="1-4" />
+                <Picker.Item label="5-8" value="5-8" />
+                <Picker.Item label="9-12" value="9-12" />
+            </Picker>
+        </View>
+    </TouchableWithoutFeedback>
+</View>
                 <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
                     <CustomCheckbox
                         checked={smsUpdates} onPress={() => setSmsUpdates(!smsUpdates)} />
