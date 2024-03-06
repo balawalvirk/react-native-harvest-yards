@@ -1,7 +1,7 @@
 import React,{useEffect} from 'react';
 import { Image, ImageBackground, Text, View } from 'react-native';
 import { appStyles } from '../../../../src/services/utilities/appStyles';
-import { HYlogo, Logo, Splash1 } from '../../../services/utilities/assets';
+import { HYlogo, Logo, Splash1, Splash2 } from '../../../services/utilities/assets';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import auth from '@react-native-firebase/auth';
 const Splash = ({ navigation }) => {
@@ -25,7 +25,7 @@ const Splash = ({ navigation }) => {
       style={appStyles.imageBackground}>
       <SafeAreaView style={appStyles.Splashcontainer}>
         <View style={appStyles.splashview}>
-          <Image source={HYlogo} style={appStyles.splashlogo} />
+          <Image source={Splash2} style={appStyles.splashlogo} />
         </View>
       </SafeAreaView>
     </ImageBackground>

@@ -205,11 +205,11 @@ export default function AdditionalInfo({ route, navigation }) {
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
 
-<View style={[appStyles.inputView , { marginTop: responsiveHeight(10), alignItems: 'center' }]}>
+<View style={[appStyles.inputView , {height: responsiveHeight(7), marginTop: responsiveHeight(7), alignItems: 'center' }]}>
     <TouchableWithoutFeedback onPress={() => pickerRef.current.focus()}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={User} style={[appStyles.Email, { marginRight: 0 }]} /> 
-            <Text style={[appStyles.abc,{marginHorizontal:16}]}>People in your household:</Text>
+            <Text style={{marginHorizontal:16,color: colors.color29}}>People in your household:</Text>
             <Picker
                 selectedValue={householdSize}
                 style={{ height: 50, width: responsiveWidth(90) }}

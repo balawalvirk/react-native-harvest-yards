@@ -15,6 +15,7 @@ export const Phone = require('../../../../src/assets/images/phone.png');
 export const Question = require('../../../../src/assets/images/Question.png');
 export const Handtea = require('../../../../src/assets/images/Handtea.png');
 export const Splash1 = require('../../../../src/assets/images/Splash1.png');
+export const Splash2 = require('../../../../src/assets/images/splash2.png');
 export const arrowright = require('../../../../src/assets/images/arrowright.png');
 export const Logo = require('../../../../src/assets/images/Logo.png');
 export const checkcircle = require('../../../../src/assets/images/checkcircle.png');
