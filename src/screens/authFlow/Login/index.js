@@ -116,10 +116,10 @@ export default function Login({ navigation }) {
         return;
       }
 
-      const response = await auth().signInWithEmailAndPassword(email.trim(), password);
+      const response = await auth().signInWithEmailAndPassword(email.trim().toLowerCase(), password);
 
       // Additional logic after successful login, if needed
-      console.log('Login successful!', response.user.uid);
+      console.log('Login successful!', response);
 
       // Show success toast
       Toast.show({
@@ -128,7 +128,7 @@ export default function Login({ navigation }) {
         text2: 'Login successful!',
       });
       if (checkboxChecked) {
-        await storeCredentials(email, password);
+        await storeCredentials(email.toLowerCase(), password);
       } else {
         // If "Remember Me" is unchecked, clear stored credentials
         await AsyncStorage.removeItem('email');

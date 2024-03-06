@@ -117,8 +117,14 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
+     
+            let numberOfPackages  
+            if(householdSize=="1-4") numberOfPackages = 1
+            else if(householdSize=="5-8") numberOfPackages = 2
+            else if(householdSize=="9-12") numberOfPackages = 3
+            const lowerCaseEmail = email.trim().toLowerCase();
             // Create user in Firebase Authentication
-            const authResponse = await auth().createUserWithEmailAndPassword(email.trim(), password);
+            const authResponse = await auth().createUserWithEmailAndPassword(email.trim().toLowerCase(), password);
             const userId = authResponse.user.uid;
             setIslinksentModalVisible(true);
             console.log('Modal should show now...');
@@ -135,11 +141,12 @@ export default function AdditionalInfo({ route, navigation }) {
                 isOver13: isOver13 ? 'Yes' : 'No',
                 isUnhoused: isUnhoused ? 'Yes' : 'No',
                 isReceivingAssistance: isReceivingAssistance ? 'Yes' : 'No',
-                email,
+                email: lowerCaseEmail,
                 phoneNumber,
                 householdSize,
                 agreementAccepted: acceptTerms ? 'Yes' : 'No',
-                smsUpdates: smsUpdates ? 'Yes' : 'No'
+                smsUpdates: smsUpdates ? 'Yes' : 'No',
+                numberOfPackages: numberOfPackages
             });
             setIslinksentModalVisible(true);
             navigation.navigate('DrawerNavigation', { screen: 'FindFood' });

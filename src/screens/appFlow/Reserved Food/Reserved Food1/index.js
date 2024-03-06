@@ -15,6 +15,7 @@ import {HelpCalloutModal} from '../../../../components/Modal/Tip Modal';
 import {QRCode} from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     createOrder,
     firestoreCollections,
@@ -52,6 +53,28 @@ const ReservedFood1 = ({route, navigation}) => {
     const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null
     const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km away' : ''
 
+
+    useEffect(() => {
+        const fetchUser = async () => {
+          try {
+            const storedEmail = await AsyncStorage.getItem('email');
+            console.log("email is",storedEmail);
+            if (!storedEmail) return;
+            
+            const usersRef = firestore().collection('users').where('email', '==', storedEmail);
+            const snapshot = await usersRef.get();
+            
+            if (snapshot.empty) return;
+            
+            const userData = snapshot.docs[0].data();
+            if(userData.numberOfPackages) setNumberOfPeople(userData.numberOfPackages)
+          } catch (error) {
+            console.error('Error fetching user: ', error);
+          }
+        };
+    
+        fetchUser();
+      }, []);
 
     useEffect(() => {
 
