@@ -194,7 +194,7 @@ export default function AdditionalInfo({ route, navigation }) {
                     keyboardType="default"
                     placeholder="Minimum 8 characters"
                     placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={5}
+                    responsiveMarginTop={6}
                     source={User}
                     value={password}
                     onChangeText={(text) => setPassword(text)}
@@ -204,7 +204,7 @@ export default function AdditionalInfo({ route, navigation }) {
                     keyboardType="default"
                     placeholder="Minimum 8 characters"
                     placeholderMarginLeft={responsiveWidth(3)}
-                    responsiveMarginTop={7}
+                    responsiveMarginTop={6}
                     TextinputWidth={responsiveWidth(67)}
                     source={lock}
                     showeye={true}
@@ -212,9 +212,15 @@ export default function AdditionalInfo({ route, navigation }) {
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
 
-<View style={[appStyles.inputView , {height: responsiveHeight(7), marginTop: responsiveHeight(7), alignItems: 'center' }]}>
+<View style={[
+        appStyles.inputmainview,
+        {
+          marginTop: responsiveHeight(6),
+        },
+      ]}>
+    <Text style={appStyles.label}>People in household</Text>
     <TouchableWithoutFeedback onPress={() => pickerRef.current.focus()}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={[appStyles.inputView , {height: responsiveHeight(7), alignItems: 'center' }]}>
             <Image source={User} style={[appStyles.Email, { marginRight: 0 }]} /> 
             <Text style={{marginHorizontal:16,color: colors.color29}}>People in your household:</Text>
             <Picker
