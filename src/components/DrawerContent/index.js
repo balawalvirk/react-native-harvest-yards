@@ -9,6 +9,7 @@ import Buttonview from '../ButtonView';
 import Button2view from '../Button2view';
 import { ModalRemoveUser } from '../Modal';
 import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fontSize } from '../../services/utilities/fonts';
 const DrawerContent = ({ navigation }) => {
   const [selectedLabel, setSelectedLabel] = useState(null);
@@ -20,6 +21,8 @@ const DrawerContent = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       await auth().signOut(); 
+      await AsyncStorage.removeItem('email');
+      await AsyncStorage.removeItem('password');
       navigation.reset({ 
         index: 0,
         routes: [{ name: 'AuthNavigation' }], 
