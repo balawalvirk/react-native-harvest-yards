@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Share, SafeAreaView, TouchableOpacity, Image } 
 import { appStyles } from '../../services/utilities/appStyles';
 import { colors } from '../../services/utilities/color';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
-import { User, icon8, tag, Donation, Star, Info, share, Logout, HYlogowhite } from '../../services/utilities/assets';
+import { User, icon8, tag, Donation, Star, Info, share, Logout, HYlogowhite, Splash2 } from '../../services/utilities/assets';
 import Line from '../Line';
 import Buttonview from '../ButtonView';
 import Button2view from '../Button2view';
@@ -57,7 +57,7 @@ const DrawerContent = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flexGrow: 1, backgroundColor: 'white', paddingBottom: responsiveWidth(13), borderTopRightRadius: responsiveWidth(15), borderBottomRightRadius: responsiveWidth(15) }}>
       <ScrollView contentContainerStyle={appStyles.scrollViewContainer} showsVerticalScrollIndicator={false}>
-        <Image source={HYlogowhite} style={[appStyles.logo, { marginTop: responsiveHeight(1) }]} />
+        <Image source={Splash2} style={[appStyles.logo, { marginTop: responsiveHeight(2) }]} />
 
         <TouchableOpacity onPress={() => handleLabelSelect('Editprofile')}>
           <Buttonview

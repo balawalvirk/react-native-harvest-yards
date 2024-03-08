@@ -16,6 +16,8 @@ import {
   animation,
   lock,
   mappin,
+  Phone,
+  User
 } from '../../../services/utilities/assets';
 import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
@@ -293,12 +295,14 @@ export default function EditProfile({ navigation }) {
       <ScrollView
         contentContainerStyle={appStyles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
-        <Text style={appStyles.infotxt}>Basic Info</Text>
+        <Text style={appStyles.infotxt}>Personal Info</Text>
         <CustomTextInput
           label="First Name"
           keyboardType="default"
           placeholder="John"
           responsiveMarginTop={3}
+          source={User}
+          placeholderMarginLeft={responsiveWidth(3)}
           value={firstName}
           onChangeText={(text) => setfirstName(text)}
         />
@@ -307,6 +311,8 @@ export default function EditProfile({ navigation }) {
           keyboardType="default"
           placeholder="Doe"
           responsiveMarginTop={7}
+          source={User}
+          placeholderMarginLeft={responsiveWidth(3)}
           value={lastName}
           onChangeText={(text) => setlastName(text)}
         />
@@ -315,6 +321,8 @@ export default function EditProfile({ navigation }) {
           label="Username"
           keyboardType="default"
           placeholder="example123"
+          source={User}
+          placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={7}
           value={UserName}
           onChangeText={(text) => setUserName(text)}
@@ -323,6 +331,8 @@ export default function EditProfile({ navigation }) {
           label="Email Address"
           keyboardType="default"
           placeholder="example@email.com"
+          source={Email}
+          placeholderMarginLeft={responsiveWidth(3)}
           responsiveMarginTop={7}
           autoCapitalize={true}
           value={email}
@@ -335,6 +345,8 @@ export default function EditProfile({ navigation }) {
           keyboardType="phone-pad"
           placeholder="Enter a number"
           responsiveMarginTop={7}
+          source={Phone}
+          placeholderMarginLeft={responsiveWidth(3)}
           value={phoneNumber} // Add value prop to display user data
           onChangeText={(text) => setPhoneNumber(text)}
         />
