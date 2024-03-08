@@ -50,11 +50,6 @@ export default function Index({ navigation }) {
   };
   const phoneRegex = /^[0-9]{10}$/;
 
-  const handleDateChange = date => {
-    if (date) {
-      setDOB(date);
-    }
-  };
   const handleCreateAccount = async () => {
     if (!firstName || !street || !city || !state || !zip || !dob) {
 
@@ -221,23 +216,11 @@ export default function Index({ navigation }) {
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
         />
-        {/* <DatePickerInput
-            label='Date of Birth'
-            inputWidth={responsiveWidth(90)}
-            responsiveMarginTop={7}
-            source1={calendar}
-            customWidth={responsiveWidth(90)}
-            selectedDate={dob}
-            showImage={true}
-            setSelectedDate={setDOB}
-            onDateChange={handleDateChange}
-        /> */}
 
         <MonthYearPicker
             label="Date of Birth"
             responsiveMarginTop={7}
             source={calendar}
-            value={dob}
             onChangeText={(text) => setDOB(text)}
         />
 
