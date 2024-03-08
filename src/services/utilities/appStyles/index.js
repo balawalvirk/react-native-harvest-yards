@@ -91,8 +91,8 @@ export const appStyles = StyleSheet.create({
   //   opacity: 1,
   // },
   logo: {
-    width: scale(218),
-    height: scale(160),
+    width: scale(200),
+    height: scale(130),
     alignSelf: 'center',
     resizeMode: 'contain',
     marginTop: responsiveHeight(6)

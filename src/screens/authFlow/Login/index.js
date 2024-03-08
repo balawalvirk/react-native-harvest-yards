@@ -6,7 +6,7 @@ import LottieView from 'lottie-react-native';
 import { responsiveFontSize, responsiveHeight, responsiveWidth, } from 'react-native-responsive-dimensions';
 import Checkbox from '../../../components/Checkbox';
 import Button from '../../../components/Button';
-import { Email, HYlogo, HYlogowhite, Logo, MaskGroup19, User, animation, lock, login } from '../../../services/utilities/assets';
+import { Email, HYlogo, HYlogowhite, Logo, MaskGroup19, User, animation, lock, login, Splash2 } from '../../../services/utilities/assets';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -152,7 +152,7 @@ export default function Login({ navigation }) {
   return (
     <View style={appStyles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image source={HYlogowhite} style={appStyles.logo} />
+        <Image source={Splash2} style={appStyles.logo} />
         <Text style={appStyles.Accounttxt}>Login To Your Account</Text>
         {/* <Text style={appStyles.Entertxt}>Enter Your Email Address And Password</Text> */}
         <CustomTextInput
