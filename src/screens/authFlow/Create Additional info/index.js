@@ -118,10 +118,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 return;
               }
      
-            let numberOfPackages  
-            if(householdSize=="1-4") numberOfPackages = 1
-            else if(householdSize=="5-8") numberOfPackages = 2
-            else if(householdSize=="9-12") numberOfPackages = 3
+            const numberOfPackages = (householdSize <= 4) ? 1 : (householdSize <= 8) ? 2 : 3
             const lowerCaseEmail = email.trim().toLowerCase();
             // Create user in Firebase Authentication
             const authResponse = await auth().createUserWithEmailAndPassword(email.trim().toLowerCase(), password);
@@ -212,30 +209,15 @@ export default function AdditionalInfo({ route, navigation }) {
                     onChangeText={(text) => setConfirmPassword(text)}
                 />
 
-<View style={[
-        appStyles.inputmainview,
-        {
-          marginTop: responsiveHeight(6),
-        },
-      ]}>
-    <Text style={appStyles.label}>People in household</Text>
-    <TouchableWithoutFeedback onPress={() => pickerRef.current.focus()}>
-        <View style={[appStyles.inputView , {height: responsiveHeight(7), alignItems: 'center' }]}>
-            <Image source={User} style={[appStyles.Email, { marginRight: 0 }]} /> 
-            <Text style={{marginHorizontal:16,color: colors.color29}}>People in your household:</Text>
-            <Picker
-                selectedValue={householdSize}
-                style={{ height: 50, width: responsiveWidth(90) }}
-                onValueChange={(itemValue, itemIndex) => setHouseholdSize(itemValue)}
-                ref={pickerRef}>
-                <Picker.Item label=" " value="" />
-                <Picker.Item label="1-4" value="1-4" />
-                <Picker.Item label="5-8" value="5-8" />
-                <Picker.Item label="9-12" value="9-12" />
-            </Picker>
-        </View>
-    </TouchableWithoutFeedback>
-</View>
+                <CustomTextInput
+                    label="How many people in your household?"
+                    keyboardType="phone-pad"
+                    placeholder="How many people in your household?"
+                    placeholderMarginLeft={responsiveWidth(3)}
+                    responsiveMarginTop={6}
+                    source={User}
+                    value={householdSize}
+                    onChangeText={(text) => setHouseholdSize(text)} />
                 <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(8), marginLeft: responsiveWidth(5) }]}>
                     <CustomCheckbox
                         checked={smsUpdates} onPress={() => setSmsUpdates(!smsUpdates)} />
