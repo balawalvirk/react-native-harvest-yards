@@ -1,56 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, Text, Image, Modal } from 'react-native';
-import { appStyles } from '../../services/utilities/appStyles';
-import {
-  responsiveHeight,
-  responsiveWidth,
-} from 'react-native-responsive-dimensions';
-// import DatePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image } from 'react-native';
+import { appStyles } from '../../../src/services/utilities/appStyles';
+import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { colors } from '../../services/utilities/color';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { fontFamily, fontSize } from '../../services/utilities/fonts';
-import moment from 'moment';
-// import DatePicker from '@react-native-community/datetimepicker';
-import DateTimePicker from 'react-native-modal-datetime-picker';
 
-
-const DatePickerInput = ({
+const MonthYearPicker = ({
   label,
   inputWidth,
   source,
   inputHeight,
+  onChangeText,
   inputBackgroundColor,
   responsiveMarginTop = 1,
+  customImageMarginRight,
   customWidth,
   custommarginleft,
   rowReverse,
-  showImage,
-  source1,
-  onpress,
-  onImgPress,
-  customTextInputMarginRight,
+  placeholderTextColor = colors.color29,
   borderRadius,
-
   error,
-  selectedDate,
-  onDateChange,
 }) => {
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const currentDate = new Date();
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
-  const handleDateChange = (selectedPickedDate) => {
-    // if (selectedPickedDate) {
-      onDateChange(selectedPickedDate);
-      setDatePickerVisible(false);
+  const months = [
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
+  ];
 
-    // }
+  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+
+  const handleMonthChange = (monthIndex) => {
+    setMonth(monthIndex);
+    onChangeText(`${months[monthIndex]} ${year}`);
   };
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
-  };
-  useEffect(()=>{
 
-  },[isDatePickerVisible])
+  const handleYearChange = (selectedYear) => {
+    setYear(selectedYear);
+    onChangeText(`${months[month]} ${selectedYear}`);
+  };
 
   return (
     <View
@@ -64,57 +54,59 @@ const DatePickerInput = ({
       ]}
     >
       <Text style={appStyles.label}>{label}</Text>
-
-
-      <TouchableOpacity
-        onPress={() => {console.log(isDatePickerVisible);setDatePickerVisible(true)}}
+      <View
         style={[
           appStyles.inputView,
           {
             width: inputWidth || responsiveWidth(90),
             height: inputHeight || responsiveHeight(7),
-            backgroundColor:
-              inputBackgroundColor || appStyles.inputView.backgroundColor,
+            backgroundColor: inputBackgroundColor || appStyles.inputView.backgroundColor,
             flexDirection: rowReverse ? 'row-reverse' : 'row',
             borderRadius: borderRadius || responsiveWidth(3.2),
           },
         ]}
       >
-        {selectedDate ? (
-          <Text style={{ color: colors.color18, paddingLeft:16 }}>
-            {' ' + moment(selectedDate).format('YYYY/MM/DD')}
-          </Text>
-        ) : (
-          <Text style={{ color: colors.color29, marginLeft: responsiveWidth(2.5) }}>
-            Select a date
-          </Text>
-        )}
-
-        {showImage && (
-          <TouchableOpacity onPress={() => setDatePickerVisible(true)}>
-            <Image source={source1} style={[appStyles.uploadimage, { marginLeft: responsiveWidth(59) }]} />
-          </TouchableOpacity>
-        )}
-      </TouchableOpacity>
-      {error && <Text style={{ color: colors.color32 }}>{error}</Text>}
-       <View style={{ flex: 1 }}>
-
-          <DateTimePicker
-          isVisible={isDatePickerVisible}
-            style={{ width: '100%', backgroundColor: 'white' }}
-            value={selectedDate}
-            mode="date"
-
-            // display="calendar"
-            minimumDate={label === "Date of Birth" ? new Date(currentDate.getFullYear() - 100, 0, 1) : currentDate}
-            onConfirm={handleDateChange}
-            onCancel={hideDatePicker}
-
+        {source ? (
+          <Image
+            source={source}
+            style={[appStyles.Email, { marginRight: customImageMarginRight }]}
           />
-        </View>
-      {/* )} */}
+        ) : (
+          <View
+            style={{
+              marginLeft: responsiveWidth(3),
+              marginRight: customImageMarginRight,
+            }}
+          />
+        )}
+
+        <Picker
+          selectedValue={month}
+          onValueChange={(itemValue) => handleMonthChange(itemValue)}
+          style={{ flex: 0.55 }}
+        >
+          {month === '' ? <Picker.Item label={'Month'} value="" color={placeholderTextColor} /> : null}
+          {months.map((month, index) => (
+            <Picker.Item key={index} label={month} value={index} />
+          ))}
+        </Picker>
+        <Picker
+          selectedValue={year}
+          onValueChange={(itemValue) => handleYearChange(itemValue)}
+          style={{ flex: 0.45 }}
+        >
+          {year === '' ? <Picker.Item label={'Year'} value="" color={placeholderTextColor} />: null}
+          {years.map((year) => (
+            <Picker.Item key={year} label={year.toString()} value={year} />
+          ))}
+        </Picker>
+      </View>
+      {error && (
+        <Text style={{ color: colors.color32 }}>{error}</Text>
+      )}
     </View>
   );
 };
 
-export default DatePickerInput;
+export default MonthYearPicker;
+

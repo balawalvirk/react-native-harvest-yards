@@ -19,7 +19,6 @@ import CustomTextInput from '../../../components/Textinputs';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import SelectOptionPicker from '../../../components/selectOptionPicker';
-import DatePickerInput from '../../../components/DatePickerInput';
 import Buttonview from '../../../components/ButtonView';
 export default function Index({navigation}) {
   const [selectedDate, setSelectedDate] = useState('');

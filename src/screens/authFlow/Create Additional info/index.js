@@ -20,6 +20,7 @@ import { appStyles } from '../../../services/utilities/appStyles';
 import CustomTextInput from '../../../components/Textinputs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SentModal } from '../../../components/Modal';
+import { Loaders } from '../../../components';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
@@ -32,7 +33,7 @@ export default function AdditionalInfo({ route, navigation }) {
     const [smsUpdates, setSmsUpdates] = useState('');
     const [acceptTerms, setAcceptTerms] = useState('');
     const [islinksentModalVisible, setIslinksentModalVisible] = useState(false);
-    const pickerRef = useRef(null);
+    const [loading, setLoading] = useState(false);
     const handlearrow = () => {
         navigation.goBack();
     };
@@ -117,7 +118,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
-     
+            setLoading(true);
             const numberOfPackages = (householdSize <= 4) ? 1 : (householdSize <= 8) ? 2 : 3
             const lowerCaseEmail = email.trim().toLowerCase();
             // Create user in Firebase Authentication
@@ -130,7 +131,7 @@ export default function AdditionalInfo({ route, navigation }) {
                 userId,
                 firstName,
                 lastName,
-                dob: dob.toISOString(),
+                dob: dob,
                 street,
                 city,
                 state,
@@ -157,6 +158,7 @@ export default function AdditionalInfo({ route, navigation }) {
             });
          }
          finally {
+          setLoading(false);
           setIslinksentModalVisible(false)
         }
     };
@@ -248,6 +250,9 @@ export default function AdditionalInfo({ route, navigation }) {
             <SentModal isVisible={islinksentModalVisible}
                 LinkSent='Account Created'
                 passowrd='Your account has been registered successfully.'
+            />
+             <Loaders.AbsolutePrimary
+              isVisible={loading}
             />
         </SafeAreaView>
     );

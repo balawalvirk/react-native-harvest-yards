@@ -5,7 +5,7 @@ import Button from '../../../components/Button';
 import { colors } from '../../../services/utilities/color';
 import CustomCheckbox from '../../../components/Checkbox';
 import firestore from '@react-native-firebase/firestore';
-import DatePickerInput from '../../../components/DatePickerInput';
+import MonthYearPicker from '../../../components/DatePickerInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   responsiveFontSize,
@@ -221,7 +221,7 @@ export default function Index({ navigation }) {
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
         />
-        <DatePickerInput
+        {/* <DatePickerInput
             label='Date of Birth'
             inputWidth={responsiveWidth(90)}
             responsiveMarginTop={7}
@@ -231,7 +231,16 @@ export default function Index({ navigation }) {
             showImage={true}
             setSelectedDate={setDOB}
             onDateChange={handleDateChange}
+        /> */}
+
+        <MonthYearPicker
+            label="Date of Birth"
+            responsiveMarginTop={7}
+            source={calendar}
+            value={dob}
+            onChangeText={(text) => setDOB(text)}
         />
+
         <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(7) }]}>Address</Text>
         <CustomTextInput
           label="Street"

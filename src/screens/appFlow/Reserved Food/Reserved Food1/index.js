@@ -3,7 +3,6 @@ import {Alert, Image, Linking, Platform, SafeAreaView, ScrollView, Text, Touchab
 import {appStyles} from '../../../../services/utilities/appStyles';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
-import DatePickerInput from '../../../../components/DatePickerInput';
 import {requestStoragePermission} from '../../../../services/utilities/permission'
 import {arrowrightwhite, calendar, HelpCallout, LeftButton} from '../../../../services/utilities/assets';
 import {responsiveHeight, responsiveWidth,} from 'react-native-responsive-dimensions';
