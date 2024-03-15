@@ -37,7 +37,7 @@ const ReservedFood1 = ({route, navigation}) => {
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
     const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false);
     const [loadingReserveFood, setLoadingReserveFood] = useState(false);
-    const [numberOfPeople, setNumberOfPeople] = useState(1); // Added state for number of people
+    const [numberOfPackages, setNumberOfPackages] = useState(1); // Added state for number of people
     const {currentLocation, calculateDistance} = useLocation()
     const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
     const {item, userId} = route.params;
@@ -56,22 +56,23 @@ const ReservedFood1 = ({route, navigation}) => {
     useEffect(() => {
         const fetchUser = async () => {
           try {
-            const storedEmail = await AsyncStorage.getItem('email');
-            console.log("email is",storedEmail);
-            if (!storedEmail) return;
-            
-            const usersRef = firestore().collection('users').where('email', '==', storedEmail);
+            // const storedEmail = await AsyncStorage.getItem('email');
+            // console.log("email is log", data.email);
+            // if (!storedEmail) return;
+
+            const usersRef = firestore().collection('users').where('email', '==', "testing112@gmail.com");
             const snapshot = await usersRef.get();
-            
+
             if (snapshot.empty) return;
-            
+
             const userData = snapshot.docs[0].data();
-            if(userData.numberOfPackages) setNumberOfPeople(userData.numberOfPackages)
+            console.log("numberOfPackagesLog", userData.numberOfPackages)
+            if(userData.numberOfPackages) setNumberOfPackages(userData.numberOfPackages)
           } catch (error) {
             console.error('Error fetching user: ', error);
           }
         };
-    
+
         fetchUser();
       }, []);
 
@@ -164,7 +165,7 @@ const ReservedFood1 = ({route, navigation}) => {
         }
     };
 
-    
+
     const reserveOrder = async () => {
         try {
                 setLoadingReserveFood(true);
@@ -197,7 +198,7 @@ const ReservedFood1 = ({route, navigation}) => {
                                 userId: user.uid,
                                 distributorId: distributorDetails.id,
                                 reservationDate: selectedDate,
-                                numberOfPeople: numberOfPeople, // Added number of people
+                                numberOfPackages: numberOfPackages, // Added number of people
                             }).then((res) => {
                                 if (res) {
                                     console.log("QR CODE VALUE", res)
@@ -208,7 +209,7 @@ const ReservedFood1 = ({route, navigation}) => {
                                 }
                             });
                         }
-                
+
             });
                 setLoadingReserveFood(false);
         } catch (error) {
@@ -238,8 +239,8 @@ const ReservedFood1 = ({route, navigation}) => {
             { cancelable: false }
         );
     };
-    
-    
+
+
 
 
     const handleReserveFoodValidation = () => {
@@ -256,7 +257,7 @@ const ReservedFood1 = ({route, navigation}) => {
     }
 
     const handleReserveFood = async () => {
-        if (handleReserveFoodValidation()) setShowDateSelector(true); 
+        if (handleReserveFoodValidation()) setShowDateSelector(true);
     };
 
     const handleDateChange = date => {
@@ -364,7 +365,7 @@ const ReservedFood1 = ({route, navigation}) => {
                   minimumDate={new Date()}
                   onConfirm={handleDateChange}
                   onCancel={closeDateSelector}
-      
+
                 />)}
 
                 <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop:250}]}>
