@@ -53,6 +53,9 @@ const ReservedFood1 = ({route, navigation}) => {
     const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null
     const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km away' : ''
 
+    useEffect(() => {
+        if(selectedDate) showAlert(selectedDate)
+    },[selectedDate])
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -81,7 +84,7 @@ const ReservedFood1 = ({route, navigation}) => {
             (documentSnapshot) => {
                 if (documentSnapshot.exists) {
                     setCompanyData(documentSnapshot.data());
-                    const availableMeals = documentSnapshot.data()?.availableMeals; // Adjust the field name if needed
+                    const availableMeals = documentSnapshot.data()?.availableMeals;
                     console.log('Available meals:', availableMeals);
                 } else {
                     console.log('Organization document not found for id:', distributorId);
@@ -142,26 +145,6 @@ const ReservedFood1 = ({route, navigation}) => {
             })
             .catch((err) => console.error(err));
     };
-    const fetchUserData = async (userId) => {
-        try {
-            const userDoc = await firestore().collection('users').doc(userId).get();
-            if (userDoc.exists) {
-                const userData = userDoc.data();
-
-                return {
-                    firstName: userData.firstName,
-                    lastName: userData.lastName,
-                };
-            } else {
-                console.log('User document not found');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            return null;
-        }
-    };
-
 
     const reserveOrder = async () => {
         try {
@@ -191,11 +174,14 @@ const ReservedFood1 = ({route, navigation}) => {
                             text2: errorMessage,
                         });
                     } else {
-                            await createOrder({
+                       await createOrder({
                                 userId: user.uid,
                                 distributorId: distributorDetails.id,
                                 reservationDate: selectedDate,
-                                numberOfPackages: numberOfPackages, // Added number of people
+                                numberOfPackages: numberOfPackages, 
+                                companyName: companyData.organization,
+                                companyAddress: companyData.address,
+                                companyLocation: companyData.location
                             }).then((res) => {
                                 if (res) {
                                     console.log("QR CODE VALUE", res)
@@ -260,7 +246,6 @@ const ReservedFood1 = ({route, navigation}) => {
     const handleDateChange = date => {
         setSelectedDate(date);
         setShowDateSelector(false);
-        showAlert(date)
     };
 
     const closeDateSelector = () => {
