@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Alert, Image, Linking, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
 import {appStyles} from '../../../../services/utilities/appStyles';
+import auth from '@react-native-firebase/auth';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
 import {requestStoragePermission} from '../../../../services/utilities/permission'
@@ -56,18 +57,14 @@ const ReservedFood1 = ({route, navigation}) => {
     useEffect(() => {
         const fetchUser = async () => {
           try {
-            // const storedEmail = await AsyncStorage.getItem('email');
-            // console.log("email is log", data.email);
-            // if (!storedEmail) return;
-
-            const usersRef = firestore().collection('users').where('email', '==', "testing112@gmail.com");
-            const snapshot = await usersRef.get();
-
-            if (snapshot.empty) return;
-
-            const userData = snapshot.docs[0].data();
-            console.log("numberOfPackagesLog", userData.numberOfPackages)
-            if(userData.numberOfPackages) setNumberOfPackages(userData.numberOfPackages)
+            const currentUser = auth().currentUser;
+            if (currentUser) {
+                const usersRef = firestore().collection('users').where('userId', '==', currentUser.uid);
+                const snapshot = await usersRef.get();
+                if (snapshot.empty) return;
+                const userData = snapshot.docs[0].data();
+                if(userData.numberOfPackages) setNumberOfPackages(userData.numberOfPackages)
+            }
           } catch (error) {
             console.error('Error fetching user: ', error);
           }
