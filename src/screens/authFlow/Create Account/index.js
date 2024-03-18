@@ -41,7 +41,6 @@ export default function Index({ navigation }) {
   const [state, setState] = useState('');
   const [dob, setDOB] = useState('');
   const [zip, setZip] = useState('');
-  const [isOver13, setIsOver13] = useState('');
   const [isUnhoused, setIsUnhoused] = useState('');
   const [loading, setLoading] = useState(false);
   const [isReceivingAssistance, setIsReceivingAssistance] = useState('');
@@ -51,8 +50,7 @@ export default function Index({ navigation }) {
   const phoneRegex = /^[0-9]{10}$/;
 
   const handleCreateAccount = async () => {
-    if (!firstName || !street || !city || !state || !zip || !dob) {
-
+    if (!firstName || !state || !zip || !dob) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -80,15 +78,14 @@ export default function Index({ navigation }) {
           text2: 'State is required',
         });
       }
-
-      if (!city) {
+      if (!city && !isUnhoused) {
         Toast.show({
           type: 'error',
           text1: 'Error',
           text2: 'City is required',
         });
       }
-      if (!street) {
+      if (!street && !isUnhoused) {
         Toast.show({
           type: 'error',
           text1: 'Error',
@@ -119,7 +116,7 @@ export default function Index({ navigation }) {
         });
       }
       else
-        if (lastName.length <= 3) {
+        if (lastName.length < 3) {
           Toast.show({
             type: 'error',
             text1: 'Error',
@@ -136,7 +133,7 @@ export default function Index({ navigation }) {
         });
       }
       else
-        if (firstName.length <= 3) {
+        if (firstName.length < 3) {
           Toast.show({
             type: 'error',
             text1: 'Error',
@@ -162,7 +159,6 @@ export default function Index({ navigation }) {
         city,
         state,
         zip,
-        isOver13,
         isUnhoused,
         isReceivingAssistance,
       });
@@ -224,7 +220,24 @@ export default function Index({ navigation }) {
             onChangeText={(text) => setDOB(text)}
         />
 
-        <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(7) }]}>Address</Text>
+    <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
+        <View style={appStyles.createcheckview}>
+          <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
+          <CustomCheckbox checked={isUnhoused} onPress={() => setIsUnhoused(!isUnhoused)}/>
+        </View>
+        {/* <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
+          <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
+          <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
+        </View> */}
+
+        <View style={appStyles.createcheckview2}>
+          <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
+          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/>
+        </View>
+
+        <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(3) }]}>Address</Text>
+        {!isUnhoused &&
+        <>
         <CustomTextInput
           label="Street"
           keyboardType="default"
@@ -245,13 +258,15 @@ export default function Index({ navigation }) {
           value={city}
           onChangeText={(text) => setCity(text)}
         />
-        <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5) }}>
+        </>
+}
+        <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5), marginBottom: responsiveHeight(5) }}>
           <CustomTextInput
             label="State"
             keyboardType="default"
             placeholder="state"
             placeholderMarginLeft={responsiveWidth(3)}
-            responsiveMarginTop={7}
+            responsiveMarginTop={!isUnhoused ? 7 : 3}
             inputWidth={responsiveWidth(42)}
             source={mappin}
             TextinputWidth={responsiveWidth(28)}
@@ -263,7 +278,7 @@ export default function Index({ navigation }) {
             keyboardType="numeric"
             placeholder="zip"
             placeholderMarginLeft={responsiveWidth(3)}
-            responsiveMarginTop={7}
+            responsiveMarginTop={!isUnhoused ? 7 : 3}
             custommarginleft={responsiveWidth(5)}
             source={mappin}
             inputWidth={responsiveWidth(42)}
@@ -272,20 +287,7 @@ export default function Index({ navigation }) {
             onChangeText={(text) => setZip(text)}
           />
         </View>
-        <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
-        <View style={appStyles.createcheckview}>
-          <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
-          <CustomCheckbox checked={isUnhoused} onPress={() => setIsUnhoused(!isUnhoused)}/>
-        </View>
-        <View style={[appStyles.createcheckview, { marginTop: responsiveHeight(4) }]}>
-          <Text style={appStyles.Entertxt}>I am over the age of 13</Text>
-          <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
-        </View>
-
-        <View style={appStyles.createcheckview2}>
-          <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
-          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/>
-        </View>
+        
         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(4) }]}>
           <Button
             label="Continue"

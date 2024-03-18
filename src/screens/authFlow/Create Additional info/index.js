@@ -25,7 +25,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 export default function AdditionalInfo({ route, navigation }) {
-    const { firstName,lastName,phoneNumber,dob, street, city, state,zip, isOver13, isUnhoused, isReceivingAssistance } = route.params;
+    const { firstName,lastName,phoneNumber,dob, street, city, state,zip, isUnhoused, isReceivingAssistance } = route.params;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [Confirmpassword, setConfirmPassword] = useState('');
@@ -136,7 +136,6 @@ export default function AdditionalInfo({ route, navigation }) {
                 city,
                 state,
                 zip,
-                isOver13: isOver13 ? 'Yes' : 'No',
                 isUnhoused: isUnhoused ? 'Yes' : 'No',
                 isReceivingAssistance: isReceivingAssistance ? 'Yes' : 'No',
                 email: lowerCaseEmail,
