@@ -136,15 +136,15 @@ export default function EditProfile({ navigation }) {
       console.log(useremail.email.trim(), Password)
       if (currentUser) {
         await auth()
-    .signInWithEmailAndPassword(useremail.email.trim(), Password)
-    .then(function(userCredential) {
-        userCredential.user.updateEmail(newEmail)
-    })
+          .signInWithEmailAndPassword(useremail.email.trim(), Password)
+          .then(function (userCredential) {
+            userCredential.user.updateEmail(newEmail)
+          })
         // await currentUser.updateEmail(newEmail);
         console.log('Email updated successfully:', newEmail);
         return true;
       }
-  
+
       return false;
     } catch (error) {
       console.error('Error updating email:', error.message);
@@ -197,7 +197,7 @@ export default function EditProfile({ navigation }) {
       setLoading(false); // Set loading to false regardless of success or error
     }
   };
-  
+
   const [switchValue, setSwitchValue] = useState(false);
   const phonePattern = /^\d{10}$/;
   const handleToggle = (value) => {
@@ -262,8 +262,8 @@ export default function EditProfile({ navigation }) {
     } else if (!ConfirmPassword) {
       showToast('Confirm Password is required');
       return false;
-    } 
-    
+    }
+
     else if (ConfirmPassword !== ConfirmPasswordNew) {
       showToast('Passwords do not match');
       return false;
@@ -337,7 +337,7 @@ export default function EditProfile({ navigation }) {
           autoCapitalize={true}
           value={email}
           editable={false}
-          // onChangeText={(text) => setemail(text)}
+        // onChangeText={(text) => setemail(text)}
         />
 
         <CustomTextInput
@@ -471,8 +471,8 @@ export default function EditProfile({ navigation }) {
         </View> */}
       </ScrollView>
       <Loaders.AbsolutePrimary
-          isVisible={loading}
-        />
+        isVisible={loading}
+      />
     </SafeAreaView>
 
   );

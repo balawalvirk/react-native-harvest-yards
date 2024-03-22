@@ -1148,6 +1148,18 @@ export const appStyles = StyleSheet.create({
     padding: responsiveWidth(8),
     marginTop: -responsiveHeight(1),
   },
+  disastertab: {
+    width: responsiveWidth(100),
+    flexGrow: 1,
+    padding: responsiveWidth(4),
+    marginTop: -responsiveHeight(0),
+  },
+  bottomview: {
+    textAlign:'center',
+    justifyContent:'center',
+    alignItems:'center',
+    marginBottom:40,
+  },
   policyfirsttxt: {
     color: colors.color4,
     fontSize: fontSize.h6,
@@ -1397,7 +1409,7 @@ export const appStyles = StyleSheet.create({
   },
   numberButton: {
     padding: 10,
-    backgroundColor: '#4CAF50', // Add your desired background color
+    backgroundColor: '#4CAF50', 
     borderRadius: 5,
     marginHorizontal: 0,
   },
@@ -1419,5 +1431,59 @@ export const appStyles = StyleSheet.create({
     color: "white",
     textAlign: 'left',
     marginBottom: -responsiveHeight(0.2),
+  },
+
+  tabRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+  },
+  tabImage: {
+    height: 20,
+    width: 20,
+    marginRight: 10,
+  },
+  tabview: {
+    width: responsiveWidth(93),
+    flex:1,
+    padding: responsiveWidth(0),
+    marginTop: -responsiveHeight(0),
+  },
+  tabContainer: {
+    backgroundColor: '#f2f2f2',
+    marginBottom: 20,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  activeTabContainer: {
+    backgroundColor: 'white',
+  },
+  tabContent: {
+    padding: 10,
+  },
+  tabTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 5,
+  },
+  activeTabTitle: {
+    color: 'green',
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: 'black',
+    marginBottom: 5,
+  },
+  tabLink: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginBottom: 5,
+  },
+  activeTabLink: {
+    fontWeight: 'bold',
   },
 });
