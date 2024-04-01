@@ -44,19 +44,34 @@ export function useHooks() {
                     id: doc.id,
                     ...doc.data(),
                 }));
-                console.log('pending pickes data: ', newData)
+               
+        
+                const currentDate = new Date();
+                currentDate.setHours(currentDate.getHours() - 3);
+                console.log('currentDate', currentDate);
 
+        
                 // Sort the data by reservationDate (client-side sorting)
                 const sortedData = newData.sort((a, b) => a.reservationDate - b.reservationDate);
+        
+                // Filter items based on reservationDate
+                const filteredItems = sortedData.filter(item => {
+                    const reservationDate = new Date(item.reservationDate.toDate().toISOString());
+                console.log('reservationDate', item.reservationDate.toDate().toISOString());
 
-                setPendingPickups(sortedData);
-                getDistributorData(sortedData)
+                    return reservationDate >= currentDate;
+                });
+        
+        
+                setPendingPickups(filteredItems);
+                getDistributorData(filteredItems);
             } else {
                 // Handle the case when snapshot is null or has no documents
-                //console.error("Snapshot is null or has no documents.");
+                // console.error("Snapshot is null or has no documents.");
                 setPendingPickups([]);
             }
         });
+        
 
 
         // Unsubscribe when the component unmounts
@@ -64,6 +79,7 @@ export function useHooks() {
     }, []); // Empty dependency array means it runs once on mount
 
     const getDistributorData = async (ordersData) => {
+
         const _pendingPickups = ordersData
         const uniqueDistributorIds = new Set(_pendingPickups.map((order) => order.distributorId));
         const distributorIds = Array.from(uniqueDistributorIds);
@@ -92,6 +108,8 @@ export function useHooks() {
         });
 
         setPendingPickups(updatedOrdersData);
+        console.log('distributorIds:pendingPickups==== ', pendingPickups)
+
     };
 
 

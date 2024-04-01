@@ -34,11 +34,13 @@ const ReservedFood1 = ({route, navigation}) => {
     const [isQRModalVisible, setIsQRModalVisible] = useState(false);
     const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
     const [companyData, setCompanyData] = useState({});
-    const [qrCodeValue, setQRCodeValue] = useState('');
+    const [qrCodeValue, setQRCodeValue] = useState(null);
     const [reservedFoodArray, setReservedFoodArray] = useState([]);
     const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false);
     const [loadingReserveFood, setLoadingReserveFood] = useState(false);
     const [numberOfPackages, setNumberOfPackages] = useState(1); // Added state for number of people
+    const [userData, setuserData] = useState({}); // Added state for number of people
+    
     const {currentLocation, calculateDistance} = useLocation()
     const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
     const {item, userId} = route.params;
@@ -52,6 +54,7 @@ const ReservedFood1 = ({route, navigation}) => {
     const distance = currentLocation && location ? calculateDistance(location) : null
     const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null
     const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km away' : ''
+    console.log("=======>", item);
 
     useEffect(() => {
         if(selectedDate) showAlert(selectedDate)
@@ -66,7 +69,23 @@ const ReservedFood1 = ({route, navigation}) => {
                 const snapshot = await usersRef.get();
                 if (snapshot.empty) return;
                 const userData = snapshot.docs[0].data();
+                console.log('userData',userData.firstName);
+                console.log('lastName',userData.userId);
+
+                if(userData) setuserData(userData)
+                
                 if(userData.numberOfPackages) setNumberOfPackages(userData.numberOfPackages)
+
+    // let packages = userData.numberOfPackages; 
+    //             if (userData.householdSize <= 4) {
+    //                 packages = userData.numberOfPackages; 
+    //             } else if (userData.householdSize <= 8) {
+    //                 packages = 2; 
+    //             } else {
+    //                 packages = 3; 
+    //             }
+    //             setNumberOfPackages(packages);
+
             }
           } catch (error) {
             console.error('Error fetching user: ', error);
@@ -176,6 +195,8 @@ const ReservedFood1 = ({route, navigation}) => {
                     } else {
                        await createOrder({
                                 userId: user.uid,
+                                // firstName: userData.firstName,
+                                // lastName: userData.lastName,
                                 distributorId: distributorDetails.id,
                                 reservationDate: selectedDate,
                                 numberOfPackages: numberOfPackages, 
@@ -187,7 +208,27 @@ const ReservedFood1 = ({route, navigation}) => {
                                     console.log("QR CODE VALUE", res)
                                     const qrValue = res?.id;
                                     console.log("QR CODE ID", qrValue)
-                                    setQRCodeValue(qrValue);
+                                    // const jsonData = JSON.stringify(res);
+                                    const jsonData = JSON.stringify({
+                                        companyAddress: res?.companyAddress,
+                                        companyLocation: res?.companyLocation,
+                                        companyName: res?.companyName,
+                                        distributorId: res?.distributorId,
+                                        id: res?.id,
+                                        numberOfPackages: res?.numberOfPackages,
+                                        reservationDate: res.reservationDate,
+                                        status: res?.status,
+                                        userId: res?.userId,
+                                          firstName: userData?.firstName,
+                                lastName: userData?.lastName,
+                                    });
+                                
+                                    setQRCodeValue(jsonData);
+                                    console.log("QR jsonData", jsonData)
+                                    console.log("QR jsonData", qrCodeValue)
+
+
+
                                     setIsQRModalVisible(true);
                                 }
                             });

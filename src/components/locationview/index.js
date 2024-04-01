@@ -19,13 +19,18 @@ const Locationview = ({
   customstyletitle,
   customstyle,
   customMarginTop,
+  leftIconpress,
   Editpress,
   copyToClipboardCondition, // Condition to copy text and show toast message
   messageType, // New prop to differentiate toast messages
 }) => {
   return (
     <View style={[appStyles.cardContainer, customstyle, { marginTop: customMarginTop, height: scale(72), backgroundColor: backgroundcolor }]}>
+           <TouchableOpacity onPress={leftIconpress}>
+
       <Image source={source} style={appStyles.tagimage} />
+      </TouchableOpacity>
+
       <View style={{ marginLeft: responsiveWidth(3), width: responsiveWidth(65), height: responsiveHeight(8) }}>
         <Text style={[appStyles.title, customstyletitle, { marginLeft: responsiveWidth(2), color: coupontxt1 }]}>{title}</Text>
         <Text style={[appStyles.description, customdescriptionstyle, { marginLeft: responsiveWidth(2), color: expirecolor }]}>{description}</Text>

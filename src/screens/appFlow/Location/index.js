@@ -18,7 +18,7 @@ import { scale } from 'react-native-size-matters';
 import { RefreshControl } from 'react-native';
 import Locationview from '../../../components/locationview';
 import { Loaders } from '../../../components';
-const Location = ({ navigation }) => {
+const Location = ({ navigation, route }) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null); // State to track the selected location
@@ -27,6 +27,8 @@ const Location = ({ navigation }) => {
   const [loadingAnimation, setLoadingAnimation] = useState(false);
   // Your useEffect hook remains the same
   const handleLocationSelect = (location) => {
+    navigation.navigate('FindFood')
+
     // Update the selected location when a user selects from the saved locations
     setSelectedLocation(location);
   };
@@ -39,19 +41,27 @@ const Location = ({ navigation }) => {
         const currentUser = auth().currentUser;
   
         if (currentUser) {
-          const userId = currentUser.uid;
+          const userId = currentUser?.uid;
   
           const locationsSnapshot = await firestore()
             .collection('LocationDetail')
             .doc(userId) // Get the document for the current user
             .get();
   
-          if (locationsSnapshot.exists) {
-            const userData = locationsSnapshot.data();
-            const fetchedLocations = userData.locations || []; // Retrieve the locations array
+          if (locationsSnapshot?.exists) {
+            const userData = locationsSnapshot?.data();
+            const fetchedLocations = userData?.locations || []; // Retrieve the locations array
   
             setLocations(fetchedLocations);
             console.log('Fetched Locations:', fetchedLocations);
+
+          //   await firestore()
+          //   .collection('LocationDetail')
+          //   .doc(userId)
+          //   .update({
+          //     locations: []
+          //   });
+          // console.log('Previous locations deleted');
           } else {
             setLocations([]); // No data found for the current user
           }
@@ -60,7 +70,7 @@ const Location = ({ navigation }) => {
         setLoading(false);
         setLoadingAnimation(false);
       } catch (error) {
-        console.error('Error fetching locations:', error);
+        console.error('Error fetching cations:', error);
         setLoading(false);
         setLoadingAnimation(false);
       }
@@ -110,6 +120,7 @@ const Location = ({ navigation }) => {
         <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Selected</Text>
         {selectedLocation && ( // Conditionally render selected location if it exists
           <TouchableOpacity onPress={() => navigation.navigate('FindFood')}>
+          {/* <TouchableOpacity onPress={() => navigation.navigate('FindFood', {selectedLocation:selectedLocation})}> */}
             <Locationview
               customMarginTop={responsiveHeight(2)}
               source={checkcircle}
@@ -141,6 +152,14 @@ const Location = ({ navigation }) => {
         customMarginTop={responsiveHeight(2)}
         source={mappin}
         source1={edit}
+        leftIconpress={() => {
+          navigation.navigate('LocationRadious', {
+            location: location.location,
+            id: location.id,
+            title: location.title,
+            status: location.status,
+          });
+        }}
         Editpress={() => {
           navigation.navigate('LocationRadious', {
             location: location.location,

@@ -7,7 +7,7 @@ import DrawerContent from '../../components/DrawerContent';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { colors } from '../../services/utilities/color';
 import { search, shoppingbag } from '../../services/utilities/assets';
-import { Image, View, TouchableOpacity, Text } from 'react-native';
+import { Image, View, TouchableOpacity, Text, Platform, KeyboardAvoidingView } from 'react-native';
 import { scale } from 'react-native-size-matters';
 import { fontFamily, fontSize } from '../../services/utilities/fonts';
 import { appStyles } from '../../services/utilities/appStyles';
@@ -79,16 +79,24 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 };
 const TabNavigator = () => {
   return (
+ 
+    <KeyboardAvoidingView 
+  style={{ flex: 1 }} 
+  behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+  keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -64} // Adjust this value according to your tab bar's height
+>
     <Tab.Navigator
       initialRouteName="FindFood"
       screenOptions={{
         headerShown: false,
     }}
       tabBar={props => <CustomTabBar {...props} />}
+      keyboardHidesTabBar={true}
     >
       <Tab.Screen name="FindFood" component={FindFood} />
       <Tab.Screen name="ReserveFood" component={ReserveFood} />
     </Tab.Navigator>
+    </KeyboardAvoidingView>
   );
 };
 const DrawerNavigation = () => {

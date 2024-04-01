@@ -230,10 +230,7 @@ export default function Index({ navigation }) {
           <CustomCheckbox checked={isOver13} onPress={() => setIsOver13(!isOver13)}/>
         </View> */}
 
-        <View style={appStyles.createcheckview2}>
-          <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
-          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/>
-        </View>
+      
 
         <Text style={[appStyles.modalText1, { marginLeft: responsiveWidth(5), marginTop: responsiveHeight(3) }]}>Address</Text>
         {!isUnhoused &&
@@ -286,6 +283,10 @@ export default function Index({ navigation }) {
             value={zip}
             onChangeText={(text) => setZip(text)}
           />
+        </View>
+        <View style={appStyles.createcheckview2}>
+          <Text style={appStyles.Entertxt}>I am currently receiving some form of public assistance</Text>
+          <CustomCheckbox marginTop={responsiveHeight(0.5)} checked={isReceivingAssistance} onPress={() => setIsReceivingAssistance(!isReceivingAssistance)}/>
         </View>
         
         <TouchableOpacity style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(4) }]}>

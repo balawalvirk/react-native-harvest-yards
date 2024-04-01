@@ -26,7 +26,22 @@ const ReservedPickups = ({ route, navigation }) => {
   const {currentLocation, calculateDistance} = useLocation();
   console.log('currentLocation: ', currentLocation)
   const { item, reservationDate } = route.params || {};
+  console.log('item', item);
   const distributerDetail = item?.distributor || null
+  const QRData = JSON.stringify({
+    companyAddress: item?.companyAddress,
+    companyLocation: item?.companyLocation,
+    companyName: item?.companyName,
+    distributorId: item?.distributorId,
+    id: item?.id,
+    numberOfPackages: item?.numberOfPackages,
+    reservationDate: item.reservationDate,
+    status: item?.status,
+    userId: item?.userId,
+    fullName: distributerDetail?.fullName,
+
+});
+console.log('jsonData: ', QRData)
   console.log("distributerDetail>>>>>000",distributerDetail);
   const { qrCodeRef, saveQRCodeToGallery } = useHooks()
   const { user } = useFirebaseAuth()
@@ -99,6 +114,7 @@ const ReservedPickups = ({ route, navigation }) => {
       try {
         // ... (Other code remains unchanged)
         const { item } = route.params; // Destructure item from route.params
+        console.log('fetching reservation date:', item);
 
         const reservationDate = item.reservationDate ? new Date(item.reservationDate) : null;
         const formattedDate = reservationDate ? formatDate(reservationDate) : 'No reservation date';
@@ -303,10 +319,10 @@ const ReservedPickups = ({ route, navigation }) => {
         />
         <View style={appStyles.qrmainview}>
           <View style={{ height: responsiveHeight(1) }} />
-          {_id ?
+          {QRData ?
             <QRCode
               getRef={qrCodeRef}
-              value={_id}
+              value={QRData}
               size={scale(150)}
             />
             :

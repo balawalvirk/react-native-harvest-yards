@@ -96,8 +96,8 @@ const MonthYearPicker = ({
           style={{ flex: 0.45 }}
         >
           {year === '' ? <Picker.Item label={'Year'} value="" color={placeholderTextColor} />: null}
-          {years.map((year) => (
-            <Picker.Item key={year} label={year.toString()} value={year} />
+          {years.map((y) => (
+            <Picker.Item key={y} label={y.toString()} value={y} color={colors.color35} />
           ))}
         </Picker>
       </View>

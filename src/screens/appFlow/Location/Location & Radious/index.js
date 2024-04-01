@@ -44,6 +44,10 @@ export default function LocationRadious({navigation, route}) {
   const [userId, setUserId] = useState(''); // State to store the current user's ID
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
+  const [latLocation, setlatLocation] = useState('');
+  const [lonLocatuon, setlonLocatuon] = useState('');
+
+
   const [currentLocation, setCurrentLocation] = useState({
     latitude: 0,
     longitude: 0,
@@ -184,6 +188,9 @@ export default function LocationRadious({navigation, route}) {
         title,
         location,
         status,
+        latitude: latLocation, 
+        longitude: lonLocatuon, 
+     
       };
 
       // Check if there is an ID passed from the previous screen
@@ -199,6 +206,9 @@ export default function LocationRadious({navigation, route}) {
           title: newLocation.title,
           location: newLocation.location,
           status: newLocation.status,
+          latitude:latLocation,
+          longitude:lonLocatuon,
+        
         };
       } else {
         // If no ID is passed or the ID doesn't exist in the locations array, add a new location
@@ -350,6 +360,9 @@ export default function LocationRadious({navigation, route}) {
                   '<<<>>>>',
                   details?.geometry?.location.lng,
                 );
+                setlatLocation( details?.geometry?.location.lat)
+                setlonLocatuon( details?.geometry?.location.lng)
+
                 handleLocationSelect(data, details); // This is where handleLocationSelect is called
               }}
               query={{

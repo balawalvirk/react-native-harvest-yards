@@ -264,7 +264,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                     showPickupsView={true}
                 />
 
-                <CustomTextInput
+                {/* <CustomTextInput
                     // placeholder={selectedDate ? selectedDate.toString() : 'No reservation date'} // Check if selectedDate exists before conversion
                     placeholderMarginLeft={responsiveWidth(3)}
                     responsiveMarginTop={-responsiveHeight(0.2)}
@@ -277,7 +277,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                     marginLeft={responsiveWidth(65)}
                     source1={checkcircle}
                     editable={false}
-                />
+                /> */}
 
 
                 {showGetButton && (
