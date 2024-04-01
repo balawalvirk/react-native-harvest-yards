@@ -28,25 +28,14 @@ const ReservedPickups = ({ route, navigation }) => {
   const { item, reservationDate } = route.params || {};
   console.log('item', item);
   const distributerDetail = item?.distributor || null
-  const QRData = JSON.stringify({
-    companyAddress: item?.companyAddress,
-    companyLocation: item?.companyLocation,
-    companyName: item?.companyName,
-    distributorId: item?.distributorId,
-    id: item?.id,
-    numberOfPackages: item?.numberOfPackages,
-    reservationDate: item.reservationDate,
-    status: item?.status,
-    userId: item?.userId,
-    fullName: distributerDetail?.fullName,
-
-});
-console.log('jsonData: ', QRData)
+ 
   console.log("distributerDetail>>>>>000",distributerDetail);
   const { qrCodeRef, saveQRCodeToGallery } = useHooks()
   const { user } = useFirebaseAuth()
 
   const [selectedDate, setSelectedDate] = useState(null);
+  const [userData1, setuserData1] = useState(null);
+
   const [showLubemeup, setShowLubemeup] = useState(true);
   const [showGetButton, setShowGetButton] = useState(false);
   const [selectedCardID, setSelectedCardID] = useState(null);
@@ -89,6 +78,45 @@ console.log('jsonData: ', QRData)
         }
     });
 };
+
+
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const currentUser = auth().currentUser;
+      const userId = currentUser ? currentUser.uid : null;
+      if (!userId) {
+        console.error('User ID not found');
+        return;
+      }
+      const userDocRef = firestore().collection('users').doc(userId);
+      const userDoc = await userDocRef.get();
+      const userData = userDoc.data();
+      
+console.log('setuserData1', userData);
+      setuserData1(userData); 
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+  fetchUserData();
+}, []);
+const QRData = JSON.stringify({
+  
+  companyName: item?.companyName,
+  distributorId: item?.distributorId,
+  id: item?.id,
+  numberOfPackages: item?.numberOfPackages,
+  reservationDate: item.reservationDate,
+  status: item?.status,
+  userId: item?.userId,
+  firstName: userData1?.firstName,
+  lastName: userData1?.lastName,
+  zip: userData1?.zip,
+});
+console.log('jsonData: ', userData1)
+console.log('jsonData: ', QRData)
+
   const _id = item.id || '34534534j5bh3hj5b345j'
 
   const handleRemoveUserPress = () => {
