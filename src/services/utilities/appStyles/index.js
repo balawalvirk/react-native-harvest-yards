@@ -886,7 +886,7 @@ export const appStyles = StyleSheet.create({
     // height: scale(116),
     height: 'auto',
     borderRadius: responsiveWidth(4),
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     marginLeft: -responsiveWidth(1),
     marginRight: responsiveWidth(3.5),
     marginTop: -responsiveHeight(0.5)
@@ -1341,7 +1341,7 @@ export const appStyles = StyleSheet.create({
   txtpartner: {
     color: colors.color4,
     fontSize: fontSize.h2,
-    fontFamily: fontFamily.SatoshiVariable,
+    fontFamily: fontFamily.SatoshiMedium,
     fontWeight: '400',
   },
   partnertxtview: {

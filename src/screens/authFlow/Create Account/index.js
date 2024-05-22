@@ -50,48 +50,90 @@ export default function Index({ navigation }) {
   const phoneRegex = /^[0-9]{10}$/;
 
   const handleCreateAccount = async () => {
-    if (!firstName || !state || !zip || !dob) {
+    if (!firstName) {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Please fill in all required fields',
+        text2: 'First name is required',
       });
-      if (!zip) {
+      return;
+    }
+   
+      if (firstName.length < 3) {
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Zip is required',
-        });
-      }
-      if (!dob) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Date of Birth is required',
+          text2: 'First name must be at least 3 characters',
         });
         return;
       }
-      if (!state) {
+      if (!lastName) {
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'State is required',
+          text2: 'Last name is required',
         });
+        return;
       }
-      if (!city && !isUnhoused) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'City is required',
-        });
-      }
-      if (!street && !isUnhoused) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Street is required',
-        });
-      }
+      
+        if (lastName.length < 3) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Last name must be at least 3 characters',
+          });
+       return;
+        }
+        if (!dob) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Date of Birth is required',
+          });
+          return;
+        }
+        if (!street && !isUnhoused) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Street is required',
+          });
+          return;
+        }
+        if (!city ) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'City is required',
+          });
+          return;
+        }
+        if (!state) {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'State is required',
+          });
+          return;
+        }
+      // if (!zip) {
+      //   Toast.show({
+      //     type: 'error',
+      //     text1: 'Error',
+      //     text2: 'Zip is required',
+      //   });
+      //   return;
+      // }
+      // if (!isReceivingAssistance) {
+      //   Toast.show({
+      //     type: 'error',
+      //     text1: 'Error',
+      //     text2: 'Please accept the Public assistance',
+      //   });
+      //   return;
+      // }
+      
+     
     //   if (!phoneNumber) {
     //     Toast.show({
     //       type: 'error',
@@ -108,40 +150,8 @@ export default function Index({ navigation }) {
     //     });
     //     return;
     //   }
-      if (!lastName) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Last name is required',
-        });
-      }
-      else
-        if (lastName.length < 3) {
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Last name must be at least 3 characters',
-          });
-       return;
-        }
-
-      if (!firstName) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'First name is required',
-        });
-      }
-      else
-        if (firstName.length < 3) {
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'First name must be at least 3 characters',
-          });
-        }
-      return;
-    }
+     
+    
 
     // Add additional validation if needed (e.g., email format)
     try {
@@ -220,8 +230,8 @@ export default function Index({ navigation }) {
             onChangeText={(text) => setDOB(text)}
         />
 
-    <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} />
-        <View style={appStyles.createcheckview}>
+    {/* <HorizontalLine marginTop={responsiveHeight(6)} width={responsiveWidth(70)} /> */}
+        <View style={[appStyles.createcheckview, {marginTop:responsiveHeight(7)}]}>
           <Text style={appStyles.Entertxt}>I am currently unhoused</Text>
           <CustomCheckbox checked={isUnhoused} onPress={() => setIsUnhoused(!isUnhoused)}/>
         </View>
@@ -245,7 +255,10 @@ export default function Index({ navigation }) {
           value={street}
           onChangeText={(text) => setStreet(text)}
         />
-        <CustomTextInput
+    
+        </>
+}
+<CustomTextInput
           label="City"
           keyboardType="default"
           placeholder="city"
@@ -255,15 +268,13 @@ export default function Index({ navigation }) {
           value={city}
           onChangeText={(text) => setCity(text)}
         />
-        </>
-}
-        <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5), marginBottom: responsiveHeight(5) }}>
+        <View style={{ flexDirection: 'row', marginLeft: responsiveWidth(5), marginBottom: responsiveHeight(5), marginTop:responsiveHeight(0) }}>
           <CustomTextInput
             label="State"
             keyboardType="default"
             placeholder="state"
             placeholderMarginLeft={responsiveWidth(3)}
-            responsiveMarginTop={!isUnhoused ? 7 : 3}
+            responsiveMarginTop={!isUnhoused ? 7 : 7}
             inputWidth={responsiveWidth(42)}
             source={mappin}
             TextinputWidth={responsiveWidth(28)}
@@ -275,7 +286,7 @@ export default function Index({ navigation }) {
             keyboardType="numeric"
             placeholder="zip"
             placeholderMarginLeft={responsiveWidth(3)}
-            responsiveMarginTop={!isUnhoused ? 7 : 3}
+            responsiveMarginTop={!isUnhoused ? 7 : 7}
             custommarginleft={responsiveWidth(5)}
             source={mappin}
             inputWidth={responsiveWidth(42)}

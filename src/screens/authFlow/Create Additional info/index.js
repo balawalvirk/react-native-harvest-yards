@@ -109,8 +109,16 @@ export default function AdditionalInfo({ route, navigation }) {
                 });
                 return;
               }
+              
+              // if (!smsUpdates) {
+              //   Toast.show({
+              //     type: 'error',
+              //     text1: 'Error',
+              //     text2: 'Please accept receiving SMS updates',
+              //   });
+              //   return;
+              // }
               if (!acceptTerms) {
-                // Show a toast message indicating that the terms and conditions need to be accepted
                 Toast.show({
                   type: 'error',
                   text1: 'Error',

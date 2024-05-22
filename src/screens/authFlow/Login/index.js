@@ -115,6 +115,15 @@ export default function Login({ navigation }) {
         setLoading(false);
         return;
       }
+      if (password.length < 8) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Password must be at least 8 characters',
+        });
+        setLoading(false);
+        return;
+      }
 
       const response = await auth().signInWithEmailAndPassword(email.trim().toLowerCase(), password);
 

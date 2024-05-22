@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef,useLayoutEffect} from 'react';
+import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
 import {
   View,
   ScrollView,
@@ -17,7 +17,7 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import {appStyles} from '../../../services/utilities/appStyles';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import Header from '../../../components/Headers';
 import {HelpCalloutModal} from '../../../components/Modal/Tip Modal';
 import {
@@ -39,18 +39,21 @@ import {RefreshControl} from 'react-native';
 import {roundToDecimal, useLocation} from '../../../services';
 import {Loaders} from '../../../components';
 import MemoizedRenderItem from '../../../components/MemoComponent';
-import { PERMISSIONS, RESULTS } from 'react-native-permissions';
+import {PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 const FindFood = ({navigation, route}) => {
-  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
+  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] =
+    useState(false);
   const [searchText, setSearchText] = useState('');
   const [distributorsData, setDistributorsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
   const hasLocationPermission = useRef(false);
-  const {selectedLocation}= route?.params || {};
+  const {selectedLocation} = route?.params || {};
   // console.log('selectedLocation', selectedLocation)
-  
+  // console.log(distributorsData[0]);
+
   const {currentLocation, calculateDistance} = useLocation();
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backPressed);
@@ -117,46 +120,46 @@ const FindFood = ({navigation, route}) => {
   }, []);
 
   useFocusEffect(
-      React.useCallback(() => {
-        fetchDistributorsData();
-      }, [searchText])
+    React.useCallback(() => {
+      fetchDistributorsData();
+    }, [searchText]),
   );
-//   let filteredDatabylocation =[];
-// if(selectedLocation !== undefined)
-// {
-// filteredDatabylocation = distributorsData.filter(item => {
-//   const milesValues = parseInt(selectedLocation.status);
-//   console.log('milesValues',milesValues);
-//   const maxDistance = milesValues;
-//   const metersInMile = 1609.34; 
+  //   let filteredDatabylocation =[];
+  // if(selectedLocation !== undefined)
+  // {
+  // filteredDatabylocation = distributorsData.filter(item => {
+  //   const milesValues = parseInt(selectedLocation.status);
+  //   console.log('milesValues',milesValues);
+  //   const maxDistance = milesValues;
+  //   const metersInMile = 1609.34;
 
-//   if (selectedLocation && selectedLocation.latitude && selectedLocation.longitude && item && item.latitude && item.longitude) {
-//       // Convert latitudes and longitudes to radians
-//       const lat1 = selectedLocation.latitude * Math.PI / 180;
-//       const lon1 = selectedLocation.longitude  * Math.PI / 180;
-//       const lat2 = item.latitude * Math.PI / 180;
-//       const lon2 = item.longitude * Math.PI / 180;
-//       // Calculate the distance between the two points using Haversine formula
-//       const dlon = lon2 - lon1;
-//       const dlat = lat2 - lat1;
-//       const a = Math.sin(dlat / 2) * Math.sin(dlat / 2) +
-//           Math.cos(lat1) * Math.cos(lat2) *
-//           Math.sin(dlon / 2) * Math.sin(dlon / 2);
-//       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//       const distance = metersInMile * c; // Distance in meters
-//       console.log('distance2', distance);
-      
-//       // Check if the distance is less than or equal to the maximum distance
-//       if (distance <= maxDistance &&
-//         item.availableMeals > 0) {
-//           console.log('distance', distance);
-//           return true; 
-//       }
-//   }
-//   return false; 
-// });
-//   console.log('filteredDatabylocation', filteredDatabylocation);
-// }
+  //   if (selectedLocation && selectedLocation.latitude && selectedLocation.longitude && item && item.latitude && item.longitude) {
+  //       // Convert latitudes and longitudes to radians
+  //       const lat1 = selectedLocation.latitude * Math.PI / 180;
+  //       const lon1 = selectedLocation.longitude  * Math.PI / 180;
+  //       const lat2 = item.latitude * Math.PI / 180;
+  //       const lon2 = item.longitude * Math.PI / 180;
+  //       // Calculate the distance between the two points using Haversine formula
+  //       const dlon = lon2 - lon1;
+  //       const dlat = lat2 - lat1;
+  //       const a = Math.sin(dlat / 2) * Math.sin(dlat / 2) +
+  //           Math.cos(lat1) * Math.cos(lat2) *
+  //           Math.sin(dlon / 2) * Math.sin(dlon / 2);
+  //       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //       const distance = metersInMile * c; // Distance in meters
+  //       console.log('distance2', distance);
+
+  //       // Check if the distance is less than or equal to the maximum distance
+  //       if (distance <= maxDistance &&
+  //         item.availableMeals > 0) {
+  //           console.log('distance', distance);
+  //           return true;
+  //       }
+  //   }
+  //   return false;
+  // });
+  //   console.log('filteredDatabylocation', filteredDatabylocation);
+  // }
 
   return (
     <SafeAreaView style={appStyles.container}>
@@ -178,8 +181,6 @@ const FindFood = ({navigation, route}) => {
             colors={[colors.color33]}
           />
         }>
-         
-
         <CustomLocationInput
           showsearch={true}
           source={search}
@@ -193,19 +194,18 @@ const FindFood = ({navigation, route}) => {
           onChangeText={text => setSearchText(text)}
           value={searchText}
         />
-      
 
         {searchText !== '' && (
           <TouchableOpacity
             onPress={() => setSearchText('')}></TouchableOpacity>
         )}
-            <TouchableOpacity
-            style={appStyles.locationview}
-              onPress={() =>
-                navigation.navigate('AppNavigation', {screen: 'Location'})
-              }>
-              <Image source={mappin} style={appStyles.locationtag} />
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={appStyles.locationview}
+          onPress={() =>
+            navigation.navigate('AppNavigation', {screen: 'Location'})
+          }>
+          <Image source={mappin} style={appStyles.locationtag} />
+        </TouchableOpacity>
 
         <Text
           style={[appStyles.infotxt, {marginBottom: responsiveHeight(0.1)}]}>
@@ -213,54 +213,64 @@ const FindFood = ({navigation, route}) => {
         </Text>
         <FlatList
           data={
-
             searchText === ''
-                ? 
-              //   filteredDatabylocation.length > 0 ? 
-              // filteredDatabylocation : selectedLocation !== undefined ? null :
-                
-              distributorsData.filter(item => !isNaN(item.availableMeals)
-                 && item.availableMeals > 0)
-                :  distributorsData.filter(item =>
-                    item.organization?.toLowerCase()?.includes(searchText?.toLowerCase()) &&
-                    item.availableMeals > 0
+              ? //   filteredDatabylocation.length > 0 ?
+                // filteredDatabylocation : selectedLocation !== undefined ? null :
+
+                distributorsData.filter(
+                  item =>
+                    !isNaN(item.availableMeals) && item.availableMeals > 0,
+                )
+              : distributorsData.filter(
+                  item =>
+                    (item.organization
+                      ?.toLowerCase()
+                      ?.includes(searchText?.toLowerCase()) ||
+                      item.address
+                        ?.toLowerCase()
+                        ?.includes(searchText?.toLowerCase())) &&
+                    item.availableMeals > 0,
                 )
           }
           keyExtractor={(item, index) => index.toString()}
+          ListEmptyComponent={() => (
+            <View
+              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              <Text
+                style={{
+                  fontSize: fontSize.h5,
+                  fontFamily: fontFamily.SatoshiVariable,
+                  fontWeight: '700',
+                  color: colors.color25,
+                }}>
+                No data available
+              </Text>
+            </View>
+          )}
           renderItem={({item}) => {
-          
-            return(
-              <MemoizedRenderItem navigation={navigation} item={item}/>
-            ) 
-         }
-        }
-
+            return <MemoizedRenderItem navigation={navigation} item={item} />;
+          }}
         />
         <View style={{height: responsiveHeight(4)}} />
       </ScrollView>
       <TouchableOpacity
-  activeOpacity={0.8}
-  style={{
-    right: responsiveWidth(0),
-    bottom: responsiveHeight(0),
-    alignItems:'center',
-    alignSelf:'flex-end',
-    position:'absolute'
-
-  }}
-  onPress={() => {setHelpCalloutModalVisible(true)}}
->
-  <Image
-    source={HelpCallout}
-    resizeMode='cover'
-    style={[
-      appStyles.helpview,
-      {
-
-      },
-    ]}
-  />
-</TouchableOpacity>
+        activeOpacity={0.8}
+        style={{
+          right: responsiveWidth(0),
+          bottom: responsiveHeight(0),
+          alignItems: 'center',
+          alignSelf: 'flex-end',
+          position: 'absolute',
+        }}
+        onPress={() => {
+          setHelpCalloutModalVisible(true);
+        }}>
+        <Image
+          source={HelpCallout}
+          resizeMode="cover"
+          style={[appStyles.helpview, {}]}
+        />
+      </TouchableOpacity>
       <Loaders.AbsolutePrimary isVisible={loading} />
       {isHelpCalloutModalVisible ? (
         <HelpCalloutModal

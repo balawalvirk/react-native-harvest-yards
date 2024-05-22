@@ -83,6 +83,7 @@ export default function useLocation() {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
       const distanceInKm = R * c;
+      // const distanceInMiles = distanceInKm * 0.621371; 
 
       distance = distanceInKm;
     }

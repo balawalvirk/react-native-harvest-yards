@@ -10,19 +10,23 @@ const MemoizedRenderItem = React.memo(({ item, navigation }) => {
   const { latitude, longitude } = item;
   const location = latitude && longitude ? { latitude, longitude } : null;
   const distance = currentLocation && location ? calculateDistance(location) : null;
-  const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null;
-  const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km' : '';
-
+  const distanceInMile = distance * 0.621371; 
+  const distanceInDecimal = distanceInMile ? roundToDecimal(distanceInMile, 2) : null;
+  const distanceInMiles = distanceInDecimal ? distanceInDecimal + ' Miles' : '';
+  const parts = item.address.split(',');
+const streetAddress = parts[0].trim();
+const cityAndZip = parts.slice(1).join(',').trim();
 
   return (
     <CardView
       customMarginTop={responsiveHeight(1)}
       source={{ uri: item.profileImage }}
       title={item.organization}
-      description={item.address}
-      distance={distanceInKm}
+      description={streetAddress}
+      description2={cityAndZip}
+      distance={distanceInMiles}
       Availabletxt={`${item.availableMeals !== undefined ? item?.availableMeals : 0} Available`}
-      additionalInfo={distanceInKm}
+      additionalInfo={distanceInMiles}
       onPress={() => {
         const { availableMeals, ...otherItemDetails } = item;
         navigation.navigate('AppNavigation', {

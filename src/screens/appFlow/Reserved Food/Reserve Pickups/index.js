@@ -311,6 +311,9 @@ console.log('jsonData: ', QRData)
       });
     }
   };
+  const parts = distributerDetail?.address.split(',');
+  const streetAddress = parts[0].trim();
+  const cityAndZip = parts.slice(1).join(',').trim();
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -327,7 +330,9 @@ console.log('jsonData: ', QRData)
           source={{ uri: distributerDetail?.profileImage }}
           title={distributerDetail?.organization}
           pickupsource={pocket1}
-          description={distributerDetail?.address}
+          description={streetAddress}
+          description2={cityAndZip}
+
           Availabletxt={'Pending'}
           additionalInfo={distributerDetail?.additionalInfo || ''}
           showPickupsView={true}
@@ -386,7 +391,7 @@ console.log('jsonData: ', QRData)
             />
           </TouchableOpacity>
         )}
-        {showGetButton && (
+        {/* {showGetButton && (
           <GetButton
             label="Remove Favorite"
             customImageSource={greenheart}
@@ -394,7 +399,7 @@ console.log('jsonData: ', QRData)
             marginTop={responsiveHeight(5)}
             onPress={handleRemoveFavorite}
           />
-        )}
+        )} */}
         <GetButton
           label='Get Directions'
           customImageSource={greensend}

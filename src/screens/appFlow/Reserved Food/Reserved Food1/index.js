@@ -1,12 +1,31 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Alert, Image, Linking, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
+import {
+  Alert,
+  Image,
+  Linking,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {appStyles} from '../../../../services/utilities/appStyles';
 import auth from '@react-native-firebase/auth';
 import Header from '../../../../components/Headers';
 import Button from '../../../../components/Button';
-import {requestStoragePermission} from '../../../../services/utilities/permission'
-import {arrowrightwhite, calendar, HelpCallout, LeftButton} from '../../../../services/utilities/assets';
-import {responsiveHeight, responsiveWidth,} from 'react-native-responsive-dimensions';
+import {requestStoragePermission} from '../../../../services/utilities/permission';
+import {
+  arrowrightwhite,
+  calendar,
+  HelpCallout,
+  LeftButton,
+  greensend,
+} from '../../../../services/utilities/assets';
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from 'react-native-responsive-dimensions';
 import Toast from 'react-native-toast-message';
 import CardView from '../../../../components/CardView';
 import QRcodeModal from '../../../../components/Modal/QR Code Modal';
@@ -17,443 +36,585 @@ import RNFetchBlob from 'rn-fetch-blob';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-    createOrder,
-    firestoreCollections,
-    orderStatuses,
-    roundToDecimal,
-    useFirebaseAuth,
-    useLocation
+  createOrder,
+  firestoreCollections,
+  orderStatuses,
+  roundToDecimal,
+  useFirebaseAuth,
+  useLocation,
 } from '../../../../services';
 import {Loaders} from '../../../../components';
+import GetButton from '../../../../components/GetButton';
+import { scale } from 'react-native-size-matters';
 
 const ReservedFood1 = ({route, navigation}) => {
+  const {user} = useFirebaseAuth();
 
-    const {user} = useFirebaseAuth();
+  const [selectedDate, setSelectedDate] = useState('');
+  const [isQRModalVisible, setIsQRModalVisible] = useState(false);
+  const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] =
+    useState(false);
+  const [companyData, setCompanyData] = useState({});
+  const [qrCodeValue, setQRCodeValue] = useState(null);
+  const [qrCodeid, setqrCodeid] = useState(null);
 
-    const [selectedDate, setSelectedDate] = useState('');
-    const [isQRModalVisible, setIsQRModalVisible] = useState(false);
-    const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] = useState(false);
-    const [companyData, setCompanyData] = useState({});
-    const [qrCodeValue, setQRCodeValue] = useState(null);
-    const [reservedFoodArray, setReservedFoodArray] = useState([]);
-    const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false);
-    const [loadingReserveFood, setLoadingReserveFood] = useState(false);
-    const [numberOfPackages, setNumberOfPackages] = useState(1); // Added state for number of people
-    const [userData, setuserData] = useState({}); // Added state for number of people
-    
-    const {currentLocation, calculateDistance} = useLocation()
-    const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
-    const {item, userId} = route.params;
-    const distributorId = item?.id || ''
-    // console.log('distributer Item: ', item)
+  const [reservedFoodArray, setReservedFoodArray] = useState([]);
+  const [isFromReservedFavourite, setIsFromReservedFavourite] = useState(false);
+  const [loadingReserveFood, setLoadingReserveFood] = useState(false);
+  const [numberOfPackages, setNumberOfPackages] = useState(1); // Added state for number of people
+  const [userData, setuserData] = useState({}); // Added state for number of people
 
-    const distributorDetails = useMemo(() => companyData || item, [companyData])
+  const {currentLocation, calculateDistance} = useLocation();
+  const [showDateSelector, setShowDateSelector] = useState(false); // Step 1
+  const {item, userId} = route.params;
+  const distributorId = item?.id || '';
+  // console.log('distributer Item: ', item)
 
-    const {latitude, longitude} = item
-    const location = latitude && longitude ? {latitude, longitude} : null
-    const distance = currentLocation && location ? calculateDistance(location) : null
-    const distanceInDecimal = distance ? roundToDecimal(distance, 2) : null
-    const distanceInKm = distanceInDecimal ? distanceInDecimal + ' km away' : ''
-    console.log("=======>", item);
+  const distributorDetails = useMemo(() => companyData || item, [companyData]);
 
-    useEffect(() => {
-        if(selectedDate) showAlert(selectedDate)
-    },[selectedDate])
+  const {latitude, longitude} = item;
+  const location = latitude && longitude ? {latitude, longitude} : null;
+  const distance =
+    currentLocation && location ? calculateDistance(location) : null;
+  const distanceInMile = distance * 0.621371; 
+  const distanceInDecimal = distanceInMile ? roundToDecimal(distanceInMile, 2) : null;
+  const distanceInMiles = distanceInDecimal ? distanceInDecimal + ' Miles' : '';
+  console.log('=======>', item);
+  const parts = item?.address.split(',');
+  const streetAddress = parts[0].trim();
+  const cityAndZip = parts.slice(1).join(',').trim();
+  const url = Platform.select({
+    // Google Maps app
+    android: `google.navigation:q=${distributorDetails?.latitude}+${distributorDetails?.longitude}`,
+    ios: `comgooglemaps://?center=${distributorDetails?.latitude},${distributorDetails?.longitude}&q=${distributorDetails?.latitude},${distributorDetails?.longitude}&zoom=14&views=traffic`,
+  });
+  
+  // const appleMaps = `maps://app?saddr=${start_address}&daddr=${destination_address}`;
+  const googleMapSite = `https://www.google.com/maps/dir/?api=1&destination=${distributorDetails?.latitude},${distributorDetails?.longitude}&dir_action=navigate`;
 
-    useEffect(() => {
-        const fetchUser = async () => {
-          try {
-            const currentUser = auth().currentUser;
-            if (currentUser) {
-                const usersRef = firestore().collection('users').where('userId', '==', currentUser.uid);
-                const snapshot = await usersRef.get();
-                if (snapshot.empty) return;
-                const userData = snapshot.docs[0].data();
-                console.log('userData',userData.firstName);
-                console.log('lastName',userData.userId);
 
-                if(userData) setuserData(userData)
-                
-                if(userData.numberOfPackages) setNumberOfPackages(userData.numberOfPackages)
-
-    // let packages = userData.numberOfPackages; 
-    //             if (userData.householdSize <= 4) {
-    //                 packages = userData.numberOfPackages; 
-    //             } else if (userData.householdSize <= 8) {
-    //                 packages = 2; 
-    //             } else {
-    //                 packages = 3; 
-    //             }
-    //             setNumberOfPackages(packages);
-
-            }
-          } catch (error) {
-            console.error('Error fetching user: ', error);
-          }
-        };
-
-        fetchUser();
-      }, []);
-
-    useEffect(() => {
-
-        const distrubuterDocumentRef = firestore().collection(firestoreCollections.distributors).doc(distributorId);
-
-        const unsubscribe = distrubuterDocumentRef.onSnapshot(
-            (documentSnapshot) => {
-                if (documentSnapshot.exists) {
-                    setCompanyData(documentSnapshot.data());
-                    const availableMeals = documentSnapshot.data()?.availableMeals;
-                    console.log('Available meals:', availableMeals);
-                } else {
-                    console.log('Organization document not found for id:', distributorId);
-                }
-            },
-            (error) => {
-                console.error('Error fetching company data:', error);
-            }
-        );
-
-        return () => unsubscribe(); // Unsubscribe when the component unmounts
-
-    }, [distributorId]);
-
-    useEffect(() => {
-        // Check if the component was accessed from Reserved favorites
-        if (route.params?.source === 'ReservedFavorites') {
-            setIsFromReservedFavourite(true);
+  const handleLinkPressDirection = () => {
+    Linking.canOpenURL(url)
+    .then((supported) => {
+        if (supported) {
+            return Linking.openURL(url);
         } else {
-            setIsFromReservedFavourite(false);
+            return Linking.openURL(googleMapSite);
         }
-        const fetchCompanyData = async () => {
-            try {
-                const {organizationId} = route.params; // Get the organizationId passed from Reservedfavorites
-
-                const organizationDoc = await firestore().collection('distributors').doc(organizationId).get();
-
-                if (organizationDoc.exists) {
-                    const distributorDetails = organizationDoc.data();
-                    setCompanyData(distributorDetails);
-
-                    // Fetch available meals for the organization
-                    const availableMeals = distributorDetails.availableMeals; // Adjust the field name if needed
-                    console.log('Available meals:', availableMeals);
-                    // Update state or perform necessary operations with available meals data
-                } else {
-                    console.log('Organization document not found for OrganizationID:', organizationId);
-                }
-            } catch (error) {
-                console.error('Error fetching company data:', error);
-            }
-        };
-
-        fetchCompanyData();
-    }, [route.params]);
-
-    const toggleModal = () => {
-        setIsQRModalVisible(!isQRModalVisible);
-    };
-
-    const handleLinkPress = () => {
-        const url = 'http://www.google.com';
-        Linking.openURL(url)
-            .then((supported) => {
-                if (!supported) {
-                    console.error('Unable to open URL');
-                }
-            })
-            .catch((err) => console.error(err));
-    };
-
-    const reserveOrder = async () => {
-        try {
-                setLoadingReserveFood(true);
-                const _reservationDate = selectedDate;
-                const startOfDay = new Date(_reservationDate);
-                startOfDay.setHours(0, 0, 0, 0);
-
-                const endOfDay = new Date(_reservationDate);
-                endOfDay.setHours(23, 59, 59, 999);
-
-                const ordersCollectionRef = firestore().collection('orders').where('userId', '==', user?.uid);
-                const ordersCollectionCheckDistributerRef = ordersCollectionRef.where('distributorId', '==', distributorDetails?.id);
-                const ordersCollectionCheckStatusRef = ordersCollectionCheckDistributerRef.where('status', '==', orderStatuses.pending);
-
-                const existingDocumentQuery = ordersCollectionCheckStatusRef
-                    .where('reservationDate', '>=', startOfDay)
-                    .where('reservationDate', '<=', endOfDay);
-
-                await existingDocumentQuery.get().then(async (querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const errorMessage = 'Reservation with the same date already exists.';
-                        console.log(errorMessage);
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Error',
-                            text2: errorMessage,
-                        });
-                    } else {
-                       await createOrder({
-                                userId: user.uid,
-                                // firstName: userData.firstName,
-                                // lastName: userData.lastName,
-                                distributorId: distributorDetails.id,
-                                reservationDate: selectedDate,
-                                numberOfPackages: numberOfPackages, 
-                                companyName: companyData.organization,
-                                companyAddress: companyData.address,
-                                companyLocation: companyData.location
-                            }).then((res) => {
-                                if (res) {
-                                    console.log("QR CODE VALUE", res)
-                                    const qrValue = res?.id;
-                                    console.log("QR CODE ID", qrValue)
-                                    // const jsonData = JSON.stringify(res);
-                                    const jsonData = JSON.stringify({
-                                        companyAddress: res?.companyAddress,
-                                        companyLocation: res?.companyLocation,
-                                        companyName: res?.companyName,
-                                        distributorId: res?.distributorId,
-                                        id: res?.id,
-                                        numberOfPackages: res?.numberOfPackages,
-                                        reservationDate: res.reservationDate,
-                                        status: res?.status,
-                                        userId: res?.userId,
-                                          firstName: userData?.firstName,
-                                lastName: userData?.lastName,
-                                    });
-                                
-                                    setQRCodeValue(jsonData);
-                                    console.log("QR jsonData", jsonData)
-                                    console.log("QR jsonData", qrCodeValue)
-
-
-
-                                    setIsQRModalVisible(true);
-                                }
-                            });
-                        }
-
-            });
-                setLoadingReserveFood(false);
-        } catch (error) {
-            console.error('Error adding reserved food information:', error);
-            setLoadingReserveFood(false);
+    })
+    .catch(() => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL(
+                googleMapSite
+                // appleMaps
+            );
         }
+    });
+};
+
+
+  useEffect(() => {
+    if (selectedDate)
+  
+     showAlert(selectedDate);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = auth().currentUser;
+        if (currentUser) {
+          const usersRef = firestore()
+            .collection('users')
+            .where('userId', '==', currentUser.uid);
+          const snapshot = await usersRef.get();
+          if (snapshot.empty) return;
+          const userData = snapshot.docs[0].data();
+          console.log('userData', userData.firstName);
+          console.log('lastName', userData.userId);
+
+          if (userData) setuserData(userData);
+
+          if (userData.numberOfPackages)
+            setNumberOfPackages(userData.numberOfPackages);
+
+          // let packages = userData.numberOfPackages;
+          //             if (userData.householdSize <= 4) {
+          //                 packages = userData.numberOfPackages;
+          //             } else if (userData.householdSize <= 8) {
+          //                 packages = 2;
+          //             } else {
+          //                 packages = 3;
+          //             }
+          //             setNumberOfPackages(packages);
+        }
+      } catch (error) {
+        console.error('Error fetching user: ', error);
+      }
     };
 
-    const showAlert = (date) => {
-        Alert.alert(
-            'Confirmation',
-            `Are you sure you want to proceed? Your selected date is ${date.toLocaleDateString('en-GB')}`,
-            [
-                {
-                    text: 'No',
-                    onPress: () => {
-                        console.log('No pressed',showDateSelector);
-                        setShowDateSelector(true);
-                    },
-                    style: 'cancel',
-                },
-                {
-                    text: 'Yes',
-                    onPress: () => {reserveOrder()},
-                },
-            ],
-            { cancelable: false }
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const distrubuterDocumentRef = firestore()
+      .collection(firestoreCollections.distributors)
+      .doc(distributorId);
+
+    const unsubscribe = distrubuterDocumentRef.onSnapshot(
+      documentSnapshot => {
+        if (documentSnapshot.exists) {
+          setCompanyData(documentSnapshot.data());
+          const availableMeals = documentSnapshot.data()?.availableMeals;
+          console.log('Available meals:', availableMeals);
+        } else {
+          console.log('Organization document not found for id:', distributorId);
+        }
+      },
+      error => {
+        console.error('Error fetching company data:', error);
+      },
+    );
+
+    return () => unsubscribe(); // Unsubscribe when the component unmounts
+  }, [distributorId]);
+
+  useEffect(() => {
+    // Check if the component was accessed from Reserved favorites
+    if (route.params?.source === 'ReservedFavorites') {
+      setIsFromReservedFavourite(true);
+    } else {
+      setIsFromReservedFavourite(false);
+    }
+    const fetchCompanyData = async () => {
+      try {
+        const {organizationId} = route.params; // Get the organizationId passed from Reservedfavorites
+
+        const organizationDoc = await firestore()
+          .collection('distributors')
+          .doc(organizationId)
+          .get();
+
+        if (organizationDoc.exists) {
+          const distributorDetails = organizationDoc.data();
+          setCompanyData(distributorDetails);
+
+          // Fetch available meals for the organization
+          const availableMeals = distributorDetails.availableMeals; // Adjust the field name if needed
+          console.log('Available meals:', availableMeals);
+          // Update state or perform necessary operations with available meals data
+        } else {
+          console.log(
+            'Organization document not found for OrganizationID:',
+            organizationId,
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching company data:', error);
+      }
+    };
+
+    fetchCompanyData();
+  }, [route.params]);
+
+  const toggleModal = () => {
+    setIsQRModalVisible(!isQRModalVisible);
+  };
+
+  const handleLinkPress = () => {
+    const url = 'http://www.google.com';
+    Linking.openURL(url)
+      .then(supported => {
+        if (!supported) {
+          console.error('Unable to open URL');
+        }
+      })
+      .catch(err => console.error(err));
+  };
+
+  const reserveOrder = async () => {
+    try {
+      setLoadingReserveFood(true);
+      const _reservationDate = selectedDate;
+      const startOfDay = new Date(_reservationDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(_reservationDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const ordersCollectionRef = firestore()
+        .collection('orders')
+        .where('userId', '==', user?.uid);
+      const ordersCollectionCheckDistributerRef = ordersCollectionRef.where(
+        'distributorId',
+        '==',
+        distributorDetails?.id,
+      );
+      const ordersCollectionCheckStatusRef =
+        ordersCollectionCheckDistributerRef.where(
+          'status',
+          '==',
+          orderStatuses.pending,
         );
-    };
 
+      const existingDocumentQuery = ordersCollectionCheckStatusRef
+        .where('reservationDate', '>=', startOfDay)
+        .where('reservationDate', '<=', endOfDay);
 
+      await existingDocumentQuery.get().then(async querySnapshot => {
+        if (!querySnapshot.empty) {
+          const errorMessage = 'Reservation with the same date already exists.';
+          console.log(errorMessage);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: errorMessage,
+          });
+        } else {
+          await createOrder({
+            userId: user.uid,
+            // firstName: userData.firstName,
+            // lastName: userData.lastName,
+            distributorId: distributorDetails.id,
+            reservationDate: selectedDate,
+            numberOfPackages: numberOfPackages,
+            companyName: companyData.organization,
+            companyAddress: companyData.address,
+            companyLocation: companyData.location,
+          }).then(res => {
+            if (res) {
+              console.log('QR CODE VALUE', res);
+              const qrValue = res?.id;
+              console.log('QR CODE ID', qrValue);
+              // const jsonData = JSON.stringify(res);
+              const jsonData = JSON.stringify({
+                // companyAddress: res?.companyAddress,
+                // companyLocation: res?.companyLocation,
+                companyName: res?.companyName,
+                distributorId: res?.distributorId,
+                id: res?.id,
+                numberOfPackages: res?.numberOfPackages,
+                reservationDate: res.reservationDate,
+                status: res?.status,
+                userId: res?.userId,
+                firstName: userData?.firstName,
+                lastName: userData?.lastName,
+                zip: userData?.zip,
+              });
+              setqrCodeid(res?.id);
+              setQRCodeValue(jsonData);
+              console.log('QR jsonData', res?.id);
+              console.log('QR jsonData', qrCodeValue);
 
-
-    const handleReserveFoodValidation = () => {
-        if (!distributorDetails?.availableMeals) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No meal available',
-            });
+              setIsQRModalVisible(true);
+            }
+          });
         }
-        if ( distributorDetails?.availableMeals && user) {
-            return true;
-        }
+      });
+      setLoadingReserveFood(false);
+    } catch (error) {
+      console.error('Error adding reserved food information:', error);
+      setLoadingReserveFood(false);
+    }
+  };
+
+  const showAlert = date => {
+    Alert.alert(
+      'Confirmation',
+      `Are you sure you want to proceed? Your selected date is ${date.toLocaleDateString(
+        'en-US',
+      )}`,
+      [
+        {
+          text: 'No',
+          onPress: () => {
+            console.log('No pressed', showDateSelector);
+            setShowDateSelector(true);
+          },
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            reserveOrder();
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const handleReserveFoodValidation = () => {
+    if (!distributorDetails?.availableMeals) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'No meal available',
+      });
+    }
+    if (distributorDetails?.availableMeals && user) {
+      return true;
+    }
+  };
+
+  const handleReserveFood = async () => {
+    if (handleReserveFoodValidation()) setShowDateSelector(true);
+  };
+
+  const handleDateChange = date => {
+    console.log('date',date);
+    setSelectedDate(date);
+    setShowDateSelector(false);
+  };
+
+  const closeDateSelector = () => {
+    // Close the DateSelector component
+    setShowDateSelector(false);
+  };
+
+  const saveImageToGallery = async imageUri => {
+    console.log('Image URI:', imageUri);
+    if (!imageUri) {
+      throw new Error('Image URI is null or undefined');
     }
 
-    const handleReserveFood = async () => {
-        if (handleReserveFoodValidation()) setShowDateSelector(true);
-    };
+    try {
+      const permissionGranted = await requestStoragePermission();
+      if (permissionGranted) {
+        const {config, fs} = RNFetchBlob;
+        const isIOS = Platform.OS === 'ios';
+        const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
 
-    const handleDateChange = date => {
-        setSelectedDate(date);
-        setShowDateSelector(false);
-    };
+        const response = await config({
+          fileCache: true,
+          appendExt: 'jpg',
+        }).fetch('GET', imageLocation);
 
-    const closeDateSelector = () => {
-        // Close the DateSelector component
-        setShowDateSelector(false);
-    };
+        const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
+        const imageName = `IMG_${new Date().getTime()}.jpg`;
 
-    const saveImageToGallery = async (imageUri) => {
-        console.log('Image URI:', imageUri);
-        if (!imageUri) {
-            throw new Error('Image URI is null or undefined');
-        }
+        await fs.cp(response.path(), `${imagePath}/${imageName}`);
+        await fs.scanFile([
+          {path: `${imagePath}/${imageName}`, mime: 'image/jpeg'},
+        ]);
 
-        try {
-            const permissionGranted = await requestStoragePermission();
-            if (permissionGranted) {
-                const {config, fs} = RNFetchBlob;
-                const isIOS = Platform.OS === 'ios';
-                const imageLocation = isIOS ? imageUri : `file://${imageUri}`;
+        console.log('Image saved to gallery successfully!');
+        Alert.alert('Success', 'Image saved to gallery!');
+      } else {
+        // Handle denied permission case
+        Alert.alert('Permission Denied', 'Storage permission required.');
+      }
+    } catch (error) {
+      console.error('Error saving image to gallery:', error);
+      Alert.alert('Error', 'Failed to save image to gallery.');
+    }
+  };
+  
 
-                const response = await config({
-                    fileCache: true,
-                    appendExt: 'jpg',
-                }).fetch('GET', imageLocation);
+  return (
+    <SafeAreaView style={appStyles.container}>
+      <Header
+        imageSource={LeftButton}
+        headerText="Reserve Food"
+        showImage={true}
+        onPress={() => navigation.goBack()}
+        customTextMarginLeft={responsiveWidth(26)}
+        marginleft={-responsiveWidth(0)}
+      />
+      <ScrollView>
+        <CardView
+          customMarginTop={responsiveHeight(1)}
+          source={{uri: distributorDetails.profileImage}}
+          title={distributorDetails.organization}
+          description={streetAddress}
+          description2={cityAndZip}
+          Availabletxt={`${
+            distributorDetails.availableMeals !== undefined
+              ? distributorDetails.availableMeals
+              : '0'
+          } Available`} // Check if availableMeals is defined, if not, show '0'
+          //additionalInfo={item.additionalInfo}
+          additionalInfo={distanceInMiles}
+        />
+        <View
+          style={{
+            marginLeft: responsiveWidth(4),
+            marginTop: responsiveHeight(3),
+          }}>
+          <Text style={appStyles.label}>
+            Company Name:
+            <Text
+              style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>
+              {' '}
+              {distributorDetails.organization}
+            </Text>
+          </Text>
+          <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
+            Address:
+            <Text
+              style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>
+                {' '}
+              {distributorDetails.address}
+            </Text>
+          </Text>
+          <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
+            Phone number:
+            <Text
+              style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>
+                {' '}
+              {distributorDetails.phoneNumber}
+            </Text>
+          </Text>
+          <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
+            <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>
+              Hours:
+            </Text>
+            <Text style={appStyles.description}>
+            {' '}
+              {distributorDetails.openAt}
+            </Text>
+            <Text style={appStyles.label}> _ </Text>
+            <Text style={appStyles.description}>
+            {' '}
+              {distributorDetails.closeAt}
+            </Text>
+          </View>
+       { distributorDetails?.openingDays &&   <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
+            
+            <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>
+              Days:
+            </Text>
 
-                const imagePath = isIOS ? fs.dirs.DocumentDir : fs.dirs.DCIMDir;
-                const imageName = `IMG_${new Date().getTime()}.jpg`;
+          {distributorDetails?.openingDays.map( item=>
+           <Text style={appStyles.description}>
+           {' '}
+             {item}
+           </Text>
+          
+          ) }
+           
+          </View>}
+      { distributorDetails.criteria &&   <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
+            <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>
+              Criteria:
+            </Text>
+            <Text style={appStyles.description}>
+            {' '}
+              {distributorDetails.criteria}
+            </Text>
+           
+          </View>}
+          <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
+            What we offer:
+            <Text
+              style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>
+                {' '}
+              {distributorDetails.whatWeOffer}
+            </Text>
+          </Text>
+          <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
+          
+            Website:
+          </Text>
+          <TouchableOpacity onPress={handleLinkPress}>
+            <Text
+              style={[
+                appStyles.description,
+                {
+                  textDecorationLine: 'underline',
+                  marginTop: -responsiveHeight(2),
+                  marginLeft: responsiveWidth(13),
+                },
+              ]}>
+                {' '}
+              {distributorDetails.website}
+            </Text>
+            
+          </TouchableOpacity>
+          <View style={{ alignItems:'center', paddingRight:responsiveWidth(4), marginTop:responsiveHeight(12) }}>
+          <GetButton
+          label='Get Directions'
+          customImageSource={greensend}
+          customImageMarginRight={responsiveWidth(2)}
+          customwidth={scale(220)}
+          marginTop={responsiveHeight(1)}
+          onPress={()=>handleLinkPressDirection()}
+          // onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
+        />
+          </View>
+       
+        </View>
+        {showDateSelector && (
+          <DateTimePicker
+            isVisible={true}
+            style={{width: '100%', backgroundColor: 'white'}}
+            value={selectedDate}
+            mode="date"
+            minimumDate={new Date()}
+            onConfirm={handleDateChange}
+            onCancel={closeDateSelector}
+          />
+        )}
 
-                await fs.cp(response.path(), `${imagePath}/${imageName}`);
-                await fs.scanFile([{path: `${imagePath}/${imageName}`, mime: 'image/jpeg'}]);
-
-                console.log('Image saved to gallery successfully!');
-                Alert.alert('Success', 'Image saved to gallery!');
-            } else {
-                // Handle denied permission case
-                Alert.alert('Permission Denied', 'Storage permission required.');
-            }
-        } catch (error) {
-            console.error('Error saving image to gallery:', error);
-            Alert.alert('Error', 'Failed to save image to gallery.');
-        }
-    };
-
-    return (
-        <SafeAreaView style={appStyles.container}>
-            <Header
-                imageSource={LeftButton}
-                headerText="Reserve Food"
-                showImage={true}
-                onPress={() => navigation.goBack()}
-                customTextMarginLeft={responsiveWidth(26)}
-                marginleft={-responsiveWidth(0)}
-            />
-            <ScrollView>
-
-                <CardView
-                    customMarginTop={responsiveHeight(1)}
-                    source={{uri: distributorDetails.profileImage}}
-                    title={distributorDetails.organization}
-                    description={distributorDetails.address}
-                    Availabletxt={`${distributorDetails.availableMeals !== undefined ? distributorDetails.availableMeals : '0'} Available`} // Check if availableMeals is defined, if not, show '0'
-                    //additionalInfo={item.additionalInfo}
-                    additionalInfo={distanceInKm}
-                />
-                <View style={{marginLeft: responsiveWidth(4), marginTop: responsiveHeight(3)}}>
-                    <Text style={appStyles.label}>Company Name:
-                        <Text
-                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.organization}</Text></Text>
-                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Address:
-                        <Text
-                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.address}</Text></Text>
-                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Phone number:
-                        <Text
-                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.phoneNumber}</Text></Text>
-                    <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
-                        <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>Hours:</Text>
-                        <Text style={appStyles.description}>{distributorDetails.openAt}</Text>
-                        <Text style={appStyles.label}> _ </Text>
-                        <Text style={appStyles.description}>{distributorDetails.closeAt}</Text>
-                    </View>
-                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>What we offer:
-                        <Text
-                            style={[appStyles.description, {marginTop: responsiveHeight(3)}]}>{distributorDetails.whatWeOffer}</Text></Text>
-                    <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>Website:</Text>
-                    <TouchableOpacity onPress={handleLinkPress}>
-                        <Text style={[appStyles.description, {
-                            textDecorationLine: 'underline',
-                            marginTop: -responsiveHeight(2),
-                            marginLeft: responsiveWidth(13)
-                        }]}>{distributorDetails.website}</Text>
-                    </TouchableOpacity>
-                </View>
-                {showDateSelector&&(
-                <DateTimePicker
-                isVisible={true}
-                  style={{ width: '100%', backgroundColor: 'white' }}
-                  value={selectedDate}
-                  mode="date"
-                  minimumDate={new Date()}
-                  onConfirm={handleDateChange}
-                  onCancel={closeDateSelector}
-
-                />)}
-
-                <TouchableOpacity style={[appStyles.Lubemeupcontainer, {marginTop:250}]}>
-                    <Button
-                        label="Reserve Food"
-                        onPress={() => handleReserveFood()}
-                        // onPress={() => handleQR(item)}
-                        ImageSource={arrowrightwhite}
-                        ImageSource1={true}
-                        ImageMarginLeft={responsiveWidth(3)}
-                    />
-                </TouchableOpacity>
-
-            </ScrollView>
-            <TouchableOpacity
-                activeOpacity={0.8}
-                style={{
-                    right: responsiveWidth(0),
-                    bottom: responsiveHeight(0),
-                    alignItems: 'center',
-                    alignSelf: 'flex-end',
-                    position: 'absolute'
-
-                }}
-                onPress={() => {
-                    setHelpCalloutModalVisible(true)
-                }}
-            >
-                <Image
-                    source={HelpCallout}
-                    resizeMode='cover'
-                    style={[
-                        appStyles.helpview,
-                        {},
-                    ]}
-                />
-            </TouchableOpacity>
-            {isHelpCalloutModalVisible && (
-                <HelpCalloutModal
-                    isVisible={isHelpCalloutModalVisible}
-                    onBackdropPress={() => setHelpCalloutModalVisible(false)}
-                    toggleModal={() => setHelpCalloutModalVisible(false)}
-                    bottom={responsiveHeight(5)}
-                    Title='Reserve Food Help'
-                    helpcallouttxt='The available bubble needs to show more than 0 for you to reserve a food package.
+       
+      </ScrollView>
+      <TouchableOpacity
+          style={[appStyles.Lubemeupcontainer, {marginTop: responsiveHeight(60), 
+            bottom: responsiveHeight(2),
+          
+            position: 'absolute',}]}>
+          <Button
+            label="Reserve Food"
+            onPress={() => handleReserveFood()}
+            // onPress={() => handleQR(item)}
+            ImageSource={arrowrightwhite}
+            ImageSource1={true}
+            ImageMarginLeft={responsiveWidth(3)}
+          />
+        </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={{
+          right: responsiveWidth(0),
+          bottom: responsiveHeight(0),
+          alignItems: 'center',
+          alignSelf: 'flex-end',
+          position: 'absolute',
+        }}
+        onPress={() => {
+          setHelpCalloutModalVisible(true);
+        }}>
+        <Image
+          source={HelpCallout}
+          resizeMode="cover"
+          style={[appStyles.helpview, {}]}
+        />
+      </TouchableOpacity>
+      {isHelpCalloutModalVisible && (
+        <HelpCalloutModal
+          isVisible={isHelpCalloutModalVisible}
+          onBackdropPress={() => setHelpCalloutModalVisible(false)}
+          toggleModal={() => setHelpCalloutModalVisible(false)}
+          bottom={responsiveHeight(5)}
+          Title="Reserve Food Help"
+          helpcallouttxt="The available bubble needs to show more than 0 for you to reserve a food package.
                 Push the “Reserve Food” button to reserve a food package.
                 The number of food packages you receive is determined by the size of your household. If you require additional food for any reason you must ask when you are picking up your reserved package.
-                A QR code will be issued to you that must be scanned when you are picking up your food package.'
-                />)}
-            {isQRModalVisible && (
-                <QRcodeModal
-                    navigation={navigation}
-                    onBackdropPress={toggleModal}
-                    isVisible={isQRModalVisible}
-                    qrCodeValue={qrCodeValue}
-                    saveImageToGallery={saveImageToGallery}
-                />
-            )}
-            <Loaders.AbsolutePrimary
-                isVisible={loadingReserveFood}
-            />
-        </SafeAreaView>
-    );
+                A QR code will be issued to you that must be scanned when you are picking up your food package."
+        />
+      )}
+      {isQRModalVisible && (
+        <QRcodeModal
+          navigation={navigation}
+          onBackdropPress={toggleModal}
+          isVisible={isQRModalVisible}
+          qrCodeValue={qrCodeValue}
+          _id={qrCodeid}
+          saveImageToGallery={saveImageToGallery}
+        />
+      )}
+      <Loaders.AbsolutePrimary isVisible={loadingReserveFood} />
+    </SafeAreaView>
+  );
 };
 export default ReservedFood1;
-
-
-

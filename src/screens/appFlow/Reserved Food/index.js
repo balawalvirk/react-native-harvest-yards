@@ -50,10 +50,10 @@ const ReservedFood = (props) => {
     <SafeAreaView style={appStyles.container}>
       <Header
         imageSource={MenueButton}
-        headerText="Reserved Food"
+        headerText={selectedTouchable === 'Pending Pick-ups' ? "Reserved Food" :  "Favorites"}
         showImage={true}
         onPress={() => navigation.openDrawer()}
-        customTextMarginLeft={responsiveWidth(23)}
+        customTextMarginLeft={selectedTouchable === 'Pending Pick-ups' ? responsiveWidth(23) : responsiveWidth(30)}
         // showImage2={true}
         bellmarginleft={responsiveWidth(25.5)}
         marginleft={-responsiveWidth(0)}
@@ -149,6 +149,9 @@ const ReservedFood = (props) => {
             const title=distributor?.organization||organization||'-- -- -- --'
             const description=distributor?.address||address||'-- -- -- --'
             // console.log("======+====",item.distributor?.expiryDate);
+            const parts = description.split(',');
+            const streetAddress = parts[0].trim();
+            const cityAndZip = parts.slice(1).join(',').trim();
 
             return (
               <CardView
@@ -160,7 +163,9 @@ const ReservedFood = (props) => {
                     ? pocket1
                     : greenheart
                 }
-                description={description}
+                description={streetAddress}
+                description2={cityAndZip}
+
                 Availabletxt={
                   selectedTouchable === 'Pending Pick-ups'
                     ? 'Pending'

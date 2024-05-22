@@ -58,18 +58,23 @@ export default function LocationRadious({navigation, route}) {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState("2 miles");
   const [circleRadius, setCircleRadius] = useState(3500);
+  // const [mapRegion, setMapRegion] = useState(null);
+  // const [currentLocation, setCurrentLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
-  // console.log('distributors>>>>', JSON.stringify(distributors, null, 2));
+  console.log('distributors>>>>', JSON.stringify(distributors, null, 2));
   const {
     location: initialLocation,
     status: initialStatus,
     title: initialTitle,
+    latLocation: initiallatitude,
+    lonLocatuon: initiallongitude,
   } = route.params || {};
+  console.log(console.log('initialLocation',initialLocation));
   const generateUniqueID = () => {
     return Math.random().toString(36).substr(2, 9);
   };
@@ -80,6 +85,14 @@ export default function LocationRadious({navigation, route}) {
     if (initialLocation) {
       setLocation(initialLocation);
     }
+    // if (initiallatitude && initiallongitude) {
+    //   setMapRegion({
+    //     initiallatitude,
+    //     initiallongitude,
+    //     latitudeDelta: 0.0922,
+    //     longitudeDelta: 0.0421,
+    //   });
+    // }
     if (initialStatus) {
       setStatus(initialStatus);
     }
@@ -284,11 +297,11 @@ export default function LocationRadious({navigation, route}) {
     }
   };
   const items = [
-    {id: '1 miles', value: '1 miles'},
     {id: '2 miles', value: '2 miles'},
-    {id: '3 miles', value: '3 miles'},
-    {id: '4 miles', value: '4 miles'},
     {id: '5 miles', value: '5 miles'},
+    {id: '10 miles', value: '10 miles'},
+    {id: '20 miles', value: '20 miles'},
+    {id: '50 miles', value: '50 miles'},
   ];
   const mapRef = useRef(null);
   async function moveToLocation(latitude, longitude) {
@@ -346,6 +359,7 @@ export default function LocationRadious({navigation, route}) {
               textInputProps={{
                 value: location,
                 onChange: handleLocationChange,
+            
               }}
               onPress={(data, details = null) => {
                 console.log(JSON.stringify(details?.geometry?.location));
@@ -376,12 +390,17 @@ export default function LocationRadious({navigation, route}) {
                   marginVertical: 5,
                   color: colors.color18,
                 },
+               
                 listView: {
                   zIndex: 9999,
                   width: responsiveWidth(87),
                   alignSelf: 'center',
                   marginTop: responsiveHeight(6),
                   position: 'absolute',
+                 
+                },
+                description: {
+                  color: colors.color18,
                 },
               }}
             />
@@ -404,6 +423,21 @@ export default function LocationRadious({navigation, route}) {
               />
             )}
 
+{/* {distributors.map(distributor => (
+              <Marker
+              key={distributor.id}
+              coordinate={{
+                // latitude: distributor.latitude,
+                latitude: distributor?.latitude,
+                //   latitude: 31.47737649999999,
+                //   longitude: 74.3070546,
+                longitude: distributor?.longitude,
+              }}
+              pinColor={'#FF0000'}
+                title={'current location'}
+              />
+            ))} */}
+
             {currentLocation && (
               <Circle
                 center={currentLocation}
@@ -425,6 +459,7 @@ export default function LocationRadious({navigation, route}) {
                   longitude: distributor?.longitude,
                 }}
                 pinColor={'red'}
+                
                 title={distributor.organization}
                 // image={require('../../../../assets/images/Basket3.png')}
               >

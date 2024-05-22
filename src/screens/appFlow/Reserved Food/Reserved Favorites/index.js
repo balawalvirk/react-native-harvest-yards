@@ -242,14 +242,17 @@ const Reservedfavorites = ({ route, navigation }) => {
           }
       });
   };
+  const parts = item.address.split(',');
+  const streetAddress = parts[0].trim();
+  const cityAndZip = parts.slice(1).join(',').trim();
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
                 imageSource={LeftButton}
-                headerText="Reserve Food"
+                headerText="Favorites"
                 showImage={true}
                 onPress={() => navigation.goBack()}
-                customTextMarginLeft={responsiveWidth(26)}
+                customTextMarginLeft={responsiveWidth(30)}
                 marginleft={-responsiveWidth(0)}
             />
             <ScrollView>
@@ -258,7 +261,9 @@ const Reservedfavorites = ({ route, navigation }) => {
                     source={{ uri: item.profileImage }}
                     title={item.organization}
                     pickupsource={greenheart}
-                    description={item.address}
+                    description={streetAddress}
+                    description2={cityAndZip}
+
                     Availabletxt={'favorite'}
                     additionalInfo={item.additionalInfo}
                     showPickupsView={true}

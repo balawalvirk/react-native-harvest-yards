@@ -32,59 +32,59 @@ const Location = ({ navigation, route }) => {
     // Update the selected location when a user selects from the saved locations
     setSelectedLocation(location);
   };
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        setLoading(true);
-        setLoadingAnimation(true);
+  // useEffect(() => {
+  //   const fetchLocations = async () => {
+  //     try {
+  //       setLoading(true);
+  //       setLoadingAnimation(true);
   
-        const currentUser = auth().currentUser;
+  //       const currentUser = auth().currentUser;
   
-        if (currentUser) {
-          const userId = currentUser?.uid;
+  //       if (currentUser) {
+  //         const userId = currentUser?.uid;
   
-          const locationsSnapshot = await firestore()
-            .collection('LocationDetail')
-            .doc(userId) // Get the document for the current user
-            .get();
+  //         const locationsSnapshot = await firestore()
+  //           .collection('LocationDetail')
+  //           .doc(userId) // Get the document for the current user
+  //           .get();
   
-          if (locationsSnapshot?.exists) {
-            const userData = locationsSnapshot?.data();
-            const fetchedLocations = userData?.locations || []; // Retrieve the locations array
+  //         if (locationsSnapshot?.exists) {
+  //           const userData = locationsSnapshot?.data();
+  //           const fetchedLocations = userData?.locations || []; // Retrieve the locations array
   
-            setLocations(fetchedLocations);
-            console.log('Fetched Locations:', fetchedLocations);
+  //           setLocations(fetchedLocations);
+  //           console.log('Fetched Locations:', fetchedLocations);
 
-          //   await firestore()
-          //   .collection('LocationDetail')
-          //   .doc(userId)
-          //   .update({
-          //     locations: []
-          //   });
-          // console.log('Previous locations deleted');
-          } else {
-            setLocations([]); // No data found for the current user
-          }
-        }
+  //         //   await firestore()
+  //         //   .collection('LocationDetail')
+  //         //   .doc(userId)
+  //         //   .update({
+  //         //     locations: []
+  //         //   });
+  //         // console.log('Previous locations deleted');
+  //         } else {
+  //           setLocations([]); // No data found for the current user
+  //         }
+  //       }
   
-        setLoading(false);
-        setLoadingAnimation(false);
-      } catch (error) {
-        console.error('Error fetching cations:', error);
-        setLoading(false);
-        setLoadingAnimation(false);
-      }
-    };
-    const onRefresh = () => {
-      setRefreshing(true);
-      fetchLocations().then(() => setRefreshing(false));
-    };
-    fetchLocations(); // Initial data fetch
-    const unsubscribe = navigation.addListener('focus', () => {
-      onRefresh(); // Fetch data when the screen comes into focus (e.g., when navigating back)
-    });
-    return unsubscribe;
-  }, [navigation]);
+  //       setLoading(false);
+  //       setLoadingAnimation(false);
+  //     } catch (error) {
+  //       console.error('Error fetching cations:', error);
+  //       setLoading(false);
+  //       setLoadingAnimation(false);
+  //     }
+  //   };
+  //   const onRefresh = () => {
+  //     setRefreshing(true);
+  //     fetchLocations().then(() => setRefreshing(false));
+  //   };
+  //   fetchLocations(); // Initial data fetch
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     onRefresh(); // Fetch data when the screen comes into focus (e.g., when navigating back)
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -117,11 +117,15 @@ const Location = ({ navigation, route }) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Selected</Text>
-        {selectedLocation && ( // Conditionally render selected location if it exists
-          <TouchableOpacity onPress={() => navigation.navigate('FindFood')}>
+
+      
+        {/* <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Selected</Text>
+        {selectedLocation && ( 
+          <TouchableOpacity
+           onPress={() => navigation.navigate('FindFood')}
+          > */}
           {/* <TouchableOpacity onPress={() => navigation.navigate('FindFood', {selectedLocation:selectedLocation})}> */}
-            <Locationview
+            {/* <Locationview
               customMarginTop={responsiveHeight(2)}
               source={checkcircle}
               source1={edit}
@@ -138,10 +142,10 @@ const Location = ({ navigation, route }) => {
               title={selectedLocation.title}
               backgroundcolor={colors.color36}
               description={selectedLocation.location}
-            />
-          </TouchableOpacity>
-        )}
-     <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Saved</Text>
+            /> */}
+          {/* </TouchableOpacity> */}
+        {/* )} */}
+     {/* <Text style={[appStyles.infotxt, { marginTop: responsiveHeight(5) }]}>Saved</Text>
      {locations.map(location => (
   <TouchableOpacity
     key={location.id}
@@ -155,9 +159,12 @@ const Location = ({ navigation, route }) => {
         leftIconpress={() => {
           navigation.navigate('LocationRadious', {
             location: location.location,
-            id: location.id,
-            title: location.title,
-            status: location.status,
+            id: location?.id,
+            title: location?.title,
+            status: location?.status,
+            latitude: location?.latitude,
+            longitude: location?.longitude,
+
           });
         }}
         Editpress={() => {
@@ -176,7 +183,8 @@ const Location = ({ navigation, route }) => {
       />
     </View>
   </TouchableOpacity>
-))}
+))} */}
+
 
 
 

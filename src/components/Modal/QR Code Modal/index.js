@@ -12,7 +12,7 @@ import { download } from '../../../services/utilities/assets';
 import GetButton from '../../GetButton';
 import { requestStoragePermission } from '../../../services/utilities/permission'
 import { useStorage } from '../../../services';
-const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) => {
+const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue, _id }) => {
   const qrCodeRef = useRef(null)
   const { saveQRCodeToGallery } = useStorage()
   const imageUri = 'nxY6upyayHZXDVRMsiAysdy6ZUE2_Web Development_Sun Dec 10 2023 20:19:00 GMT+0500';
@@ -75,8 +75,12 @@ const QRcodeModal = ({ isVisible, navigation, onBackdropPress, qrCodeValue }) =>
             getRef={qrCodeRef}
           />
         </View>
+        
+        <Text style={[appStyles.title, { alignSelf: 'center' ,marginTop: responsiveHeight(1)}]}>
+          ID# {_id.slice(-4)}
+        </Text>
         <TouchableOpacity
-          style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(3), width: responsiveWidth(85) }]}
+          style={[appStyles.Lubemeupcontainer, { marginTop: responsiveHeight(2), width: responsiveWidth(85) }]}
           onPress={() => saveImageToGallery(qrCodeValue)}>
           <Button
             label="Download QR Code"
