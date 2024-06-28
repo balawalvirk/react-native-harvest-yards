@@ -128,7 +128,7 @@ export default function Login({ navigation }) {
       const response = await auth().signInWithEmailAndPassword(email.trim().toLowerCase(), password);
 
       // Additional logic after successful login, if needed
-      console.log('Login successful!', response);
+      // console.log('Login successful!', response);
 
       // Show success toast
       Toast.show({
@@ -146,7 +146,7 @@ export default function Login({ navigation }) {
       // Navigate to the next screen
       navigation.navigate('DrawerNavigation', { screen: 'FindFood' });
     } catch (error) {
-      console.error('Error logging in:', error.message);
+      // console.error('Error logging in:', error.message);
       Toast.show({
         type: 'error',
         text1: 'Error',

@@ -1,45 +1,35 @@
-import React, {useState, useEffect, useRef} from 'react';
+import Geolocation from '@react-native-community/geolocation';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
   Image,
   PermissionsAndroid,
-  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {appStyles} from '../../../../services/utilities/appStyles';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import MapView, { Circle, Marker } from 'react-native-maps';
 import {
-  responsiveFontSize,
   responsiveHeight,
-  responsiveWidth,
+  responsiveWidth
 } from 'react-native-responsive-dimensions';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import CustomTextInput from '../../../../components/Textinputs';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { scale } from 'react-native-size-matters';
 import Button from '../../../../components/Button';
+import DropdownComp from '../../../../components/DropDownPiker';
+import Header from '../../../../components/Headers';
+import { appStyles } from '../../../../services/utilities/appStyles';
 import {
   Buttonminus,
   Buttonplus,
-  Down,
   GPS,
   LeftButton,
-  mappin,
+  mappin
 } from '../../../../services/utilities/assets';
-import {colors} from '../../../../services/utilities/color';
-import Header from '../../../../components/Headers';
-import MapView, {Marker, Circle} from 'react-native-maps';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import {scale} from 'react-native-size-matters';
-import Geocoder from 'react-native-geocoding';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { Dropdown } from 'react-native-element-dropdown';
-import Geolocation from '@react-native-community/geolocation';
-import GetLocation from 'react-native-get-location';
-import {v4 as uuidv4} from 'uuid';
-import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import DropdownComp from '../../../../components/DropDownPiker';
+import { colors } from '../../../../services/utilities/color';
 export default function LocationRadious({navigation, route}) {
   const [userId, setUserId] = useState(''); // State to store the current user's ID
   const [title, setTitle] = useState('');
@@ -330,7 +320,7 @@ export default function LocationRadious({navigation, route}) {
         contentContainerStyle={appStyles.scrollViewContainer}
         keyboardShouldPersistTaps={'handled'}
         showsVerticalScrollIndicator={false}>
-        <CustomTextInput
+        {/* <CustomTextInput
           label="Title"
           keyboardType="default"
           placeholder="Home"
@@ -339,7 +329,7 @@ export default function LocationRadious({navigation, route}) {
           placeholderTextColor={colors.color4}
           value={title}
           onChangeText={text => setTitle(text)}
-        />
+        /> */}
         <Text
           style={[
             appStyles.label,
@@ -376,8 +366,7 @@ export default function LocationRadious({navigation, route}) {
                 );
                 setlatLocation( details?.geometry?.location.lat)
                 setlonLocatuon( details?.geometry?.location.lng)
-
-                handleLocationSelect(data, details); // This is where handleLocationSelect is called
+                handleLocationSelect(data, details); 
               }}
               query={{
                 key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss', // Replace with your API key
@@ -461,14 +450,16 @@ export default function LocationRadious({navigation, route}) {
                 pinColor={'red'}
                 
                 title={distributor.organization}
+                // description={distributor.id}
+                
                 // image={require('../../../../assets/images/Basket3.png')}
               >
                 <Image
                   source={require('../../../../assets/images/GreenLocation.png')}
                   style={{
-                    width: 40, // Adjust the width as needed
-                    height: 40, // Adjust the height as needed
-                    resizeMode: 'contain', // Adjust the resizeMode as needed
+                    width: 40, 
+                    height: 40, 
+                    resizeMode: 'contain', 
                   }}
                 />
               </Marker>
@@ -531,6 +522,7 @@ export default function LocationRadious({navigation, route}) {
               handleRadiusChange(item?.value)
               console.log('item', item);
             }}
+
             search={false}
             title="Radius Area"
             // titleStyle={{marginLeft: wp(5)}}

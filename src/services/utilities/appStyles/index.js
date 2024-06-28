@@ -1202,6 +1202,15 @@ export const appStyles = StyleSheet.create({
     marginTop: responsiveHeight(2),
     marginBottom: -responsiveHeight(1),
   },
+  tabtxt: {
+    fontSize: fontSize.h5,
+    fontFamily: fontFamily.SatoshiVariable,
+    fontWeight: '700',
+    color: colors.color33,
+    marginLeft: responsiveWidth(5),
+    marginTop: responsiveHeight(2),
+    marginBottom: responsiveHeight(0.1)
+  },
   pickupsview: {
     width: scale(88),
     height: scale(28),

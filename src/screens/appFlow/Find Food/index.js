@@ -1,45 +1,37 @@
-import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  ScrollView,
-  SafeAreaView,
+  BackHandler,
+  FlatList,
   Image,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
   Text,
   TouchableOpacity,
-  FlatList,
-  BackHandler,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
+  View
 } from 'react-native';
+import { PERMISSIONS, RESULTS } from 'react-native-permissions';
 import {
   responsiveHeight,
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
-import {appStyles} from '../../../services/utilities/appStyles';
-import {useFocusEffect} from '@react-navigation/native';
-import Header from '../../../components/Headers';
-import {HelpCalloutModal} from '../../../components/Modal/Tip Modal';
-import {
-  MenueButton,
-  search,
-  locationtag,
-  HelpCallout,
-  animation,
-  mappin,
-} from '../../../services/utilities/assets';
-import CustomLocationInput from '../../../components/Textinputs/Locationinput';
-import CardView from '../../../components/CardView';
 import Toast from 'react-native-toast-message';
-import firestore from '@react-native-firebase/firestore';
-import {scale} from 'react-native-size-matters';
-import {colors} from '../../../services/utilities/color';
-import LottieView from 'lottie-react-native';
-import {RefreshControl} from 'react-native';
-import {roundToDecimal, useLocation} from '../../../services';
-import {Loaders} from '../../../components';
+import { Loaders } from '../../../components';
+import Header from '../../../components/Headers';
 import MemoizedRenderItem from '../../../components/MemoComponent';
-import {PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { HelpCalloutModal } from '../../../components/Modal/Tip Modal';
+import CustomLocationInput from '../../../components/Textinputs/Locationinput';
+import { useLocation } from '../../../services';
+import { appStyles } from '../../../services/utilities/appStyles';
+import {
+  HelpCallout,
+  MenueButton,
+  mappin,
+  search
+} from '../../../services/utilities/assets';
+import { colors } from '../../../services/utilities/color';
 import { fontFamily, fontSize } from '../../../services/utilities/fonts';
 const FindFood = ({navigation, route}) => {
   const [isHelpCalloutModalVisible, setHelpCalloutModalVisible] =
@@ -55,6 +47,7 @@ const FindFood = ({navigation, route}) => {
   // console.log(distributorsData[0]);
 
   const {currentLocation, calculateDistance} = useLocation();
+  // console.log('currentLocation', currentLocation);
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backPressed);
     return () => {
@@ -124,6 +117,7 @@ const FindFood = ({navigation, route}) => {
       fetchDistributorsData();
     }, [searchText]),
   );
+  const distanceThreshold = 100;
   //   let filteredDatabylocation =[];
   // if(selectedLocation !== undefined)
   // {
@@ -160,7 +154,7 @@ const FindFood = ({navigation, route}) => {
   // });
   //   console.log('filteredDatabylocation', filteredDatabylocation);
   // }
-
+  const [selectedTab, setSelectedTab] = useState('All');
   return (
     <SafeAreaView style={appStyles.container}>
       <Header
@@ -173,14 +167,7 @@ const FindFood = ({navigation, route}) => {
         marginleft={-responsiveWidth(0)}
         bellmarginleft={responsiveWidth(32)}
       />
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[colors.color33]}
-          />
-        }>
+     
         <CustomLocationInput
           showsearch={true}
           source={search}
@@ -206,51 +193,178 @@ const FindFood = ({navigation, route}) => {
           }>
           <Image source={mappin} style={appStyles.locationtag} />
         </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: 5,
+            marginBottom: responsiveHeight(1),
+          }}>
+          <TouchableOpacity onPress={() => setSelectedTab('All')}>
+            <Text
+              style={[
+                appStyles.tabtxt,
+                {
+                  color:
+                    selectedTab === 'All'
+                      ? colors.color33
+                      : colors.color4 + '60',
+                },
+              ]}>
+              All
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSelectedTab('Nearby')}>
+            <Text
+              style={[
+                appStyles.tabtxt,
+                {
+                  color:
+                    selectedTab === 'Nearby'
+                      ? colors.color33
+                      : colors.color4 + '60',
+                },
+              ]}>
+              Nearby
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.color33]}
+          />
+        }>
 
-        <Text
-          style={[appStyles.infotxt, {marginBottom: responsiveHeight(0.1)}]}>
-          Nearby
-        </Text>
-        <FlatList
-          data={
-            searchText === ''
-              ? //   filteredDatabylocation.length > 0 ?
-                // filteredDatabylocation : selectedLocation !== undefined ? null :
+        {selectedTab == 'All' && (
+          <FlatList
+            data={
+              searchText === ''
+                ? //   filteredDatabylocation.length > 0 ?
+                  // filteredDatabylocation : selectedLocation !== undefined ? null :
 
-                distributorsData.filter(
-                  item =>
-                    !isNaN(item.availableMeals) && item.availableMeals > 0,
-                )
-              : distributorsData.filter(
-                  item =>
-                    (item.organization
-                      ?.toLowerCase()
-                      ?.includes(searchText?.toLowerCase()) ||
-                      item.address
+                  distributorsData.filter(
+                    item =>
+                      !isNaN(item.availableMeals) && item.availableMeals > 0,
+                  )
+                : distributorsData.filter(
+                    item =>
+                      (item.organization
                         ?.toLowerCase()
-                        ?.includes(searchText?.toLowerCase())) &&
-                    item.availableMeals > 0,
-                )
-          }
-          keyExtractor={(item, index) => index.toString()}
-          ListEmptyComponent={() => (
-            <View
-              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-              <Text
+                        ?.includes(searchText?.toLowerCase()) ||
+                        item.address
+                          ?.toLowerCase()
+                          ?.includes(searchText?.toLowerCase())) &&
+                      item.availableMeals > 0,
+                  )
+            }
+            keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={() => (
+              <View
                 style={{
-                  fontSize: fontSize.h5,
-                  fontFamily: fontFamily.SatoshiVariable,
-                  fontWeight: '700',
-                  color: colors.color25,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
                 }}>
-                No data available
-              </Text>
-            </View>
-          )}
-          renderItem={({item}) => {
-            return <MemoizedRenderItem navigation={navigation} item={item} />;
-          }}
-        />
+                <Text
+                  style={{
+                    fontSize: fontSize.h5,
+                    fontFamily: fontFamily.SatoshiVariable,
+                    fontWeight: '700',
+                    color: colors.color25,
+                  }}>
+                  No data available
+                </Text>
+              </View>
+            )}
+            renderItem={({item}) => {
+              return <MemoizedRenderItem navigation={navigation} item={item} />;
+            }}
+          />
+        )}
+
+        {selectedTab == 'Nearby' && (
+          <FlatList
+            data={
+              searchText === ''
+                ? distributorsData.filter(item => {
+                    const targetlocation = {
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                    };
+                    const distance = calculateDistance(targetlocation);
+                    const distanceInMiles = distance * 0.621371;
+                    return (
+                      !isNaN(item.availableMeals) &&
+                      item.availableMeals > 0 &&
+                      distanceInMiles <= distanceThreshold
+                    );
+                  })
+                : distributorsData.filter(item => {
+                    const targetlocation = {
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                    };
+                    const distance = calculateDistance(targetlocation);
+                    const distanceInMiles = distance * 0.621371;
+                    return (
+                      (item.organization
+                        ?.toLowerCase()
+                        ?.includes(searchText?.toLowerCase()) ||
+                        item.address
+                          ?.toLowerCase()
+                          ?.includes(searchText?.toLowerCase())) &&
+                      item.availableMeals > 0 &&
+                      distanceInMiles <= distanceThreshold
+                    );
+                  })
+            }
+            // data={
+            //   searchText === ''
+            //     ? //   filteredDatabylocation.length > 0 ?
+            //       // filteredDatabylocation : selectedLocation !== undefined ? null :
+
+            //       distributorsData.filter(
+            //         item =>
+            //           !isNaN(item.availableMeals) && item.availableMeals > 0,
+            //       )
+            //     : distributorsData.filter(
+            //         item =>
+            //           (item.organization
+            //             ?.toLowerCase()
+            //             ?.includes(searchText?.toLowerCase()) ||
+            //             item.address
+            //               ?.toLowerCase()
+            //               ?.includes(searchText?.toLowerCase())) &&
+            //           item.availableMeals > 0,
+            //       )
+            // }
+
+            keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
+                }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.h5,
+                    fontFamily: fontFamily.SatoshiVariable,
+                    fontWeight: '700',
+                    color: colors.color25,
+                  }}>
+                  No data available
+                </Text>
+              </View>
+            )}
+            renderItem={({item}) => {
+              return <MemoizedRenderItem navigation={navigation} item={item} />;
+            }}
+          />
+        )}
         <View style={{height: responsiveHeight(4)}} />
       </ScrollView>
       <TouchableOpacity

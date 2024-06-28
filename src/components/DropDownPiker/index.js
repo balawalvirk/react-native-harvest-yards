@@ -25,7 +25,7 @@ export default function DropdownComp(props) {
           props.dropdownStyle,
           //   isFocus && styles.focusStyle,
         ]}
-        itemTextStyle={{color: colors.black}}
+        itemTextStyle={{color: colors.color25}}
         data={props.data}
         placeholder={!isFocus ? props.placeholder : '...'}
         placeholderStyle={[styles.placeholderStyle, props.placeholderStyle]}
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     borderRadius: responsiveWidth(3.2),
     alignSelf: 'center',
-    color: colors.black,
+    color: colors.color25,
   },
 
   focusStyle: {
