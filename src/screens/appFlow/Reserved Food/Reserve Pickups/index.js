@@ -213,8 +213,8 @@ console.log('jsonData: ', QRData)
         (fav) =>
           fav.profileImage === distributerDetail.profileImage &&
           fav.organization === distributerDetail.organization &&
-          fav.address === distributerDetail.address &&
-          fav.reservationDate === selectedDate
+          fav.address === distributerDetail.address 
+          // fav.reservationDate === selectedDate
       );
 
       if (isItemInFavorites) {
