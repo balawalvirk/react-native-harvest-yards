@@ -241,9 +241,7 @@ const FindFood = ({navigation, route}) => {
           <FlatList
             data={
               searchText === ''
-                ? //   filteredDatabylocation.length > 0 ?
-                  // filteredDatabylocation : selectedLocation !== undefined ? null :
-
+                ? 
                   distributorsData.filter(
                     item =>
                       !isNaN(item.availableMeals) && item.availableMeals > 0,

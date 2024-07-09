@@ -1,42 +1,41 @@
 import Geolocation from '@react-native-community/geolocation';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
   PermissionsAndroid,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import MapView, { Circle, Marker } from 'react-native-maps';
+import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+import MapView, {Circle, Marker} from 'react-native-maps';
 import {
   responsiveHeight,
-  responsiveWidth
+  responsiveWidth,
 } from 'react-native-responsive-dimensions';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { scale } from 'react-native-size-matters';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {scale} from 'react-native-size-matters';
 import Button from '../../../../components/Button';
 import DropdownComp from '../../../../components/DropDownPiker';
 import Header from '../../../../components/Headers';
-import { appStyles } from '../../../../services/utilities/appStyles';
+import {appStyles} from '../../../../services/utilities/appStyles';
 import {
   Buttonminus,
   Buttonplus,
   GPS,
   LeftButton,
-  mappin
+  mappin,
 } from '../../../../services/utilities/assets';
-import { colors } from '../../../../services/utilities/color';
+import {colors} from '../../../../services/utilities/color';
 export default function LocationRadious({navigation, route}) {
   const [userId, setUserId] = useState(''); // State to store the current user's ID
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
   const [latLocation, setlatLocation] = useState('');
   const [lonLocatuon, setlonLocatuon] = useState('');
-
 
   const [currentLocation, setCurrentLocation] = useState({
     latitude: 0,
@@ -46,7 +45,7 @@ export default function LocationRadious({navigation, route}) {
   const [distributorsLocations, setDistributorsLocations] = useState([]);
   const [distributors, setDistributors] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState("2 miles");
+  const [status, setStatus] = useState('2 miles');
   const [circleRadius, setCircleRadius] = useState(3500);
   // const [mapRegion, setMapRegion] = useState(null);
   // const [currentLocation, setCurrentLocation] = useState(null);
@@ -64,7 +63,7 @@ export default function LocationRadious({navigation, route}) {
     latLocation: initiallatitude,
     lonLocatuon: initiallongitude,
   } = route.params || {};
-  console.log(console.log('initialLocation',initialLocation));
+  console.log(console.log('initialLocation', initialLocation));
   const generateUniqueID = () => {
     return Math.random().toString(36).substr(2, 9);
   };
@@ -86,13 +85,12 @@ export default function LocationRadious({navigation, route}) {
     if (initialStatus) {
       setStatus(initialStatus);
     }
-  }, [initialTitle, initialLocation, initialStatus,circleRadius]);
+  }, [initialTitle, initialLocation, initialStatus, circleRadius]);
 
   const handleLocationChange = text => {
     setLocation(text);
   };
 
-  
   const getCurrentLocation = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -122,7 +120,7 @@ export default function LocationRadious({navigation, route}) {
           error => {
             console.error('Error getting location: ', error);
           },
-          {enableHighAccuracy: false, timeout: 15000, },
+          {enableHighAccuracy: false, timeout: 15000},
         );
       } else {
         console.log('Location permission denied');
@@ -161,15 +159,13 @@ export default function LocationRadious({navigation, route}) {
     fetchDistributorsCoordinates();
   }, []);
 
- 
-
   useEffect(() => {
     const currentUser = auth().currentUser;
     if (currentUser) {
       setUserId(currentUser.uid);
     }
   }, []);
- 
+
   // Function to save data to Firestore
 
   const saveDataToFirestore = async () => {
@@ -191,9 +187,8 @@ export default function LocationRadious({navigation, route}) {
         title,
         location,
         status,
-        latitude: latLocation, 
-        longitude: lonLocatuon, 
-     
+        latitude: latLocation,
+        longitude: lonLocatuon,
       };
 
       // Check if there is an ID passed from the previous screen
@@ -209,9 +204,8 @@ export default function LocationRadious({navigation, route}) {
           title: newLocation.title,
           location: newLocation.location,
           status: newLocation.status,
-          latitude:latLocation,
-          longitude:lonLocatuon,
-        
+          latitude: latLocation,
+          longitude: lonLocatuon,
         };
       } else {
         // If no ID is passed or the ID doesn't exist in the locations array, add a new location
@@ -226,9 +220,9 @@ export default function LocationRadious({navigation, route}) {
     }
   };
   const handleRadiusChange = value => {
-    console.log("value>>",value);
+    console.log('value>>', value);
     const miles = parseFloat(value);
-      console.log("miles>>>",miles);
+    console.log('miles>>>', miles);
     if (!isNaN(miles)) {
       const newRadius = miles * 1609.34; // Convert to meters
       console.log('Selected Radius:', value);
@@ -240,12 +234,10 @@ export default function LocationRadious({navigation, route}) {
     }
   };
 
- 
-  console.log("status>>",status);
-  
+  console.log('status>>', status);
 
   const handleZoomIn = () => {
-    console.log("handleZoomIn called");
+    console.log('handleZoomIn called');
     const newRegion = {
       ...mapRegion,
       latitudeDelta: mapRegion.latitudeDelta / 2,
@@ -255,7 +247,7 @@ export default function LocationRadious({navigation, route}) {
   };
 
   const handleZoomOut = () => {
-    console.log("handleZoomOut called");
+    console.log('handleZoomOut called');
     const newRegion = {
       ...mapRegion,
       latitudeDelta: mapRegion.latitudeDelta * 2,
@@ -347,9 +339,9 @@ export default function LocationRadious({navigation, route}) {
               placeholder="ABC Center, New York"
               fetchDetails={true}
               textInputProps={{
+                placeholderTextColor: colors.color10,
                 value: location,
                 onChange: handleLocationChange,
-            
               }}
               onPress={(data, details = null) => {
                 console.log(JSON.stringify(details?.geometry?.location));
@@ -364,9 +356,9 @@ export default function LocationRadious({navigation, route}) {
                   '<<<>>>>',
                   details?.geometry?.location.lng,
                 );
-                setlatLocation( details?.geometry?.location.lat)
-                setlonLocatuon( details?.geometry?.location.lng)
-                handleLocationSelect(data, details); 
+                setlatLocation(details?.geometry?.location.lat);
+                setlonLocatuon(details?.geometry?.location.lng);
+                handleLocationSelect(data, details);
               }}
               query={{
                 key: 'AIzaSyCWymlaPZyBhBw78qINEvZUzjzWUFsRkss', // Replace with your API key
@@ -379,14 +371,13 @@ export default function LocationRadious({navigation, route}) {
                   marginVertical: 5,
                   color: colors.color18,
                 },
-               
+
                 listView: {
                   zIndex: 9999,
                   width: responsiveWidth(87),
                   alignSelf: 'center',
                   marginTop: responsiveHeight(6),
                   position: 'absolute',
-                 
                 },
                 description: {
                   color: colors.color18,
@@ -412,7 +403,7 @@ export default function LocationRadious({navigation, route}) {
               />
             )}
 
-{/* {distributors.map(distributor => (
+            {/* {distributors.map(distributor => (
               <Marker
               key={distributor.id}
               coordinate={{
@@ -441,39 +432,41 @@ export default function LocationRadious({navigation, route}) {
               <Marker
                 key={distributor.id}
                 coordinate={{
-                  // latitude: distributor.latitude,
                   latitude: distributor?.latitude,
-                  //   latitude: 31.47737649999999,
-                  //   longitude: 74.3070546,
                   longitude: distributor?.longitude,
                 }}
                 pinColor={'red'}
-                
                 title={distributor.organization}
                 // description={distributor.id}
-                
+
                 // image={require('../../../../assets/images/Basket3.png')}
               >
-                <Image
+                {/* <Image
                   source={require('../../../../assets/images/GreenLocation.png')}
                   style={{
                     width: 40, 
                     height: 40, 
                     resizeMode: 'contain', 
                   }}
-                />
+                /> */}
               </Marker>
             ))}
           </MapView>
         </View>
 
-        <TouchableOpacity  onPress={()=>handleZoomIn()}>
+        <TouchableOpacity onPress={() => handleZoomIn()}>
           <Image
             source={Buttonplus}
-            style={[appStyles.plusbutton, {marginTop: -responsiveHeight(6.3),marginLeft: responsiveWidth(69),}]}
+            style={[
+              appStyles.plusbutton,
+              {
+                marginTop: -responsiveHeight(6.3),
+                marginLeft: responsiveWidth(69),
+              },
+            ]}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=>handleZoomOut()}>
+        <TouchableOpacity onPress={() => handleZoomOut()}>
           <Image
             source={Buttonminus}
             style={[appStyles.plusbutton, {marginTop: -responsiveHeight(7)}]}
@@ -487,7 +480,7 @@ export default function LocationRadious({navigation, route}) {
           {/* <Text style={[appStyles.label, {marginLeft: responsiveWidth(5)}]}>
             Radius Area
           </Text> */}
-          <View style={{alignSelf:'center'}}>
+          <View style={{alignSelf: 'center'}}>
             {/* <DropDownPicker
               items={items.map((item, index) => ({
                 label: item.label,
@@ -512,22 +505,21 @@ export default function LocationRadious({navigation, route}) {
               dropDownDirection="Top"
             /> */}
             <DropdownComp
-            data={items}
-            labelField={'value'}
-            valueField={'id'}
-            placeholder="Select CBD"
-            value={status || ''}
-            onChange={item => {
-              setStatus(item?.value);
-              handleRadiusChange(item?.value)
-              console.log('item', item);
-            }}
-
-            search={false}
-            title="Radius Area"
-            // titleStyle={{marginLeft: wp(5)}}
-            // dropdownStyle={styles.dropdownStyle}
-          />
+              data={items}
+              labelField={'value'}
+              valueField={'id'}
+              placeholder="Select CBD"
+              value={status || ''}
+              onChange={item => {
+                setStatus(item?.value);
+                handleRadiusChange(item?.value);
+                console.log('item', item);
+              }}
+              search={false}
+              title="Radius Area"
+              // titleStyle={{marginLeft: wp(5)}}
+              // dropdownStyle={styles.dropdownStyle}
+            />
           </View>
         </View>
 
