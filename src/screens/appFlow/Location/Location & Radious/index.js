@@ -30,6 +30,7 @@ import {
   mappin,
 } from '../../../../services/utilities/assets';
 import {colors} from '../../../../services/utilities/color';
+import Toast from 'react-native-toast-message';
 export default function LocationRadious({navigation, route}) {
   const [userId, setUserId] = useState(''); // State to store the current user's ID
   const [title, setTitle] = useState('');
@@ -169,9 +170,15 @@ export default function LocationRadious({navigation, route}) {
   // Function to save data to Firestore
 
   const saveDataToFirestore = async () => {
+    if (!location) {
+      Toast.show({type:'error',
+        text1:'error',
+        text2: 'Please enter location'
+      })
+      
+    } else {
     try {
       const userDocRef = firestore().collection('LocationDetail').doc(userId);
-
       const doc = await userDocRef.get();
       let locations = [];
 
@@ -218,7 +225,9 @@ export default function LocationRadious({navigation, route}) {
     } catch (error) {
       console.error('Error saving data:', error);
     }
+  }
   };
+
   const handleRadiusChange = value => {
     console.log('value>>', value);
     const miles = parseFloat(value);

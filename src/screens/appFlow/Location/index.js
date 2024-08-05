@@ -59,10 +59,9 @@ const Location = ({navigation, route}) => {
 
         if (currentUser) {
           const userId = currentUser?.uid;
-
           const locationsSnapshot = await firestore()
             .collection('LocationDetail')
-            .doc(userId) // Get the document for the current user
+            .doc(userId) 
             .get();
 
           if (locationsSnapshot?.exists) {
