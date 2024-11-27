@@ -24,26 +24,26 @@ const Reservedfavorites = ({ route, navigation }) => {
     const [selectedCardID, setSelectedCardID] = useState(null);
     const [isRemoveUserModalVisible, setIsRemoveUserModalVisible] = useState(false);
     const [reservedFoodData, setReservedFoodData] = useState([]);
-    const [organizationId, setOrganizationId] = useState(null); 
+    const [organizationId, setOrganizationId] = useState(null);
     const {currentLocation, calculateDistance} = useLocation();
     console.log('currentLocation: ', currentLocation)// New state for organizationId
     const { userId } = route.params;
     const { item } = route.params;
     const start_address = `${currentLocation?.latitude},${currentLocation?.longitude}`;
     const destination_address = `${item?.latitude},${item?.longitude}`;
-    
+
     console.log('start_address --> ', start_address);
     console.log('destination_address --> ', destination_address);
-    
+
     const url = Platform.select({
       // Google Maps app
       android: `google.navigation:q=${item?.latitude}+${item?.longitude}`,
       ios: `comgooglemaps://?center=${item?.latitude},${item?.longitude}&q=${item?.latitude},${item?.longitude}&zoom=14&views=traffic`,
     });
-    
+
     const appleMaps = `maps://app?saddr=${start_address}&daddr=${destination_address}`;
     const googleMapSite = `https://www.google.com/maps/dir/?api=1&destination=${item?.latitude},${item?.longitude}&dir_action=navigate`;
-  
+
     useEffect(() => {
         const fetchReservationDate = async () => {
             try {
@@ -79,19 +79,19 @@ const Reservedfavorites = ({ route, navigation }) => {
                   const seconds = userData.reservationDate.seconds; // Get seconds from Firestore timestamp
                   const milliseconds = seconds * 1000; // Convert seconds to milliseconds
                   const date = new Date(milliseconds); // Create a JavaScript date object
-  
+
                   const monthNames = [
                       'January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December'
                   ];
-  
+
                   const month = monthNames[date.getMonth()];
                   const day = date.getDate();
                   const year = date.getFullYear();
-  
+
                   const formattedDate = `${month} ${day}, ${year}`;
                   setSelectedDate(formattedDate); // Set the formatted date to selectedDate state
-  
+
                   console.log('Retrieved Reservation Date:', formattedDate); // Add console log to show the retrieved date
               } else {
                   console.log('No reservation date found');
@@ -101,7 +101,7 @@ const Reservedfavorites = ({ route, navigation }) => {
               console.error('Error fetching reservation date:', error);
           }
       };
-  
+
       fetchReservationDate();
   }, []);
     const handleReservation = async () => {
@@ -116,7 +116,7 @@ const Reservedfavorites = ({ route, navigation }) => {
           const userDoc = await userDocRef.get();
           const userData = userDoc.data();
           let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-      
+
           // Check if the item exists in favorites
           const isItemInFavorites = favoritesArray.some(
             (fav) =>
@@ -125,7 +125,7 @@ const Reservedfavorites = ({ route, navigation }) => {
               fav.address === item.address &&
               fav.reservationDate === selectedDate
           );
-      
+
           if (isItemInFavorites) {
             // Show a toast indicating that the data is already in favorites
             Toast.show({
@@ -141,14 +141,14 @@ const Reservedfavorites = ({ route, navigation }) => {
               address: item.address,
               reservationDate: selectedDate,
             });
-      
+
             await userDocRef.update({
               favorites: favoritesArray,
             });
-      
+
             setShowLubemeup(false);
             setShowGetButton(true);
-      
+
             // Show a success toast after adding to favorites
             Toast.show({
               type: 'success',
@@ -164,7 +164,7 @@ const Reservedfavorites = ({ route, navigation }) => {
           });
         }
       };
-    
+
     console.log("item>>>",JSON.stringify(item,null,2));
     const handleRemoveFavorite = async () => {
       try {
@@ -174,33 +174,33 @@ const Reservedfavorites = ({ route, navigation }) => {
           console.error('User ID not found');
           return;
         }
-  
+
         const userDocRef = firestore().collection('users').doc(userId);
         const userDoc = await userDocRef.get();
         const userData = userDoc.data();
         let favoritesArray = userData && userData.favorites ? userData.favorites : [];
-  
+
         const itemToRemove = {
           profileImage: item.profileImage,
           organization: item.organization,
           address: item.address,
           reservationDate: selectedDate,
         };
-  
+
         const updatedFavorites = favoritesArray.filter(
           (fav) =>
             fav.profileImage !== itemToRemove.profileImage ||
             fav.organization !== itemToRemove.organization ||
             fav.address !== itemToRemove.address
         );
-  
+
         await userDocRef.update({
           favorites: updatedFavorites,
         });
-  
+
         setShowLubemeup(true);
         setShowGetButton(false);
-  
+
         Toast.show({
           type: 'success',
           text1: 'Success',
@@ -208,14 +208,14 @@ const Reservedfavorites = ({ route, navigation }) => {
         });
       } catch (error) {
         console.error('Error removing favorite:', error);
-  
+
         let errorMessage = 'Failed to remove favorite. Please try again.';
         if (error.code === 'permission-denied') {
           errorMessage = 'Permission denied. You might not have access to perform this action.';
         } else if (error.code === 'not-found') {
           errorMessage = 'Document not found. The specified document does not exist.';
         }
-  
+
         Toast.show({
           type: 'error',
           text1: 'Error',
@@ -223,7 +223,7 @@ const Reservedfavorites = ({ route, navigation }) => {
         });
       }
     };
-  
+
     const handleLinkPress = () => {
       Linking.canOpenURL(url)
       .then((supported) => {
@@ -242,9 +242,9 @@ const Reservedfavorites = ({ route, navigation }) => {
           }
       });
   };
-  const parts = item.address.split(',');
-  const streetAddress = parts[0].trim();
-  const cityAndZip = parts.slice(1).join(',').trim();
+  const parts = item?.address ? item.address.split(',') : [];
+  const streetAddress = parts[0]?.trim();
+  const cityAndZip = parts?.slice(1)?.join(',')?.trim();
     return (
         <SafeAreaView style={appStyles.container}>
             <Header
@@ -329,7 +329,7 @@ const Reservedfavorites = ({ route, navigation }) => {
                            userId:userId
                             }
                         });
-                        
+
                     }}
                 />
             </ScrollView>

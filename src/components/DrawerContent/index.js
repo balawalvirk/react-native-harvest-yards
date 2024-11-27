@@ -20,12 +20,12 @@ const DrawerContent = ({ navigation }) => {
   };
   const handleLogout = async () => {
     try {
-      await auth().signOut(); 
+      await auth().signOut();
       await AsyncStorage.removeItem('email');
       await AsyncStorage.removeItem('password');
-      navigation.reset({ 
+      navigation.reset({
         index: 0,
-        routes: [{ name: 'AuthNavigation' }], 
+        routes: [{ name: 'AuthNavigation' }],
       });
     } catch (error) {
       console.error('Error signing out:', error);
@@ -155,11 +155,11 @@ const DrawerContent = ({ navigation }) => {
           customFontSize={selectedLabel === 'Share Our App' ? fontSize.h16 : fontSize.h10} // Change the font size here
           onPress={() => {
             shareAppContent();
-            setSelectedLabel('Share Our App'); 
+            setSelectedLabel('Share Our App');
           }}
         />
         </TouchableOpacity>
-       
+
 
         <Button2view
           text='Follow Us'
@@ -179,7 +179,7 @@ const DrawerContent = ({ navigation }) => {
             showtxt={true}
             MarginRight={-responsiveWidth(7)}
             onPress={() => {
-              setSelectedLabel('Logout'); 
+              setSelectedLabel('Logout');
               handleRemoveUserPress();
             }}
           />

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useState, useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 import AppNavigation from './appNavigation';
 import AuthNavigation from './authNavigation';
@@ -22,14 +22,17 @@ const RootNavigation = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         {user ? (
           // If user exists, show AppNavigation
-<>
-<Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
+          <>
+            <Stack.Screen
+              name="DrawerNavigation"
+              component={DrawerNavigation}
+            />
 
-<Stack.Screen name="AppNavigation" component={AppNavigation} />
-</>
+            <Stack.Screen name="AppNavigation" component={AppNavigation} />
+          </>
         ) : (
           // If user doesn't exist, show AuthNavigation
           <Stack.Screen name="AuthNavigation" component={AuthNavigation} />

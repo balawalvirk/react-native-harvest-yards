@@ -10,12 +10,13 @@ const MemoizedRenderItem = React.memo(({ item, navigation }) => {
   const { latitude, longitude } = item;
   const location = latitude && longitude ? { latitude, longitude } : null;
   const distance = currentLocation && location ? calculateDistance(location) : null;
-  const distanceInMile = distance * 0.621371; 
+  const distanceInMile = distance * 0.621371;
   const distanceInDecimal = distanceInMile ? roundToDecimal(distanceInMile, 2) : null;
   const distanceInMiles = distanceInDecimal ? distanceInDecimal + ' Miles' : '';
-  const parts = item.address.split(',');
-const streetAddress = parts[0].trim();
-const cityAndZip = parts.slice(1).join(',').trim();
+  // const parts = item?.address?.split(',');
+  const parts = item?.address ? item.address.split(',') : [];
+const streetAddress = parts[0]?.trim();
+const cityAndZip = parts?.slice(1)?.join(',')?.trim();
 
   return (
     <CardView

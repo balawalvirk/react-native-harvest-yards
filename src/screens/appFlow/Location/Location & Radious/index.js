@@ -175,7 +175,7 @@ export default function LocationRadious({navigation, route}) {
         text1:'error',
         text2: 'Please enter location'
       })
-      
+
     } else {
     try {
       const userDocRef = firestore().collection('LocationDetail').doc(userId);
@@ -432,7 +432,7 @@ export default function LocationRadious({navigation, route}) {
                 center={currentLocation}
                 radius={circleRadius}
                 fillColor="rgba(14, 166, 39, 0.3)"
-                strokeColor="rgba(14, 166, 39, 0.7)"
+                strokeColor="rgba(14, , 39, 0.7)"
                 strokeWidth={2}
               />
             )}
@@ -453,9 +453,9 @@ export default function LocationRadious({navigation, route}) {
                 {/* <Image
                   source={require('../../../../assets/images/GreenLocation.png')}
                   style={{
-                    width: 40, 
-                    height: 40, 
-                    resizeMode: 'contain', 
+                    width: 40,
+                    height: 40,
+                    resizeMode: 'contain',
                   }}
                 /> */}
               </Marker>
@@ -502,7 +502,7 @@ export default function LocationRadious({navigation, route}) {
               dropDownMaxHeight={responsiveHeight(15)}
               containerStyle={appStyles.dcontainer}
               style={appStyles.Dropdown}
-              setValue={(value) => 
+              setValue={(value) =>
               ( console.log("calllllll",value),
                 setStatus(value),
                 handleRadiusChange(status) )

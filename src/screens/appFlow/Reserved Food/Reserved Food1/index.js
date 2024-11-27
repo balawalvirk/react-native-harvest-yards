@@ -76,11 +76,11 @@ const ReservedFood1 = ({route, navigation}) => {
   const location = latitude && longitude ? {latitude, longitude} : null;
   const distance =
     currentLocation && location ? calculateDistance(location) : null;
-  const distanceInMile = distance * 0.621371; 
+  const distanceInMile = distance * 0.621371;
   const distanceInDecimal = distanceInMile ? roundToDecimal(distanceInMile, 2) : null;
   const distanceInMiles = distanceInDecimal ? distanceInDecimal + ' Miles' : '';
   console.log('=======>', item);
-  const parts = item?.address.split(',');
+  const parts = item?.address ? item.address.split(',') : [];
   const streetAddress = parts[0].trim();
   const cityAndZip = parts.slice(1).join(',').trim();
   const url = Platform.select({
@@ -88,7 +88,7 @@ const ReservedFood1 = ({route, navigation}) => {
     android: `google.navigation:q=${distributorDetails?.latitude}+${distributorDetails?.longitude}`,
     ios: `comgooglemaps://?center=${distributorDetails?.latitude},${distributorDetails?.longitude}&q=${distributorDetails?.latitude},${distributorDetails?.longitude}&zoom=14&views=traffic`,
   });
-  
+
   // const appleMaps = `maps://app?saddr=${start_address}&daddr=${destination_address}`;
   const googleMapSite = `https://www.google.com/maps/dir/?api=1&destination=${distributorDetails?.latitude},${distributorDetails?.longitude}&dir_action=navigate`;
 
@@ -115,7 +115,7 @@ const ReservedFood1 = ({route, navigation}) => {
 
   useEffect(() => {
     if (selectedDate)
-  
+
      showAlert(selectedDate);
   }, [selectedDate]);
 
@@ -409,7 +409,7 @@ const ReservedFood1 = ({route, navigation}) => {
       Alert.alert('Error', 'Failed to save image to gallery.');
     }
   };
-  
+
 
   return (
     <SafeAreaView style={appStyles.container}>
@@ -480,7 +480,7 @@ const ReservedFood1 = ({route, navigation}) => {
             </Text>
           </View>
        { distributorDetails?.openingDays &&   <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
-            
+
             <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>
               Days:
             </Text>
@@ -490,9 +490,9 @@ const ReservedFood1 = ({route, navigation}) => {
            {' '}
              {item}
            </Text>
-          
+
           ) }
-           
+
           </View>}
       { distributorDetails.criteria &&   <View style={{flexDirection: 'row', marginTop: responsiveHeight(3)}}>
             <Text style={[appStyles.label, {marginTop: responsiveHeight(0.3)}]}>
@@ -502,7 +502,7 @@ const ReservedFood1 = ({route, navigation}) => {
             {' '}
               {distributorDetails.criteria}
             </Text>
-           
+
           </View>}
           <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
             What we offer:
@@ -513,7 +513,7 @@ const ReservedFood1 = ({route, navigation}) => {
             </Text>
           </Text>
           <Text style={[appStyles.label, {marginTop: responsiveHeight(3)}]}>
-          
+
             Website:
           </Text>
           <TouchableOpacity onPress={handleLinkPress}>
@@ -529,7 +529,7 @@ const ReservedFood1 = ({route, navigation}) => {
                 {' '}
               {distributorDetails.website}
             </Text>
-            
+
           </TouchableOpacity>
           <View style={{ alignItems:'center', paddingRight:responsiveWidth(4), marginTop:responsiveHeight(12) }}>
           <GetButton
@@ -542,7 +542,7 @@ const ReservedFood1 = ({route, navigation}) => {
           // onPress={() => navigation.navigate('DrawerNavigation', { screen: 'ReserveFood', params: { selectedTab: 'Favorites' } })}
         />
           </View>
-       
+
         </View>
         {showDateSelector && (
           <DateTimePicker
@@ -556,12 +556,12 @@ const ReservedFood1 = ({route, navigation}) => {
           />
         )}
 
-       
+
       </ScrollView>
       <TouchableOpacity
-          style={[appStyles.Lubemeupcontainer, {marginTop: responsiveHeight(60), 
+          style={[appStyles.Lubemeupcontainer, {marginTop: responsiveHeight(60),
             bottom: responsiveHeight(2),
-          
+
             position: 'absolute',}]}>
           <Button
             label="Reserve Food"

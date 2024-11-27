@@ -44,7 +44,7 @@ const Location = ({navigation, route}) => {
   const [loadingAnimation, setLoadingAnimation] = useState(false);
   // Your useEffect hook remains the same
   const handleLocationSelect = location => {
-    navigation.navigate('FindFood');
+    navigation.navigate('DrawerNavigation', {screen: 'FindFood'});
 
     // Update the selected location when a user selects from the saved locations
     setSelectedLocation(location);
@@ -61,7 +61,7 @@ const Location = ({navigation, route}) => {
           const userId = currentUser?.uid;
           const locationsSnapshot = await firestore()
             .collection('LocationDetail')
-            .doc(userId) 
+            .doc(userId)
             .get();
 
           if (locationsSnapshot?.exists) {
@@ -237,7 +237,7 @@ const Location = ({navigation, route}) => {
         bottom={responsiveHeight(4.7)}
         Title="Location Help"
         helpcallouttxt="The default location is your home address.
-      You can use your current location to see the closest places to get food. 
+      You can use your current location to see the closest places to get food.
       Or, enter an address where you would like to see places nearby to obtain food."
       />
     </SafeAreaView>
