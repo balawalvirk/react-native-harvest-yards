@@ -19,6 +19,7 @@ import Reservedfavorites from '../../screens/appFlow/Reserved Food/Reserved Favo
 const Stack = createStackNavigator();
 const AppNavigation = () => {
   return (
+
     <Stack.Navigator screenOptions={{ headerShown: false }}>
 
          <Stack.Screen name="Editprofile" component={Editprofile} />
