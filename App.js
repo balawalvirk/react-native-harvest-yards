@@ -1,7 +1,7 @@
 import React from 'react'
 import Toast from 'react-native-toast-message';
 import RootNavigation from './src/navigation/RootNavigation'
-import { Text, View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 const App = () => {
   return (
     <>
@@ -13,7 +13,7 @@ const App = () => {
         >App.js</Text>
       </View> */}
     </>
-
   );
 };
+
 export default App;
